@@ -427,9 +427,12 @@ For verification, a local matcher establishes whether there is real geometric co
 <p>The matcher landscape as of mid-2026: <strong>LightGlue</strong> for speed,
 <strong>RoMa / RoMa v2</strong> for dense accuracy on hard pairs, and <strong>MASt3R</strong> for matching
 posed as a 3D problem rather than a 2D one, which is the right framing for wide baselines
-<span class="conf">○ REPORTED</span>. OmniGlue reports AUC@5° of 5.8 on ScanNet-1500 against SuperGlue's 5.1
-<span class="conf">○ REPORTED</span> — note how low those absolute numbers are. Indoor wide-baseline matching
-is hard, and the literature is candid about it.</p>
+<span class="conf">○ REPORTED</span>. OmniGlue reports AUC@5° of 8.6 on ScanNet-1500 against SuperGlue's 7.2
+<span class="conf">✓ VERIFIED (review, 19 Aug 2026 — the figures 5.8/5.1 in the original draft were wrong; corrected
+from the CVPR 2024 paper, Table 3)</span> — note how low those absolute numbers are. Indoor wide-baseline matching
+is hard, and the literature is candid about it. One licensing note for this stage: RoMa v1 is MIT and rides on
+DINOv2 (Apache-2.0), but RoMa v2 switched its backbone to DINOv3, which ships under a bespoke Meta licence —
+check it before adopting v2 <span class="conf">✓ VERIFIED (review, 19 Aug 2026)</span>.</p>
 
 <div class="card caution">
   <h4>Practical expectation</h4>
@@ -515,12 +518,19 @@ pointmap models on wide-FOV camera models <span class="conf">○ REPORTED</span>
 is to undistort first with GeoCalib and accept some loss at the frame edges.</p>
 
 <p><strong>Monocular fallback.</strong> When a room has exactly one photograph — common for bathrooms and
-hallways — you need single-image geometry. The strong options are <strong>MoGe-2</strong> (Microsoft,
-metric point maps plus intrinsics from one image), <strong>Depth Pro</strong> (Apple, Apache-2.0, metric
-depth with an internally-estimated field of view, sub-second inference), <strong>UniDepth V2</strong> and
-<strong>Metric3D v2</strong>. Note that Depth Anything V2 is <em>relative</em> depth by default and its
+hallways — you need single-image geometry. The strong options are <strong>MoGe-2</strong> (Microsoft, MIT
+licence, metric point maps plus intrinsics from one image — the commercially safe default here
+<span class="conf">✓ VERIFIED (review, 19 Aug 2026)</span>), <strong>Depth Pro</strong> (Apple, metric
+depth with an internally-estimated field of view, sub-second inference — but <strong>not</strong> Apache-2.0 as an
+earlier draft of this report claimed: the actual LICENSE is an Apple custom "personal, non-exclusive" licence that
+makes commercial use legally problematic <span class="conf">✓ VERIFIED (review, 19 Aug 2026)</span>),
+<strong>UniDepth V2</strong> (CC-BY-NC-4.0, code and weights — research only
+<span class="conf">✓ VERIFIED (review, 19 Aug 2026)</span>) and
+<strong>Metric3D v2</strong> (BSD-2 code, weights licence unspecified — contact the authors before commercial use
+<span class="conf">✓ VERIFIED (review, 19 Aug 2026)</span>). Note that Depth Anything V2 is <em>relative</em> depth by default and its
 larger checkpoints are CC-BY-NC-4.0 — only the Small model is Apache-2.0
-<span class="conf">✓ VERIFIED</span>. That licence split catches people out.</p>
+<span class="conf">✓ VERIFIED</span>. That licence split catches people out. Net of all of this: for a product,
+the monocular fallback is MoGe-2, with Depth Anything V2 Small as the only other clean option.</p>
 
 <h3>4.5 &nbsp;Room layout — turning a point cloud into architecture</h3>
 
@@ -541,13 +551,17 @@ them into a polygon. <strong>PlaneMVS</strong>, <strong>NOPE-SAC</strong> and <s
 are the learned versions, and NOPE-SAC in particular solves camera pose and plane reconstruction jointly
 from sparse views <span class="conf">○ REPORTED</span>. There is also <strong>Plane-DUSt3R</strong>
 (ICLR 2025), which adapts DUSt3R specifically to unposed room layout reconstruction
-<span class="conf">○ REPORTED</span> — the closest published work to the shape of your stage 4–5.</p>
+<span class="conf">✓ VERIFIED (review, 19 Aug 2026 — repo exists, code MIT; but it builds on DUSt3R
+checkpoints, which are CC-BY-NC, so treat it as research-only in practice)</span> — the closest published
+work to the shape of your stage 4–5.</p>
 
 <p>For the output representation, look at Meta's <strong>SceneScript</strong>, which emits architecture as a
 sequence of tokens (<code>make_wall</code>, <code>make_door</code>, …) rather than a mesh. The idea is
 excellent — a compact, editable, human-readable room description that you can validate, snap to
-right angles, and extrude cleanly. The code is not released <span class="conf">○ REPORTED</span>, but the
-representation is worth stealing.</p>
+right angles, and extrude cleanly. Contrary to an earlier draft of this report, the code <em>is</em> released
+(facebookresearch/scenescript) — under CC-BY-NC, so research-only
+<span class="conf">✓ VERIFIED (review, 19 Aug 2026)</span> — and the
+representation is worth stealing either way.</p>
 
 <h3>4.6 &nbsp;The floor plan channel</h3>
 
@@ -561,7 +575,12 @@ The research pass surfaced a cluster of 2024–2026 methods — RoomFormer, Poly
 and newer transformer and diffusion approaches reporting ~88% room F1 on CubiCasa5K and ~98% on synthetic
 Structured3D <span class="conf">○ REPORTED</span>. The gap between those two numbers is the whole story:
 performance on real, stylised, agency-drawn plans is meaningfully worse than on clean synthetic ones, and
-European plans are more varied than the datasets. Expect to fine-tune.</p>
+European plans are more varied than the datasets. Expect to fine-tune. <strong>Licensing warning the original
+draft missed:</strong> the CubiCasa5K <em>dataset</em> is CC-BY-NC-4.0, and Structured3D's terms are also
+non-commercial <span class="conf">✓ VERIFIED (review, 19 Aug 2026)</span> — so a production vectoriser cannot
+simply be trained on them. Plan on partner-supplied plans with your own annotations (plus synthetic generation)
+as the fine-tuning corpus, or negotiate a dataset licence. RoomFormer's code itself is MIT
+<span class="conf">✓ VERIFIED (review, 19 Aug 2026)</span>.</p>
 
 <p><strong>Scale it.</strong> Here is the part that no research paper solves and that your market hands you
 for free. French listings print room areas directly on the plan — <em>Séjour 24,5 m²</em>, <em>Chambre 11,2
@@ -663,13 +682,19 @@ in increasing order of both usefulness and risk:</p>
   <li><strong>Texture infill</strong> — extend the observed wall texture across the unobserved plane.
   Geometrically truthful (the wall really is there, from the layout), only the surface appearance is invented.</li>
   <li><strong>Generative view synthesis.</strong> Stability's <em>Stable Virtual Camera</em> takes 1–32
-  images and generates long trajectories, but is released under a non-commercial licence
-  <span class="conf">○ REPORTED</span>. Google's CAT3D/CAT4D are research. Tencent's HunyuanWorld is
-  open-source and panorama-oriented <span class="conf">○ REPORTED</span>. World Labs' <strong>Marble</strong>
+  images and generates long trajectories, but is released under the Stability AI Non-Commercial License with
+  no published commercial path <span class="conf">✓ VERIFIED (review, 19 Aug 2026)</span>. Google's CAT3D/CAT4D
+  are research. Tencent's HunyuanWorld is open-weights and panorama-oriented, but its Community License
+  states in capitals that it <em>does not apply in the European Union, United Kingdom and South Korea</em> —
+  it is unusable for a French company <span class="conf">✓ VERIFIED (review, 19 Aug 2026)</span>.
+  World Labs' <strong>Marble</strong>
   is the most product-like: it accepts text, images, video or coarse 3D layouts and exports Gaussian splats,
   collider and visual meshes, or video <span class="conf">✓ VERIFIED</span>. Its own documentation is candid
   about the failure mode you would care about — "the back of a table or the far corner of a room is not as
-  crisp as the room's centre" <span class="conf">✓ VERIFIED</span>. Pricing is not public.</li>
+  crisp as the room's centre" <span class="conf">✓ VERIFIED</span>. Pricing is now public — Free (4 generations),
+  Standard $20/mo, Pro $35/mo, Max $95/mo — and there is a generation API
+  <span class="conf">✓ VERIFIED (review, 19 Aug 2026 — the "pricing is not public" line in the original draft
+  is out of date)</span>.</li>
 </ol>
 
 <div class="card stop">
@@ -688,16 +713,25 @@ in increasing order of both usefulness and risk:</p>
 
 <p><strong>Renderer.</strong> <a href="https://sparkjs.dev/">Spark</a>, built by World Labs, is a Gaussian
 splat renderer for Three.js that composites splats and ordinary meshes in one scene with correct depth, and
-reads PLY, SOGS, SPZ, SPLAT and KSPLAT <span class="conf">✓ VERIFIED</span>. That hybrid capability is
-exactly what your architecture needs — mesh shell, splats inside. Alternatives: Three.js gained a native
-WebGPU splat renderer in r186 <span class="conf">○ REPORTED</span>, PlayCanvas has strong splat and
-compression support, and <code>@mkkellogg/GaussianSplats3D</code> is widely used but its maintainer now
-points people at Spark <span class="conf">○ REPORTED</span>.</p>
+reads PLY, SOG, SPZ, SPLAT and KSPLAT <span class="conf">✓ VERIFIED</span>. It is MIT-licensed
+<span class="conf">✓ VERIFIED (review, 19 Aug 2026 — the licence question left open in the original draft is
+resolved: MIT)</span>. That hybrid capability is
+exactly what your architecture needs — mesh shell, splats inside. Alternatives: the claim that Three.js gained a
+native WebGPU splat renderer in r186 could <em>not</em> be confirmed against release notes in the review pass —
+treat it as unverified <span class="conf">○ UNCONFIRMED (review, 19 Aug 2026)</span>; PlayCanvas has strong splat and
+compression support; and <code>@mkkellogg/GaussianSplats3D</code> (MIT) is widely used but its README now says the
+project is no longer in active development and recommends Spark
+<span class="conf">✓ VERIFIED (review, 19 Aug 2026)</span>.</p>
 
 <p><strong>Formats and budgets.</strong> Raw PLY for a 4M-Gaussian scene is around 1.4 GB; SPZ (Niantic,
-open-sourced) brings that to roughly 160 MB, and SOGS to 80–140 MB with streaming support
-<span class="conf">○ REPORTED</span>. Khronos has standardised a glTF Gaussian splatting extension
-<span class="conf">○ REPORTED</span>, which is a good sign for the ecosystem. For the mesh shell, glTF with
+open-sourced, MIT <span class="conf">✓ VERIFIED (review, 19 Aug 2026)</span>) brings that to roughly 160 MB, and
+SOG to 80–140 MB with streaming support
+<span class="conf">○ REPORTED</span>. Tooling note from the review pass: the original PlayCanvas
+<code>sogs</code> repo is archived; the maintained tool is <code>splat-transform</code> (MIT), which adds
+multi-LOD chunked SOG for streaming <span class="conf">✓ VERIFIED (review, 19 Aug 2026)</span>. Khronos has a
+glTF Gaussian splatting extension, <code>KHR_gaussian_splatting</code>, at Release Candidate stage — close, but
+not yet ratified as the original draft implied <span class="conf">✓ VERIFIED (review, 19 Aug 2026)</span>.
+For the mesh shell, glTF with
 Draco geometry compression and KTX2/Basis textures routinely achieves 95%+ size reduction.</p>
 
 <p><strong>Mobile is the real constraint.</strong> Reported figures: 1–3 M splats on iPhone, 1–2 M on
@@ -761,7 +795,7 @@ constraints; and every stage emits a confidence that survives to the viewer.</p>
     <span class="name">Per-room geometry</span>
     <p>MapAnything (Apache checkpoint) over each group of 3–8 images → poses, metric point map, confidence
     masks.</p>
-    <p class="fallback">Fallback for singletons: MoGe-2 or Depth Pro monocular point map. Fallback for
+    <p class="fallback">Fallback for singletons: MoGe-2 monocular point map (Depth Pro's licence rules it out of the product — see §6). Fallback for
     failures: drop to layout-only for that room.</p>
   </div>
   <div class="arrow">↓</div>
@@ -850,20 +884,20 @@ non-commercial weights, or permissive weights trained on a restrictively-license
   <thead><tr><th style="width:22%">Component</th><th style="width:24%">Recommendation</th><th style="width:18%">Licence</th><th>Note</th></tr></thead>
   <tbody>
     <tr><td>Triage / VLM reasoning</td><td>Frontier VLM API, or fine-tuned SigLIP</td><td><span class="chip solved"><span class="dot"></span>Commercial API</span></td><td>Cheap per listing. A local Qwen-VL-class model is the self-hosted alternative.</td></tr>
-    <tr><td>Calibration</td><td>GeoCalib</td><td><span class="chip partial"><span class="dot"></span>Check</span></td><td>Verify the current licence on the CVG repo before committing.</td></tr>
+    <tr><td>Calibration</td><td>GeoCalib</td><td><span class="chip solved"><span class="dot"></span>Apache-2.0</span></td><td><span class="conf">✓ VERIFIED (review, 19 Aug 2026)</span> — code Apache-2.0, weights CC-BY-4.0 (commercial use fine with attribution). Supports pinhole and fisheye/radial models.</td></tr>
     <tr><td>Global descriptors</td><td>DINOv2</td><td><span class="chip solved"><span class="dot"></span>Apache-2.0</span></td><td>DINOv3 ships under a bespoke Meta licence — read it before upgrading.</td></tr>
-    <tr><td>Local matching</td><td>LightGlue with ALIKED or DISK features</td><td><span class="chip partial"><span class="dot"></span>Apache, but…</span></td><td><strong>Trap:</strong> LightGlue itself is permissive, but the SuperPoint weights it is usually paired with are under a restrictive Magic Leap research licence. Use ALIKED or DISK instead. <span class="conf">○ verify</span></td></tr>
+    <tr><td>Local matching</td><td>LightGlue with ALIKED or DISK features</td><td><span class="chip partial"><span class="dot"></span>Apache, but…</span></td><td><strong>Trap:</strong> LightGlue itself is Apache-2.0, but the SuperPoint weights it is usually paired with are under Magic Leap's "noncommercial research use only" licence. Use ALIKED (BSD-3) or DISK (Apache-2.0) instead. <span class="conf">✓ VERIFIED (review, 19 Aug 2026)</span></td></tr>
     <tr><td>Sparse reconstruction</td><td><strong>MapAnything</strong> (Apache checkpoint)</td><td><span class="chip solved"><span class="dot"></span>Apache-2.0</span></td><td><span class="conf">✓ VERIFIED</span> — code Apache, and an explicitly commercial-friendly weights variant.</td></tr>
     <tr><td>&nbsp;&nbsp;— alternative</td><td>VGGT-1B-Commercial</td><td><span class="chip partial"><span class="dot"></span>Application</span></td><td><span class="conf">✓ VERIFIED</span> — approval flow, no military use.</td></tr>
     <tr><td>&nbsp;&nbsp;— avoid</td><td>MASt3R / DUSt3R</td><td><span class="chip open"><span class="dot"></span>CC-BY-NC-SA</span></td><td><span class="conf">✓ VERIFIED</span> — research only. Fine for benchmarking, not for the product.</td></tr>
-    <tr><td>Monocular depth</td><td>Depth Pro, or Depth Anything V2 <em>Small</em></td><td><span class="chip solved"><span class="dot"></span>Apache-2.0</span></td><td><span class="conf">✓ VERIFIED</span> — DA-V2 Base/Large/Giant are CC-BY-NC-4.0. Only Small is Apache.</td></tr>
+    <tr><td>Monocular depth</td><td><strong>MoGe-2</strong>, or Depth Anything V2 <em>Small</em></td><td><span class="chip solved"><span class="dot"></span>MIT / Apache-2.0</span></td><td><span class="conf">✓ VERIFIED (review, 19 Aug 2026)</span> — MoGe-2 is MIT. <strong>Correction to the original draft:</strong> Depth Pro is under an Apple custom personal-use licence, <em>not</em> Apache-2.0 — do not ship it. UniDepth is CC-BY-NC. DA-V2 Base/Large/Giant are CC-BY-NC-4.0; only Small is Apache.</td></tr>
     <tr><td>Segmentation</td><td>SAM 2 + Grounding DINO</td><td><span class="chip solved"><span class="dot"></span>Apache-2.0</span></td><td>For door, window and fixture detection feeding the scale solve.</td></tr>
-    <tr><td>Classical SfM (fallback)</td><td>COLMAP, GLOMAP</td><td><span class="chip solved"><span class="dot"></span>BSD</span></td><td>GLOMAP reportedly ~8× faster than COLMAP on comparable problems <span class="conf">○ REPORTED</span>. Useful when a room happens to have many overlapping photos.</td></tr>
-    <tr><td>Gaussian splatting</td><td><strong>gsplat</strong> (Nerfstudio)</td><td><span class="chip solved"><span class="dot"></span>Apache-2.0</span></td><td><strong>Trap:</strong> the original Inria/MPI 3DGS reference implementation is research-only. gsplat is the commercially usable rasteriser. <span class="conf">○ verify before relying on it</span></td></tr>
+    <tr><td>Classical SfM (fallback)</td><td>COLMAP, GLOMAP</td><td><span class="chip solved"><span class="dot"></span>BSD</span></td><td>GLOMAP ~8× faster than COLMAP on IMC 2023 per its own paper <span class="conf">✓ VERIFIED (review, 19 Aug 2026)</span>. COLMAP new-BSD, GLOMAP BSD-3. Useful when a room happens to have many overlapping photos.</td></tr>
+    <tr><td>Gaussian splatting</td><td><strong>gsplat</strong> (Nerfstudio)</td><td><span class="chip solved"><span class="dot"></span>Apache-2.0</span></td><td><strong>Trap confirmed:</strong> the original Inria/MPI 3DGS reference implementation is under a custom research/evaluation-only licence (commercial use needs written consent from Inria). gsplat is Apache-2.0. <span class="conf">✓ VERIFIED (review, 19 Aug 2026)</span> Depth-regularised research variants (DNGaussian is Inria-style non-commercial) should be reimplemented on gsplat, not vendored.</td></tr>
     <tr><td>Splat compression</td><td>SPZ, or SOGS for streaming</td><td><span class="chip solved"><span class="dot"></span>Open</span></td><td>SPZ open-sourced by Niantic; SOGS by PlayCanvas.</td></tr>
     <tr><td>Mesh pipeline</td><td>xatlas, gltf-transform, meshoptimizer, KTX2</td><td><span class="chip solved"><span class="dot"></span>Permissive</span></td><td>Well-trodden and reliable.</td></tr>
     <tr><td>Texturing</td><td>MVS-Texturing or OpenMVS</td><td><span class="chip partial"><span class="dot"></span>Check</span></td><td>OpenMVS is AGPL-ish in places — read carefully if you link it into a service.</td></tr>
-    <tr><td>Web renderer</td><td>Three.js + Spark</td><td><span class="chip partial"><span class="dot"></span>Check</span></td><td><span class="conf">✓ VERIFIED</span> that Spark is World Labs' Three.js splat renderer with hybrid mesh support; its licence was not stated on the site I read — confirm on the repo.</td></tr>
+    <tr><td>Web renderer</td><td>Three.js + Spark</td><td><span class="chip solved"><span class="dot"></span>MIT</span></td><td><span class="conf">✓ VERIFIED (review, 19 Aug 2026)</span> — Spark is MIT on GitHub; hybrid splat+mesh rendering confirmed; reads PLY/SOG/SPZ/SPLAT/KSPLAT.</td></tr>
     <tr><td>Evaluation data</td><td>ZInD, Structured3D</td><td><span class="chip open"><span class="dot"></span>Non-commercial</span></td><td><span class="conf">✓ VERIFIED</span> — ZInD is 1,575 homes, 67,448 panoramas, 2,737 floor plans, and explicitly <em>not</em> licensed for commercial purposes, including by researchers at non-academic institutions building products. Zillow accepts commercial enquiries at their listed address.</td></tr>
   </tbody>
 </table>
@@ -1084,7 +1118,7 @@ feature agencies will want independently.</p>
 
 <h4>Depth, calibration and scale</h4>
 <ul>
-  <li><a href="https://github.com/apple/ml-depth-pro">Depth Pro</a> (Apple, Apache-2.0) — metric depth with internally estimated FOV</li>
+  <li><a href="https://github.com/apple/ml-depth-pro">Depth Pro</a> (Apple; custom personal-use licence, not commercially usable — corrected on review) — metric depth with internally estimated FOV</li>
   <li><a href="https://github.com/microsoft/moge">MoGe / MoGe-2</a> — metric point maps plus intrinsics from one image</li>
   <li><a href="https://github.com/cvg/GeoCalib">GeoCalib</a> — single-image calibration, pinhole and fisheye</li>
   <li><a href="https://github.com/DepthAnything/Depth-Anything-V2">Depth Anything V2</a> — Small is Apache-2.0, larger checkpoints are CC-BY-NC-4.0</li>
@@ -1140,14 +1174,59 @@ feature agencies will want independently.</p>
   reproducing figures with more precision than the sources support, and several of the 2026 arXiv
   identifiers that came back were not confirmed to exist. Before you cite any specific accuracy figure from
   §4, open the paper.</li>
-  <li>Two claims in §6 come from my own knowledge rather than this session's research and are flagged as
-  needing verification: the licence status of the original Inria 3DGS implementation versus gsplat, and the
-  Magic Leap licence on SuperPoint weights. Both are the kind of trap that is expensive to discover late,
-  so check them early.</li>
+  <li>Two claims in §6 came from the original author's knowledge rather than that session's research and were
+  flagged as needing verification: the licence status of the original Inria 3DGS implementation versus gsplat,
+  and the Magic Leap licence on SuperPoint weights. <strong>Both were confirmed in the 19 August 2026 review
+  pass</strong> (see the addendum below): Inria 3DGS is research/evaluation-only with commercial use requiring
+  written consent, gsplat is Apache-2.0, and the SuperPoint weights are noncommercial-research-only.</li>
   <li>Cost figures in §8 are my estimates from stated inference times, not measurements. The human-review
   observation is a modelling argument, not an empirical finding — but it is the one I would most encourage
   you to test early, because it changes where you spend effort.</li>
 </ul>
+
+<div class="card flag">
+  <h4>Review addendum — 19 August 2026</h4>
+  <p>This report was independently reviewed after delivery. Seven verification agents re-checked the
+  load-bearing claims against primary sources (LICENSE files, model cards, arXiv pages, official product and
+  government pages). Corrections were applied inline, marked
+  <span class="conf">✓ VERIFIED (review, 19 Aug 2026)</span>. Summary of what changed:</p>
+  <ul>
+    <li><strong>Depth Pro is not Apache-2.0.</strong> Its LICENSE is an Apple custom "personal, non-exclusive"
+    licence; it is out of the product stack. MoGe-2 (MIT, metric, intrinsics from one image) is the monocular
+    fallback of record. UniDepth is CC-BY-NC; Metric3D v2 weights are unlicensed pending author contact.</li>
+    <li><strong>CubiCasa5K's dataset is CC-BY-NC-4.0</strong> (and Structured3D is non-commercial): the floor-plan
+    vectoriser cannot be trained on them for a commercial product without a negotiated licence. Partner plans +
+    own annotations + synthetic data are the fine-tuning path.</li>
+    <li><strong>HunyuanWorld's Community License does not apply in the EU, UK and South Korea</strong> — unusable
+    for a French company. Stable Virtual Camera confirmed non-commercial with no published commercial path.</li>
+    <li><strong>Marble pricing is now public</strong> (Free / $20 / $35 / $95 per month, with a generation API);
+    the "pricing is not public" line was stale.</li>
+    <li><strong>SceneScript's code is released</strong> (CC-BY-NC), contrary to the draft.</li>
+    <li><strong>OmniGlue's ScanNet-1500 figures were misquoted</strong>: AUC@5° is 8.6 vs SuperGlue's 7.2 (not
+    5.8 vs 5.1). The qualitative point stands.</li>
+    <li><strong>Confirmed as stated:</strong> MapAnything Apache code + Apache commercial checkpoint;
+    VGGT-1B-Commercial application flow; MASt3R/DUSt3R CC-BY-NC-SA; gsplat Apache-2.0 vs Inria research-only;
+    SuperPoint Magic Leap noncommercial trap (use ALIKED/DISK); GeoCalib Apache-2.0 code + CC-BY-4.0 weights;
+    Spark MIT with hybrid splat+mesh rendering; SPZ MIT; GLOMAP ~8× COLMAP (its own paper, IMC 2023); ZInD and
+    LASER non-commercial; RoomFormer, F3Loc, HorizonNet, AtlantaNet, Plane-DUSt3R code MIT; C3Po
+    (arXiv 2511.18559) and the vacation-rental grouping paper (arXiv 2507.00263) both exist as described;
+    EU AI Act Art. 50 in force 2 Aug 2026 (grace to 2 Dec 2026 for systems already on the market; fines up to
+    €15M / 3% turnover); loi Carrez 5% tolerance mechanics; NY DOS trend alert of 13 Nov 2025; CoStar v. Zillow
+    live (53k+ images claimed, moved to W.D. Washington, active as of March 2026).</li>
+    <li><strong>New precision:</strong> the California disclosure law is <strong>AB 723</strong>, effective
+    1 Jan 2026 — conspicuous labelling of digitally altered listing images, original image accessible via
+    link/QR, basic exposure/cropping edits exempt. This is a useful template for the viewer's disclosure UX.
+    The Dutch TDM opt-out decision is DPG Media v. Knowledge Exchange (Amsterdam, decided 30 Oct 2024,
+    publicised early 2025).</li>
+    <li><strong>Still unconfirmed:</strong> the claim that Three.js r186 shipped a native WebGPU splat renderer
+    (not found in release notes during review); PolyRoom has no stated licence; no sector-specific DGCCRF or
+    CNIL guidance on AI-altered property images was found (the general misleading-practices and GDPR frameworks
+    apply). French/UK sector guidance remains the report's thinnest area — take counsel before launch.</li>
+  </ul>
+  <p>The full per-component licence ledger now lives in <code>docs/LICENSING.md</code> in this repository and
+  supersedes §6's table where they disagree. Development planning is in <code>ROADMAP.md</code> and
+  <code>docs/ARCHITECTURE.md</code>.</p>
+</div>
 
 <hr class="soft">
 
