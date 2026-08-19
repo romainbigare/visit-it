@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reconstructing flats in 3D from listing photos — a feasibility report</title>
+<style>
+  :root {
+    color-scheme: light;
+    --surface: #fcfcfb;
+    --plane: #f9f9f7;
+    --ink: #0b0b0b;
+    --ink-2: #52514e;
+    --muted: #898781;
+    --rule: #e1e0d9;
+    --line: #c3c2b7;
+    --border: rgba(11,11,11,0.10);
+    --good: #0ca30c;
+    --warning: #fab219;
+    --serious: #ec835a;
+    --critical: #d03b3b;
+    --accent: #2a78d6;
+    --accent-soft: #cde2fb;
+    --code-bg: #f2f1ec;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --surface: #1a1a19;
+      --plane: #0d0d0d;
+      --ink: #ffffff;
+      --ink-2: #c3c2b7;
+      --muted: #898781;
+      --rule: #2c2c2a;
+      --line: #383835;
+      --border: rgba(255,255,255,0.10);
+      --accent: #3987e5;
+      --accent-soft: #184f95;
+      --code-bg: #232321;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--plane);
+    color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 16px;
+    line-height: 1.62;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 20px 96px; }
+  header.masthead {
+    background: var(--surface);
+    border-bottom: 1px solid var(--rule);
+    padding: 44px 20px 32px;
+    margin-bottom: 28px;
+  }
+  header.masthead .inner { max-width: 860px; margin: 0 auto; }
+  .kicker {
+    font-size: 12px; letter-spacing: 0.10em; text-transform: uppercase;
+    color: var(--muted); margin: 0 0 12px;
+  }
+  h1 { font-size: 30px; line-height: 1.22; margin: 0 0 14px; font-weight: 650; letter-spacing: -0.015em; }
+  .standfirst { font-size: 17px; color: var(--ink-2); margin: 0 0 20px; max-width: 62ch; }
+  .meta { font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 6px 18px; }
+  h2 {
+    font-size: 21px; font-weight: 640; letter-spacing: -0.01em;
+    margin: 52px 0 4px; padding-top: 20px; border-top: 1px solid var(--rule);
+  }
+  h2 .num { color: var(--muted); font-weight: 400; margin-right: 10px; font-variant-numeric: tabular-nums; }
+  h3 { font-size: 17px; font-weight: 620; margin: 32px 0 8px; }
+  h4 { font-size: 15px; font-weight: 620; margin: 22px 0 6px; color: var(--ink-2); }
+  p { margin: 0 0 14px; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-soft); }
+  a:hover { border-bottom-color: var(--accent); }
+  ul, ol { margin: 0 0 16px; padding-left: 22px; }
+  li { margin-bottom: 7px; }
+  code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.87em; background: var(--code-bg); padding: 1px 5px; border-radius: 4px;
+  }
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    padding: 18px 20px; margin: 20px 0;
+  }
+  .card.flag { border-left: 3px solid var(--accent); }
+  .card.caution { border-left: 3px solid var(--serious); }
+  .card.stop { border-left: 3px solid var(--critical); }
+  .card h4 { margin-top: 0; }
+  .card p:last-child, .card ul:last-child, .card ol:last-child { margin-bottom: 0; }
+  .tablewrap { overflow-x: auto; margin: 18px 0; -webkit-overflow-scrolling: touch; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; min-width: 520px; }
+  th, td { text-align: left; padding: 9px 12px 9px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { font-weight: 620; color: var(--ink-2); font-size: 12.5px; letter-spacing: 0.02em; text-transform: uppercase; }
+  td:last-child, th:last-child { padding-right: 0; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;
+    font-size: 12px; font-weight: 600; padding: 2px 9px 2px 7px; border-radius: 20px;
+    border: 1px solid var(--border);
+  }
+  .chip .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+  .chip.solved  .dot { background: var(--good); }
+  .chip.partial .dot { background: var(--warning); }
+  .chip.fragile .dot { background: var(--serious); }
+  .chip.open    .dot { background: var(--critical); }
+  .conf { font-size: 11px; color: var(--muted); font-weight: 600; }
+  .toc { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; margin: 0 0 8px; }
+  .toc ol { margin: 0; padding-left: 20px; font-size: 14.5px; }
+  .toc li { margin-bottom: 5px; }
+  .toc a { border-bottom: none; color: var(--ink); }
+  .toc a:hover { color: var(--accent); }
+  .pipeline { margin: 22px 0; }
+  .stage {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 16px; margin-bottom: 8px; position: relative;
+  }
+  .stage .tag {
+    font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--muted); font-weight: 650; display: block; margin-bottom: 3px;
+  }
+  .stage .name { font-weight: 620; font-size: 15.5px; display: block; margin-bottom: 5px; }
+  .stage p { font-size: 14px; margin: 0 0 6px; color: var(--ink-2); }
+  .stage p:last-child { margin-bottom: 0; }
+  .stage .fallback { font-size: 13px; color: var(--muted); }
+  .arrow { text-align: center; color: var(--line); font-size: 15px; line-height: 1; margin: 2px 0 6px; }
+  .keynum { font-size: 30px; font-weight: 650; letter-spacing: -0.02em; line-height: 1.1; }
+  .keynum.sm { font-size: 23px; }
+  .keylabel { font-size: 13px; color: var(--ink-2); }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 20px 0; }
+  .tile { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+  blockquote {
+    margin: 16px 0; padding: 2px 0 2px 16px; border-left: 2px solid var(--line);
+    color: var(--ink-2); font-size: 15px;
+  }
+  .fn { font-size: 13.5px; color: var(--ink-2); }
+  hr.soft { border: 0; border-top: 1px solid var(--rule); margin: 30px 0; }
+  .srconly { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); }
+  @media (max-width: 600px) {
+    h1 { font-size: 25px; }
+    h2 { font-size: 19px; }
+    body { font-size: 15.5px; }
+    .wrap { padding: 0 16px 72px; }
+    header.masthead { padding: 32px 16px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="inner">
+    <p class="kicker">Technical feasibility report</p>
+    <h1>Reconstructing flats in 3D from listing photos</h1>
+    <p class="standfirst">What is possible today when the only inputs are an unlabelled bag of estate-agent
+    photographs and, sometimes, a floor plan — no poses, no calibration, no captions, no capture control.</p>
+    <div class="meta">
+      <span>Prepared for Romain</span>
+      <span>19 August 2026</span>
+      <span>Target: metrically plausible layout + photorealistic views, browser-delivered</span>
+      <span>Preference: open-source where possible</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<div class="card" style="margin-top:0">
+  <h4>How to read the confidence marks</h4>
+  <p style="font-size:14px">Research for this report was gathered by a fleet of search agents, then the
+  load-bearing claims were checked against primary sources. Two conventions run through the document:</p>
+  <ul style="font-size:14px; margin-bottom:0">
+    <li><span class="conf">✓ VERIFIED</span> — I opened the repository, paper or statutory text myself during this session.</li>
+    <li><span class="conf">○ REPORTED</span> — it came back from the research pass with a source, but I did not independently confirm it. Treat these as leads, not facts. Benchmark numbers in particular deserve a second look before you rely on them.</li>
+  </ul>
+</div>
+
+<nav class="toc" aria-label="Contents">
+  <ol>
+    <li><a href="#verdict">The verdict, briefly</a></li>
+    <li><a href="#decompose">Decomposing the problem</a></li>
+    <li><a href="#walls">Where the difficulty actually lives</a></li>
+    <li><a href="#sota">State of the art, stage by stage</a></li>
+    <li><a href="#architecture">A proposed architecture</a></li>
+    <li><a href="#stack">The stack, and the licensing minefield</a></li>
+    <li><a href="#unsolved">What remains genuinely unsolved</a></li>
+    <li><a href="#cost">What it costs to run</a></li>
+    <li><a href="#roadmap">A staged plan, with kill criteria</a></li>
+    <li><a href="#legal">Law, data and disclosure</a></li>
+    <li><a href="#resources">Resources</a></li>
+    <li><a href="#caveats">Caveats on this report</a></li>
+  </ol>
+</nav>
+
+<h2 id="verdict"><span class="num">01</span>The verdict, briefly</h2>
+
+<p>The literal version of your idea — take any listing, press a button, receive a complete,
+metrically correct, freely walkable, photorealistic 3D flat — is not achievable at reliable quality today.
+Not because any single piece is impossible, but because one specific piece has no signal to work with,
+and several others are much more fragile on real estate-agent photographs than their benchmark numbers suggest.</p>
+
+<p>A slightly different product, however, is achievable now, and I think it is the more interesting one anyway.
+The move is to stop treating this as a reconstruction problem and start treating it as an
+<em>inference problem with a reconstruction component</em>: recover what the photographs genuinely support,
+infer the rest from strong structural priors, and choose a presentation format that is honest about
+which is which. Concretely, a scaled architectural shell derived from the floor plan and per-room layout
+estimation, with photorealistic Gaussian splats anchored inside each room, navigated by teleporting between
+waypoints rather than free roaming. That is buildable in roughly four to six months by a small team, and it
+lands very close to what buyers actually want from a virtual visit.</p>
+
+<div class="tiles">
+  <div class="tile">
+    <div class="keynum">~60%</div>
+    <div class="keylabel">of a typical room's surfaces are never photographed in a listing. Reconstruction cannot fill this; only priors or generation can.</div>
+  </div>
+  <div class="tile">
+    <div class="keynum">0</div>
+    <div class="keylabel">reliable signal for inter-room placement from photos alone. This is the hard wall, and the floor plan is the way through it.</div>
+  </div>
+  <div class="tile">
+    <div class="keynum">±3–5%</div>
+    <div class="keylabel">achievable metric error if you exploit the legally-published surface area as a global scale constraint. Without it, ±15%.</div>
+  </div>
+  <div class="tile">
+    <div class="keynum sm">€0.30–1.50</div>
+    <div class="keylabel">estimated GPU and inference cost per listing at volume. Compute is not the constraint; correctness is.</div>
+  </div>
+</div>
+
+<p>The strategic observation from the market scan is worth stating early: every incumbent in this space
+(Matterport, Zillow, Giraffe360, Realsee, Cupix) controls the capture. They sell a camera, or a capture app,
+or a photographer. Nobody has a production-grade product that works from photographs that already exist.
+That gap is real, and it is real for a reason — it is genuinely hard. But it is a gap, and the pieces needed to
+close it have moved a long way in the last eighteen months.</p>
+
+<h2 id="decompose"><span class="num">02</span>Decomposing the problem</h2>
+
+<p>"Photos in, 3D flat out" is nine distinct problems wearing one coat. Separating them is the most
+useful thing you can do early, because their maturity levels differ enormously, and a plan that treats
+them as one monolith will fail at whichever one is weakest without telling you which.</p>
+
+<div class="tablewrap">
+<table>
+  <thead>
+    <tr><th style="width:24%">Sub-problem</th><th style="width:20%">Status</th><th>What that means</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>1. Triage</strong><br><span class="fn">Which image is a floor plan, a room, an exterior, a stock photo?</span></td>
+      <td><span class="chip solved"><span class="dot"></span>✓ Solved</span></td>
+      <td>A vision-language model or a fine-tuned classifier handles this at high accuracy. Cheap, boring, reliable.</td>
+    </tr>
+    <tr>
+      <td><strong>2. Calibration</strong><br><span class="fn">Focal length and lens distortion from a single photo, no EXIF</span></td>
+      <td><span class="chip solved"><span class="dot"></span>✓ Solved</span></td>
+      <td>GeoCalib and the pointmap models estimate intrinsics themselves. Blind <em>fisheye</em> distortion recovery is shakier, but real estate photos are usually already de-fished in post.</td>
+    </tr>
+    <tr>
+      <td><strong>3. Grouping</strong><br><span class="fn">Which photos show the same room?</span></td>
+      <td><span class="chip partial"><span class="dot"></span>~ Workable</span></td>
+      <td>Global descriptors plus a VLM cross-check get most of the way. Symmetric bedrooms and blank white walls produce genuine confusions.</td>
+    </tr>
+    <tr>
+      <td><strong>4. Per-room geometry</strong><br><span class="fn">Poses and 3D structure within one room</span></td>
+      <td><span class="chip partial"><span class="dot"></span>~ Workable</span></td>
+      <td>Pointmap foundation models changed this completely. They work from 2–3 photos with almost no overlap, where classical SfM simply fails. Accuracy is coarse but usable.</td>
+    </tr>
+    <tr>
+      <td><strong>5. Room layout</strong><br><span class="fn">Walls, floor, ceiling as a clean polygon</span></td>
+      <td><span class="chip partial"><span class="dot"></span>~ Workable</span></td>
+      <td>Mature for 360° panoramas, considerably weaker for ordinary perspective shots, and benchmark scores are measured on empty rooms. Furniture is the enemy.</td>
+    </tr>
+    <tr>
+      <td><strong>6. Floor plan parsing</strong><br><span class="fn">Raster plan → vector rooms, doors, dimensions</span></td>
+      <td><span class="chip partial"><span class="dot"></span>~ Workable</span></td>
+      <td>Good research results on clean plans; European agency plans are stylised and varied. OCR of the printed room areas is the underrated part.</td>
+    </tr>
+    <tr>
+      <td><strong>7. Global assembly</strong><br><span class="fn">Where each room sits relative to the others</span></td>
+      <td><span class="chip open"><span class="dot"></span>✕ Open</span></td>
+      <td><strong>This is the wall.</strong> With a floor plan it becomes an assignment problem and is tractable. Without one, the photographs contain essentially no information about it.</td>
+    </tr>
+    <tr>
+      <td><strong>8. Metric scale</strong><br><span class="fn">Real metres, not arbitrary units</span></td>
+      <td><span class="chip partial"><span class="dot"></span>~ Workable</span></td>
+      <td>Metric monodepth gets you within ~15%. Combining it with door-height priors and the advertised surface area gets you far closer. See §4.8 — there is a nice trick here.</td>
+    </tr>
+    <tr>
+      <td><strong>9. Appearance</strong><br><span class="fn">Photorealistic surfaces</span></td>
+      <td><span class="chip fragile"><span class="dot"></span>! Fragile</span></td>
+      <td>Gaussian splatting from 5–15 unposed indoor photos produces recognisable rooms with visible artefacts. The unphotographed 60% has to come from somewhere, and that somewhere is a product and legal decision, not a technical one.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>Notice the shape of it: nothing is impossible, one thing is genuinely unsolved, and the rest are
+"works well on benchmarks, degrades on real inputs". That second category is where projects like this
+quietly die — not at a wall, but in a long slow accumulation of 80%-success stages multiplying down to
+a 20%-success pipeline. Guarding against that is mostly an evaluation discipline problem, which is why
+§9 puts the eval harness before any of the interesting work.</p>
+
+<h2 id="walls"><span class="num">03</span>Where the difficulty actually lives</h2>
+
+<h3>The first wall: rooms have no spatial relationship in the photographs</h3>
+
+<p>Within a room, two photos taken from opposite corners share walls, a ceiling plane, a floor plane,
+a window. That is enough for a modern pointmap model to place them relative to each other, even with
+almost no pixel overlap. Between rooms, there is nothing. A photo of the kitchen and a photo of the
+bedroom share no observed surface at all. No amount of model capability recovers a quantity for which
+there is no observation.</p>
+
+<p>There are exactly three ways through this, and it is worth being clear that they are the only three:</p>
+
+<ol>
+  <li><strong>The floor plan.</strong> If a plan is present, it <em>is</em> the global coordinate system.
+  Every room polygon is given, adjacency is given, and the problem collapses from "estimate 6-DoF poses for
+  N rooms" to "assign N reconstructed rooms to M plan polygons" — a small, well-conditioned matching problem.
+  This is why I would treat the plan as the spine of the whole product rather than an optional extra.</li>
+  <li><strong>Doorway chaining.</strong> Occasionally you see the same doorway from both sides: from the hall
+  looking into the bedroom, and from the bedroom looking back. That shared aperture gives you a relative pose
+  between two rooms. In practice this is available for perhaps a third of adjacencies in a well-photographed
+  listing, and almost never enough to close a full graph.</li>
+  <li><strong>Generation.</strong> Synthesise a plausible layout consistent with the room count, room types
+  and total surface area. This produces something that looks like a flat and is not the flat. It has a
+  legitimate use — as an explicitly-labelled schematic — and an illegitimate one, which is presenting it as
+  a measurement.</li>
+</ol>
+
+<div class="card flag">
+  <h4>The design consequence</h4>
+  <p>Because option 1 is so much stronger than the others, the architecture in §5 is built around a
+  floor-plan-first spine with graceful degradation, rather than a photo-first pipeline that treats the plan
+  as a bonus. A listing with a plan gets a real flat. A listing without one gets a set of accurately
+  reconstructed rooms with an inferred, visibly-marked arrangement. Those are two different products and
+  should look different to the user.</p>
+</div>
+
+<h3>The second wall: estate agent photography is adversarial to reconstruction</h3>
+
+<p>This is the finding I would most encourage you to internalise, because it is invisible from the research
+literature and obvious the moment you look at real listings. Property photographers are trained to produce
+images that are exactly wrong for multi-view geometry:</p>
+
+<div class="tablewrap">
+<table>
+  <thead><tr><th style="width:30%">Practice</th><th>Why it exists</th><th style="width:38%">Why it breaks the pipeline</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Ultra-wide lenses</strong> (14–24 mm equivalent)</td><td>Makes rooms look larger</td><td>Extreme perspective; feature descriptors degrade at the frame edges; heavy distortion that has usually been partially corrected in a non-invertible way</td></tr>
+    <tr><td><strong>HDR bracketing / flambient</strong></td><td>Holds detail in bright windows and dark corners simultaneously</td><td>Both SfM and Gaussian splatting assume photometric consistency. Tone-mapped composites violate it, and flash-plus-ambient blends bake spatially-inconsistent lighting into the images</td></tr>
+    <tr><td><strong>Vertical perspective correction</strong></td><td>Straightens converging vertical lines</td><td>A non-rigid warp applied after capture. The image is no longer a pinhole projection of anything, so estimated intrinsics are fictional</td></tr>
+    <tr><td><strong>Retouching, colour grading, sky replacement</strong></td><td>Sells the property</td><td>Radiometric inconsistency between images of the same room; synthetic content through windows with no geometric basis</td></tr>
+    <tr><td><strong>Virtual staging</strong></td><td>Furnishes empty flats</td><td>Objects that exist in one photo and not another, with no depth consistency. Multi-view checks fail on precisely the most visually prominent content</td></tr>
+    <tr><td><strong>Mirrors, glass, glossy floors</strong></td><td>Unavoidable in bathrooms and hallways; often deliberately used to imply space</td><td>Reflections are matched as if they were geometry, producing phantom rooms behind walls. This is a classical, well-documented, still-unsolved SfM failure</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>None of these is individually fatal. Together they mean that a pipeline validated on ScanNet or
+Structured3D will disappoint on real listings by a margin large enough to be mistaken for a bug.
+Budget for an image-conditioning stage and for a rejection path — some photos should simply be
+excluded from geometry and used only for texture.</p>
+
+<h3>The third wall: benchmark numbers do not survive contact</h3>
+
+<p>Room layout methods report 80%+ 3D IoU. They report it on PanoContext, Stanford 2D-3D and
+Structured3D — datasets of empty or synthetically-furnished rooms, shot as clean panoramas. ZInD, the
+most realistic large dataset, is explicitly composed of <em>unfurnished</em> homes
+<span class="conf">✓ VERIFIED</span>. A furnished flat photographed at 16 mm with a sofa occluding the
+wall-floor junction across half the frame is a different problem. The research pass surfaced an estimate
+of a 20–40% accuracy drop when these methods are applied directly to messy real-world photos
+<span class="conf">○ REPORTED</span>; I would treat that as directionally right and measure it yourself
+early rather than trusting it.</p>
+
+<h2 id="sota"><span class="num">04</span>State of the art, stage by stage</h2>
+
+<p>What follows is organised as the pipeline runs, because that is how you will have to build and debug it.
+For each stage: what the best current methods are, what they actually deliver, and where they break.</p>
+
+<h3>4.1 &nbsp;Triage — sorting the bag of images</h3>
+
+<p>The input is 10–30 unlabelled JPEGs containing rooms, exteriors, street scenes, detail shots, possibly a
+floor plan, possibly stock photos of the neighbourhood, possibly the same room three times. Everything
+downstream depends on getting this right, and fortunately it is the easiest stage.</p>
+
+<p>Two viable approaches. A zero-shot vision-language model classifying each image into
+<code>{floor_plan, interior, exterior, detail, marketing, other}</code> plus a room type, which needs no
+training data and can be prompted to also flag "this looks virtually staged" or "this contains a mirror".
+Or a fine-tuned classifier over CLIP/SigLIP embeddings, which is cheaper at volume. Places365 and
+MIT Indoor67 are the classical reference datasets; a small real-estate-specific classifier called RE-Tagger
+exists in the literature <span class="conf">○ REPORTED</span> but you will do better fine-tuning a modern
+backbone on a few thousand of your partner agency's images.</p>
+
+<p>Expect 75–90% top-1 on room type in the general case, with hallway-versus-bedroom and
+dining-versus-living being the honest confusions. The VLM route has a useful property here: it can return
+"I'm not sure" and a confidence, and an uncertain image can be routed to texture-only use rather than
+poisoning the geometry.</p>
+
+<h3>4.2 &nbsp;Calibration and image conditioning</h3>
+
+<p><strong>EXIF is usually gone.</strong> The research pass found that major portals and their image CDNs
+strip metadata on upload <span class="conf">○ REPORTED</span>, which matches what you would expect for
+privacy reasons — listing photos often carry GPS. Plan for no focal length, no camera model, nothing.
+Blind calibration is not an optimisation, it is the only path.</p>
+
+<p><strong>GeoCalib</strong> (ECCV 2024, <a href="https://github.com/cvg/GeoCalib">cvg/GeoCalib</a>) is the
+strongest single-image calibration method: it combines a learned prior with a geometric optimisation over
+vanishing points and horizon, and supports both pinhole and fisheye parameterisations without retraining
+<span class="conf">○ REPORTED</span>. Indoor Manhattan scenes are its favourable case, since walls give it
+clean orthogonal structure. The classical vanishing-point approach (NeurVPS and descendants) remains a
+sensible cross-check.</p>
+
+<p>In practice you may not need a separate calibration stage at all, because the pointmap models in §4.4
+estimate intrinsics themselves as part of their forward pass. The argument for running GeoCalib anyway is
+as a sanity gate: if GeoCalib and the pointmap model disagree wildly about field of view, that photo has
+probably been perspective-corrected and should be treated with suspicion.</p>
+
+<p>The conditioning steps I would build regardless: exposure and white-balance alignment across the photos
+of a single room (they were often shot minutes apart with different settings, and both SfM and splatting
+assume otherwise), and a rejection classifier for composites.</p>
+
+<h3>4.3 &nbsp;Grouping photos into rooms</h3>
+
+<p>Two stages, retrieval then verification. For retrieval, global descriptors — DINOv2 features, or a
+purpose-built place-recognition head such as AnyLoc or MegaLoc — produce candidate same-room pairs.
+For verification, a local matcher establishes whether there is real geometric correspondence.</p>
+
+<p>The matcher landscape as of mid-2026: <strong>LightGlue</strong> for speed,
+<strong>RoMa / RoMa v2</strong> for dense accuracy on hard pairs, and <strong>MASt3R</strong> for matching
+posed as a 3D problem rather than a 2D one, which is the right framing for wide baselines
+<span class="conf">○ REPORTED</span>. OmniGlue reports AUC@5° of 5.8 on ScanNet-1500 against SuperGlue's 5.1
+<span class="conf">○ REPORTED</span> — note how low those absolute numbers are. Indoor wide-baseline matching
+is hard, and the literature is candid about it.</p>
+
+<div class="card caution">
+  <h4>Practical expectation</h4>
+  <p>On textured rooms with 60–120° viewpoint change, expect 40–70% of pairs to verify correctly.
+  On minimalist interiors with white walls, considerably less. Symmetric rooms and repeated tiling produce
+  confident wrong matches, which are worse than no match. Budget for a VLM adjudication step
+  ("are these two photographs of the same room? What do you see in both?") — it costs a few cents per
+  listing and catches failures that geometry cannot.</p>
+</div>
+
+<p>One relevant recent paper: <em>Room Scene Discovery and Grouping in Unstructured Vacation Rental Image
+Collections</em> (arXiv 2507.00263, July 2025) addresses exactly this task
+<span class="conf">○ REPORTED</span>. Worth reading closely; it is the nearest thing to prior art on your
+specific grouping problem.</p>
+
+<h3>4.4 &nbsp;Per-room geometry — the part that recently became possible</h3>
+
+<p>This is where the field has moved most, and it is the reason your idea is worth attempting in 2026 and
+would not have been in 2023. The <strong>pointmap foundation models</strong> — DUSt3R and its lineage —
+replaced the "detect features, match, bundle-adjust" pipeline with a single forward pass that regresses
+3D points and camera parameters directly. Crucially, they work with two or three images and minimal
+overlap, precisely the regime where COLMAP returns nothing at all.</p>
+
+<div class="tablewrap">
+<table>
+  <thead><tr><th style="width:20%">Model</th><th style="width:16%">Licence</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>MapAnything</strong><br><span class="fn">Meta, 2025</span></td>
+      <td><span class="chip solved"><span class="dot"></span>Apache-2.0</span><br><span class="fn">code and an Apache weights variant</span></td>
+      <td><strong>The commercially safe default.</strong> Code is Apache-2.0; two checkpoints exist —
+      <code>facebook/map-anything</code> under CC-BY-NC-4.0 and <code>facebook/map-anything-apache</code>
+      explicitly for commercial use <span class="conf">✓ VERIFIED</span>. Accepts any combination of images,
+      intrinsics, poses and depth, and regresses <em>metric</em> 3D geometry — which matters a great deal
+      for §4.8. If I were starting today this is where I would start.</td>
+    </tr>
+    <tr>
+      <td><strong>VGGT</strong><br><span class="fn">Meta / Oxford, CVPR 2025 best paper</span></td>
+      <td><span class="chip partial"><span class="dot"></span>Split</span></td>
+      <td>Infers intrinsics, extrinsics, depth, point maps and tracks from one to hundreds of views in
+      seconds. The default checkpoint is non-commercial, but a <code>VGGT-1B-Commercial</code> checkpoint
+      exists with an application-based approval flow and reportedly equal or slightly better performance
+      <span class="conf">✓ VERIFIED</span>. Strong candidate; note the drift finding below.</td>
+    </tr>
+    <tr>
+      <td><strong>MASt3R / MASt3R-SfM</strong><br><span class="fn">Naver Labs</span></td>
+      <td><span class="chip open"><span class="dot"></span>CC-BY-NC-SA</span></td>
+      <td>Excellent quality, <strong>not usable commercially</strong> — code and checkpoints are
+      CC-BY-NC-SA 4.0 and the authors additionally note that one training dataset licence is "very
+      restrictive" <span class="conf">✓ VERIFIED</span>. Also worth knowing: the repository describes its
+      COLMAP/GLOMAP integration scripts as "toys" that were "not extensively tested, and may fail on edge
+      cases" <span class="conf">✓ VERIFIED</span>. Useful as a research baseline; do not build on it.</td>
+    </tr>
+    <tr>
+      <td><strong>π³ / Pi3</strong>, <strong>Fast3R</strong>, <strong>CUT3R</strong>, <strong>Spann3R</strong>, <strong>Pow3R</strong>, <strong>MV-DUSt3R+</strong></td>
+      <td><span class="chip partial"><span class="dot"></span>Mixed</span></td>
+      <td>A crowded and fast-moving field. Fast3R scales to 1000+ images in one pass; Pow3R accepts optional
+      priors (intrinsics, depth) which is attractive if you have a floor plan to condition on; Pi3 is
+      permutation-equivariant, removing the arbitrary reference-frame choice. Most have BSD or Apache
+      <em>code</em> with CC-BY-NC <em>weights</em> — check both, every time
+      <span class="conf">○ REPORTED</span>.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="card caution">
+  <h4>The honest caveat on pointmap models</h4>
+  <p>An independent evaluation on aerial photogrammetry found these models substantially <em>less</em>
+  accurate than COLMAP when overlap is good — roughly 0.06 m error for COLMAP versus 1–2 m for the learned
+  methods — and reported VGGT accumulating up to 42 m of camera drift over a 191-image sequence
+  <span class="conf">○ REPORTED</span>. Read that as: pointmap models win decisively in the sparse,
+  wide-baseline, low-overlap regime where classical SfM fails outright, and lose where classical SfM
+  succeeds. For your problem you are firmly in the first regime, so this is the right family — but it also
+  means you should not expect survey-grade geometry, and you should not feed it fifty images and expect
+  the errors to average out. Per-room batches of 3–8 images is the sweet spot.</p>
+  <p style="margin-bottom:0">None of these models has published results on real estate listing photographs.
+  You will be the first to measure that.</p>
+</div>
+
+<p><strong>Fisheye.</strong> All of these assume a pinhole model. There is early work on conditioning
+pointmap models on wide-FOV camera models <span class="conf">○ REPORTED</span>, but the practical answer
+is to undistort first with GeoCalib and accept some loss at the frame edges.</p>
+
+<p><strong>Monocular fallback.</strong> When a room has exactly one photograph — common for bathrooms and
+hallways — you need single-image geometry. The strong options are <strong>MoGe-2</strong> (Microsoft,
+metric point maps plus intrinsics from one image), <strong>Depth Pro</strong> (Apple, Apache-2.0, metric
+depth with an internally-estimated field of view, sub-second inference), <strong>UniDepth V2</strong> and
+<strong>Metric3D v2</strong>. Note that Depth Anything V2 is <em>relative</em> depth by default and its
+larger checkpoints are CC-BY-NC-4.0 — only the Small model is Apache-2.0
+<span class="conf">✓ VERIFIED</span>. That licence split catches people out.</p>
+
+<h3>4.5 &nbsp;Room layout — turning a point cloud into architecture</h3>
+
+<p>A pointmap is not a room. You need the wall planes, the floor, the ceiling, and ideally a clean polygon.
+This matters more than it first appears: the layout polygon is what makes the model measurable, what lets
+you cull stray Gaussians later, and what you match against the floor plan.</p>
+
+<p>The panorama-based literature is mature — HorizonNet, DuLa-Net, HoHoNet, LGT-Net, AtlantaNet — with
+reported 3D IoU in the 80s on cuboid rooms and around 72% on genuinely non-rectangular ones
+<span class="conf">○ REPORTED</span>. AtlantaNet is the one to look at if your stock is Parisian
+haussmannien and other old, irregular buildings, since it drops the requirement that walls meet at right
+angles. Perspective-image layout estimation is markedly weaker, roughly 60–75% 3D IoU on clean cuboid
+benchmarks.</p>
+
+<p>The more promising route for your inputs is <strong>plane-based</strong>: fit planes to the pointmap
+(RANSAC on normals is often enough), classify them as floor/ceiling/wall by orientation, and intersect
+them into a polygon. <strong>PlaneMVS</strong>, <strong>NOPE-SAC</strong> and <strong>PlaneFormer</strong>
+are the learned versions, and NOPE-SAC in particular solves camera pose and plane reconstruction jointly
+from sparse views <span class="conf">○ REPORTED</span>. There is also <strong>Plane-DUSt3R</strong>
+(ICLR 2025), which adapts DUSt3R specifically to unposed room layout reconstruction
+<span class="conf">○ REPORTED</span> — the closest published work to the shape of your stage 4–5.</p>
+
+<p>For the output representation, look at Meta's <strong>SceneScript</strong>, which emits architecture as a
+sequence of tokens (<code>make_wall</code>, <code>make_door</code>, …) rather than a mesh. The idea is
+excellent — a compact, editable, human-readable room description that you can validate, snap to
+right angles, and extrude cleanly. The code is not released <span class="conf">○ REPORTED</span>, but the
+representation is worth stealing.</p>
+
+<h3>4.6 &nbsp;The floor plan channel</h3>
+
+<p>Given the argument in §3, this stage carries more weight than its size suggests. Four things need to
+happen.</p>
+
+<p><strong>Detect it.</strong> Trivial — a VLM or classifier picks the plan out of the image set.</p>
+
+<p><strong>Vectorise it.</strong> CubiCasa5K is the reference dataset and the basis of most working systems.
+The research pass surfaced a cluster of 2024–2026 methods — RoomFormer, PolyRoom, Raster-to-Graph,
+and newer transformer and diffusion approaches reporting ~88% room F1 on CubiCasa5K and ~98% on synthetic
+Structured3D <span class="conf">○ REPORTED</span>. The gap between those two numbers is the whole story:
+performance on real, stylised, agency-drawn plans is meaningfully worse than on clean synthetic ones, and
+European plans are more varied than the datasets. Expect to fine-tune.</p>
+
+<p><strong>Scale it.</strong> Here is the part that no research paper solves and that your market hands you
+for free. French listings print room areas directly on the plan — <em>Séjour 24,5 m²</em>, <em>Chambre 11,2
+m²</em> — and the total surface is a legal requirement of the listing itself. OCR those numbers and you have
+not one but several independent scale constraints, plus a cross-check. This is a far more reliable route to
+metres than any learned method, and it is sitting in plain sight.</p>
+
+<p><strong>Match photos to rooms on it.</strong> This is a genuine research problem, and there is a genuinely
+relevant recent paper: <strong>C3Po</strong> (arXiv 2511.18559), which predicts pixel-level correspondences
+between ground-level photographs and floor plans, trained on a new dataset of 90K photo/plan pairs across
+597 scenes <span class="conf">✓ VERIFIED</span>. Zillow's <strong>LASER</strong> and CVPR 2024's
+<strong>F³Loc</strong> attack the adjacent problem of localising a camera within a floor plan
+<span class="conf">○ REPORTED</span>. For a first version you do not need any of them: matching by room type
+label, area, aspect ratio and window count, solved as a Hungarian assignment, will place most rooms
+correctly and can defer the ambiguous ones to a human.</p>
+
+<h3>4.7 &nbsp;Global assembly</h3>
+
+<p>Covered in §3 — with a plan this is assignment, without one it is inference. The one addition worth
+making is that assembly should be treated as a single global optimisation rather than a chain of local
+decisions. You have a rich set of soft constraints available at once: room polygons from §4.5, plan polygons
+from §4.6, room type labels, the total surface area, door and window positions on both the plan and in the
+photos, ceiling height consistency across rooms, and gravity alignment. Solving them jointly is both more
+accurate and more diagnosable than pipelining them, because the residuals tell you which listing is
+problematic and why.</p>
+
+<h3>4.8 &nbsp;Metric scale — the surface-area trick</h3>
+
+<p>Metric monocular depth models now genuinely output metres. UniDepth and MoGe-2 report δ₁ above 98% on
+NYUv2 <span class="conf">○ REPORTED</span>, which sounds excellent until you translate it: δ₁ counts pixels
+within 25% of ground truth. At a typical 3–4 m indoor viewing distance that is a tolerance of nearly a metre.
+Reported practical error for these models indoors is on the order of 10–15%. A flat advertised at 68 m²
+coming out at 78 m² is not a product.</p>
+
+<div class="card flag">
+  <h4>The fix, and I think it is the neatest idea in this report</h4>
+  <p>Treat scale as a single scalar to be solved for, not something each stage estimates independently, and
+  constrain it with everything you know at once:</p>
+  <ul>
+    <li><strong>The advertised surface area.</strong> In France the <em>loi Carrez</em> makes a measured
+    surface figure a legal requirement of the sale listing. It is published, in metres squared, on every
+    listing. It is a direct global constraint on total floor polygon area, and it is free.</li>
+    <li><strong>Door heights.</strong> Standard interior door leaves are ~2.04 m across the EU. Detect doors,
+    measure them in model units, and you have one anchor per doorway.</li>
+    <li><strong>Ceiling heights.</strong> Residential norms cluster at 2.5–2.7 m in modern construction and
+    considerably higher in older Parisian stock — a weaker prior, but useful as a plausibility check.</li>
+    <li><strong>Other standard dimensions:</strong> kitchen counters at 0.90 m, light switches at ~1.10–1.30 m,
+    stair risers, standard tile sizes.</li>
+    <li><strong>The metric depth models themselves</strong> as a prior with a wide but honest uncertainty.</li>
+  </ul>
+  <p style="margin-bottom:0">This is a tiny weighted least-squares problem — one unknown, half a dozen
+  observations with known variances — and it is extremely robust. My estimate is that it brings total area
+  error to roughly ±3–5% when the Carrez figure is available, against ±15% from depth models alone.
+  It also gives you a free quality signal: when the constraints disagree badly, something upstream is wrong,
+  and you can flag the listing rather than shipping a bad model.</p>
+</div>
+
+<h3>4.9 &nbsp;Appearance — Gaussian splatting from very few views</h3>
+
+<p>For "photorealistic views", 3D Gaussian splatting is the right representation, and the sparse/unposed
+variants have matured. <strong>InstantSplat</strong> uses a pointmap model for initialisation and jointly
+optimises poses and Gaussians, reporting roughly 30× speedup over the SfM-then-splat pipeline.
+<strong>Splatt3R</strong> goes pose-free from stereo pairs. <strong>FreeSplat</strong> is specifically aimed
+at indoor free-view synthesis from 2–3 views. <strong>DepthSplat</strong> couples depth estimation and
+splatting in both directions. <strong>MVSplat</strong> reports 26.4 dB PSNR on RealEstate10K from two input
+views <span class="conf">○ REPORTED</span>. Depth-regularised variants — DNGaussian, SparseGS — consistently
+buy 10–30% LPIPS improvement in the sparse regime <span class="conf">○ REPORTED</span>.</p>
+
+<p>The practical consensus from the research pass: <strong>6–12 views per room</strong> is where results
+become acceptable, and below 3 views floaters and smearing dominate <span class="conf">○ REPORTED</span>.
+A typical listing gives you 2–4 photos of the main room and 1–2 of everything else, so you will spend a lot
+of time in the difficult part of that curve.</p>
+
+<div class="card flag">
+  <h4>A trick worth building in</h4>
+  <p>Floaters — stray Gaussians floating in space — are the dominant sparse-view artefact, and they are what
+  makes a splat look broken rather than merely soft. If you have already computed a room layout polygon in
+  §4.5, you have a bounding volume, and you can simply cull every Gaussian outside it plus a small margin.
+  Geometry and appearance reinforcing each other like this is the main argument for running both stages
+  rather than picking one.</p>
+</div>
+
+<p><strong>Meshes from splats,</strong> if you want them: SuGaR extracts editable meshes in minutes via
+Poisson reconstruction, and 2D Gaussian Splatting, Gaussian Opacity Fields and GS2Mesh are the surface-aligned
+alternatives <span class="conf">○ REPORTED</span>. For your use case I would not bother — the architectural
+shell should come from the layout polygon, which is cleaner, lighter and actually measurable, with splats
+layered inside it for realism.</p>
+
+<h3>4.10 &nbsp;Completion — what to do about the unseen 60%</h3>
+
+<p>Every room has surfaces no camera saw, and they are usually the wall behind the photographer. Options,
+in increasing order of both usefulness and risk:</p>
+
+<ol>
+  <li><strong>Leave them empty.</strong> With waypoint navigation you can often simply never look that way.
+  Honest, cheap, and surprisingly acceptable.</li>
+  <li><strong>Flat-shade them</strong> from the room's dominant wall colour, sampled from the observed
+  surfaces. Reads as "no data" without looking broken.</li>
+  <li><strong>Texture infill</strong> — extend the observed wall texture across the unobserved plane.
+  Geometrically truthful (the wall really is there, from the layout), only the surface appearance is invented.</li>
+  <li><strong>Generative view synthesis.</strong> Stability's <em>Stable Virtual Camera</em> takes 1–32
+  images and generates long trajectories, but is released under a non-commercial licence
+  <span class="conf">○ REPORTED</span>. Google's CAT3D/CAT4D are research. Tencent's HunyuanWorld is
+  open-source and panorama-oriented <span class="conf">○ REPORTED</span>. World Labs' <strong>Marble</strong>
+  is the most product-like: it accepts text, images, video or coarse 3D layouts and exports Gaussian splats,
+  collider and visual meshes, or video <span class="conf">✓ VERIFIED</span>. Its own documentation is candid
+  about the failure mode you would care about — "the back of a table or the far corner of a room is not as
+  crisp as the room's centre" <span class="conf">✓ VERIFIED</span>. Pricing is not public.</li>
+</ol>
+
+<div class="card stop">
+  <h4>Where the line is</h4>
+  <p>Options 1–3 invent appearance. Option 4 invents <em>content</em> — furniture, fixtures, a view through
+  a window. For property marketing that is a different category of thing, and the regulatory direction of
+  travel is against it (§10). My recommendation: build 1–3 for the product, keep 4 in the lab, and if you
+  ever ship it, confine it strictly to surfaces whose geometry is known and mark it visibly in the viewer.
+  The rule that keeps you safe is simple — <strong>never generate anything that changes the perceived size,
+  layout or condition of the property</strong>.</p>
+</div>
+
+<h3>4.11 &nbsp;Delivery in the browser</h3>
+
+<p>This stage is comfortably solved, which is a relief.</p>
+
+<p><strong>Renderer.</strong> <a href="https://sparkjs.dev/">Spark</a>, built by World Labs, is a Gaussian
+splat renderer for Three.js that composites splats and ordinary meshes in one scene with correct depth, and
+reads PLY, SOGS, SPZ, SPLAT and KSPLAT <span class="conf">✓ VERIFIED</span>. That hybrid capability is
+exactly what your architecture needs — mesh shell, splats inside. Alternatives: Three.js gained a native
+WebGPU splat renderer in r186 <span class="conf">○ REPORTED</span>, PlayCanvas has strong splat and
+compression support, and <code>@mkkellogg/GaussianSplats3D</code> is widely used but its maintainer now
+points people at Spark <span class="conf">○ REPORTED</span>.</p>
+
+<p><strong>Formats and budgets.</strong> Raw PLY for a 4M-Gaussian scene is around 1.4 GB; SPZ (Niantic,
+open-sourced) brings that to roughly 160 MB, and SOGS to 80–140 MB with streaming support
+<span class="conf">○ REPORTED</span>. Khronos has standardised a glTF Gaussian splatting extension
+<span class="conf">○ REPORTED</span>, which is a good sign for the ecosystem. For the mesh shell, glTF with
+Draco geometry compression and KTX2/Basis textures routinely achieves 95%+ size reduction.</p>
+
+<p><strong>Mobile is the real constraint.</strong> Reported figures: 1–3 M splats on iPhone, 1–2 M on
+Android, with iOS Safari memory ceilings around 100–200 MB and no catchable exception when you exceed them —
+the tab simply dies <span class="conf">○ REPORTED</span>. Practical target: 200–500 K splats per room at
+30 fps on a mid-range phone, and a total payload in the single-digit megabytes. That means one room loaded
+at a time, which fits waypoint navigation perfectly.</p>
+
+<div class="card flag">
+  <h4>Why waypoint navigation is an architectural decision, not a UX one</h4>
+  <p>Matterport, Zillow and Giraffe360 all use teleport-between-waypoints with a dollhouse overview and a
+  floor plan minimap. It is easy to read that as convention. It is actually a load-bearing engineering
+  choice: a waypoint viewer only needs the scene to look right <em>from the waypoints and along the
+  sightlines between them</em>. Free roam demands complete, watertight geometry everywhere, including behind
+  the sofa and inside the wardrobe. Given that you will never have data for those places, waypoint
+  navigation is not a compromise — it is the format that matches what your pipeline can actually produce.
+  Choose it deliberately and early, because it also tells you which viewpoints to optimise the splats for.</p>
+</div>
+
+<h2 id="architecture"><span class="num">05</span>A proposed architecture</h2>
+
+<p>Nine stages, each with a defined fallback, each producing an artefact you can inspect and score
+independently. The design principles behind it: the floor plan is the spine; geometry and appearance are
+computed separately and reinforce each other; scale is one global variable solved once against all available
+constraints; and every stage emits a confidence that survives to the viewer.</p>
+
+<div class="pipeline">
+
+  <div class="stage">
+    <span class="tag">Stage 0</span>
+    <span class="name">Ingest and triage</span>
+    <p>VLM or fine-tuned classifier over each image → type, room label, quality flags (mirror present,
+    likely virtually staged, likely composite), plus a perceptual-hash dedup. Listing text is parsed for
+    surface area, room count and floor.</p>
+    <p class="fallback">Output: a manifest. Fallback: none needed — this stage is reliable.</p>
+  </div>
+  <div class="arrow">↓</div>
+
+  <div class="stage">
+    <span class="tag">Stage 1</span>
+    <span class="name">Conditioning</span>
+    <p>GeoCalib for intrinsics and distortion → undistort to pinhole. Exposure and white-balance alignment
+    within each candidate room group. Images that fail plausibility checks are demoted to texture-only.</p>
+    <p class="fallback">Fallback: if calibration is implausible, pass the raw image through and let the
+    pointmap model estimate intrinsics, with a lower confidence weight.</p>
+  </div>
+  <div class="arrow">↓</div>
+
+  <div class="stage">
+    <span class="tag">Stage 2</span>
+    <span class="name">Grouping into rooms</span>
+    <p>DINOv2 or MegaLoc global descriptors → candidate pairs → LightGlue or RoMa verification → graph
+    clustering. VLM adjudicates low-confidence pairs.</p>
+    <p class="fallback">Fallback: a photo that groups with nothing becomes a singleton room and is routed
+    to the monocular path in stage 3.</p>
+  </div>
+  <div class="arrow">↓</div>
+
+  <div class="stage">
+    <span class="tag">Stage 3</span>
+    <span class="name">Per-room geometry</span>
+    <p>MapAnything (Apache checkpoint) over each group of 3–8 images → poses, metric point map, confidence
+    masks.</p>
+    <p class="fallback">Fallback for singletons: MoGe-2 or Depth Pro monocular point map. Fallback for
+    failures: drop to layout-only for that room.</p>
+  </div>
+  <div class="arrow">↓</div>
+
+  <div class="stage">
+    <span class="tag">Stage 4</span>
+    <span class="name">Structure extraction</span>
+    <p>Plane fitting on the point map → floor, ceiling, wall planes → intersection into a room polygon,
+    regularised under an Atlanta-world assumption (right angles preferred, not required). Door and window
+    apertures detected and placed on the wall planes.</p>
+    <p class="fallback">Fallback: if plane fitting fails, fall back to a cuboid fitted to the point cloud
+    extent, flagged as approximate.</p>
+  </div>
+  <div class="arrow">↓</div>
+
+  <div class="stage">
+    <span class="tag">Stage 5</span>
+    <span class="name">Floor plan channel <span class="fn">(parallel to 2–4)</span></span>
+    <p>Vectorise the plan → room polygons, adjacency graph, door positions. OCR the printed room labels and
+    areas. This runs independently and does not block the photo path.</p>
+    <p class="fallback">Fallback: no plan → skip; stage 6 switches to the degraded branch.</p>
+  </div>
+  <div class="arrow">↓</div>
+
+  <div class="stage">
+    <span class="tag">Stage 6</span>
+    <span class="name">Global assembly</span>
+    <p><strong>With a plan:</strong> Hungarian assignment of reconstructed rooms to plan polygons, scored on
+    room type match, area ratio, aspect ratio, window count and position. Then a joint refinement over
+    rotations and translations.<br>
+    <strong>Without a plan:</strong> build what graph you can from shared doorways, then synthesise a layout
+    constrained by room count, types, adjacency conventions and total surface area — and mark the entire
+    result as an inferred arrangement in the viewer.</p>
+    <p class="fallback">This is the stage most likely to produce a wrong-but-confident answer. Instrument
+    it heavily.</p>
+  </div>
+  <div class="arrow">↓</div>
+
+  <div class="stage">
+    <span class="tag">Stage 7</span>
+    <span class="name">Global scale solve</span>
+    <p>One weighted least-squares problem over a single scale factor: advertised surface area (strongest
+    weight where available), detected door heights against a 2.04 m prior, ceiling height priors, standard
+    fixture dimensions, metric depth predictions. Residuals become the listing's quality score.</p>
+    <p class="fallback">Fallback: no advertised area → lean on door heights, and widen the published
+    uncertainty rather than hiding it.</p>
+  </div>
+  <div class="arrow">↓</div>
+
+  <div class="stage">
+    <span class="tag">Stage 8</span>
+    <span class="name">Appearance</span>
+    <p>Per room: Gaussian splatting (gsplat) initialised from stage 3 poses and points, depth-regularised,
+    a few hundred iterations, then culled against the stage 4 polygon. The architectural shell mesh is built
+    from the polygon and texture-projected from the photos where they cover it; unobserved surfaces get
+    flat-shaded or texture-extended fill.</p>
+    <p class="fallback">Fallback: rooms with one photo get shell-plus-projected-texture only, no splats.</p>
+  </div>
+  <div class="arrow">↓</div>
+
+  <div class="stage">
+    <span class="tag">Stage 9</span>
+    <span class="name">Packaging and delivery</span>
+    <p>Shell as glTF with Draco and KTX2 (hundreds of KB). Splats as SPZ or SOGS, budgeted per room. Three.js
+    plus Spark for hybrid rendering. Viewer offers waypoint navigation, a dollhouse overview, a floor plan
+    minimap, and a visual treatment that distinguishes photographed surfaces from inferred ones.</p>
+    <p class="fallback">Progressive load: shell first, then the splats for the room you are standing in.</p>
+  </div>
+
+</div>
+
+<p>Two properties of this design are worth calling out. First, it degrades in <em>steps</em> rather than
+collapsing: a listing with no plan and one photo per room still produces a scaled schematic walkthrough,
+which is a legitimate product. Second, every stage's output is inspectable, so when a listing looks wrong
+you can see which stage produced the error rather than re-running the whole thing and hoping.</p>
+
+<h2 id="stack"><span class="num">06</span>The stack, and the licensing minefield</h2>
+
+<p>You asked for open-source where possible. That constraint bites harder here than in most domains,
+because the best models in this field are overwhelmingly released under CC-BY-NC licences. A pipeline
+assembled without checking would be unshippable, and the problem is often subtle — permissive code with
+non-commercial weights, or permissive weights trained on a restrictively-licensed dataset.</p>
+
+<div class="tablewrap">
+<table>
+  <thead><tr><th style="width:22%">Component</th><th style="width:24%">Recommendation</th><th style="width:18%">Licence</th><th>Note</th></tr></thead>
+  <tbody>
+    <tr><td>Triage / VLM reasoning</td><td>Frontier VLM API, or fine-tuned SigLIP</td><td><span class="chip solved"><span class="dot"></span>Commercial API</span></td><td>Cheap per listing. A local Qwen-VL-class model is the self-hosted alternative.</td></tr>
+    <tr><td>Calibration</td><td>GeoCalib</td><td><span class="chip partial"><span class="dot"></span>Check</span></td><td>Verify the current licence on the CVG repo before committing.</td></tr>
+    <tr><td>Global descriptors</td><td>DINOv2</td><td><span class="chip solved"><span class="dot"></span>Apache-2.0</span></td><td>DINOv3 ships under a bespoke Meta licence — read it before upgrading.</td></tr>
+    <tr><td>Local matching</td><td>LightGlue with ALIKED or DISK features</td><td><span class="chip partial"><span class="dot"></span>Apache, but…</span></td><td><strong>Trap:</strong> LightGlue itself is permissive, but the SuperPoint weights it is usually paired with are under a restrictive Magic Leap research licence. Use ALIKED or DISK instead. <span class="conf">○ verify</span></td></tr>
+    <tr><td>Sparse reconstruction</td><td><strong>MapAnything</strong> (Apache checkpoint)</td><td><span class="chip solved"><span class="dot"></span>Apache-2.0</span></td><td><span class="conf">✓ VERIFIED</span> — code Apache, and an explicitly commercial-friendly weights variant.</td></tr>
+    <tr><td>&nbsp;&nbsp;— alternative</td><td>VGGT-1B-Commercial</td><td><span class="chip partial"><span class="dot"></span>Application</span></td><td><span class="conf">✓ VERIFIED</span> — approval flow, no military use.</td></tr>
+    <tr><td>&nbsp;&nbsp;— avoid</td><td>MASt3R / DUSt3R</td><td><span class="chip open"><span class="dot"></span>CC-BY-NC-SA</span></td><td><span class="conf">✓ VERIFIED</span> — research only. Fine for benchmarking, not for the product.</td></tr>
+    <tr><td>Monocular depth</td><td>Depth Pro, or Depth Anything V2 <em>Small</em></td><td><span class="chip solved"><span class="dot"></span>Apache-2.0</span></td><td><span class="conf">✓ VERIFIED</span> — DA-V2 Base/Large/Giant are CC-BY-NC-4.0. Only Small is Apache.</td></tr>
+    <tr><td>Segmentation</td><td>SAM 2 + Grounding DINO</td><td><span class="chip solved"><span class="dot"></span>Apache-2.0</span></td><td>For door, window and fixture detection feeding the scale solve.</td></tr>
+    <tr><td>Classical SfM (fallback)</td><td>COLMAP, GLOMAP</td><td><span class="chip solved"><span class="dot"></span>BSD</span></td><td>GLOMAP reportedly ~8× faster than COLMAP on comparable problems <span class="conf">○ REPORTED</span>. Useful when a room happens to have many overlapping photos.</td></tr>
+    <tr><td>Gaussian splatting</td><td><strong>gsplat</strong> (Nerfstudio)</td><td><span class="chip solved"><span class="dot"></span>Apache-2.0</span></td><td><strong>Trap:</strong> the original Inria/MPI 3DGS reference implementation is research-only. gsplat is the commercially usable rasteriser. <span class="conf">○ verify before relying on it</span></td></tr>
+    <tr><td>Splat compression</td><td>SPZ, or SOGS for streaming</td><td><span class="chip solved"><span class="dot"></span>Open</span></td><td>SPZ open-sourced by Niantic; SOGS by PlayCanvas.</td></tr>
+    <tr><td>Mesh pipeline</td><td>xatlas, gltf-transform, meshoptimizer, KTX2</td><td><span class="chip solved"><span class="dot"></span>Permissive</span></td><td>Well-trodden and reliable.</td></tr>
+    <tr><td>Texturing</td><td>MVS-Texturing or OpenMVS</td><td><span class="chip partial"><span class="dot"></span>Check</span></td><td>OpenMVS is AGPL-ish in places — read carefully if you link it into a service.</td></tr>
+    <tr><td>Web renderer</td><td>Three.js + Spark</td><td><span class="chip partial"><span class="dot"></span>Check</span></td><td><span class="conf">✓ VERIFIED</span> that Spark is World Labs' Three.js splat renderer with hybrid mesh support; its licence was not stated on the site I read — confirm on the repo.</td></tr>
+    <tr><td>Evaluation data</td><td>ZInD, Structured3D</td><td><span class="chip open"><span class="dot"></span>Non-commercial</span></td><td><span class="conf">✓ VERIFIED</span> — ZInD is 1,575 homes, 67,448 panoramas, 2,737 floor plans, and explicitly <em>not</em> licensed for commercial purposes, including by researchers at non-academic institutions building products. Zillow accepts commercial enquiries at their listed address.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="card caution">
+  <h4>Practical advice on licensing</h4>
+  <p>Keep a single file in the repository that records, for every model you load: the code licence, the
+  weights licence, the training data licences the authors disclose, and the date you checked. This field
+  re-licenses things frequently — VGGT gained a commercial checkpoint after release, DINOv2 moved to Apache
+  after its initial release — so a check from six months ago may be either too pessimistic or dangerously
+  stale. Re-verify before each release.</p>
+</div>
+
+<h2 id="unsolved"><span class="num">07</span>What remains genuinely unsolved</h2>
+
+<p>Six things that no amount of engineering effort will make go away, listed so you can decide which ones
+you are willing to live with.</p>
+
+<h4>1. Inter-room placement without a floor plan</h4>
+<p>Not a modelling gap — an information gap. The photographs do not contain the answer. Any system that
+appears to solve this is inferring, and should say so. <strong>Mitigation:</strong> make the plan the spine;
+degrade visibly when it is absent; consider offering the user a thirty-second drag-and-drop room arrangement
+step, which turns an unsolvable problem into a trivial one.</p>
+
+<h4>2. Wide-baseline matching on textureless interiors</h4>
+<p>A white-walled minimalist bedroom photographed twice from opposite corners may share no matchable
+structure at all. Pointmap models help enormously because they reason about geometry rather than texture,
+but they are not magic. <strong>Mitigation:</strong> lean on plane correspondence rather than point
+correspondence, and accept a per-room failure rate.</p>
+
+<h4>3. Radiometric chaos</h4>
+<p>HDR compositing, flash-ambient blending and per-image grading break the photometric consistency both SfM
+and splatting assume. <strong>Mitigation:</strong> normalise aggressively before geometry, and accept that
+splat quality will be limited by inconsistent lighting between views of the same wall.</p>
+
+<h4>4. Mirrors and glass</h4>
+<p>A classical failure with no clean solution. Bathrooms and hallways — the rooms most likely to have a
+single photo and a large mirror — are the worst case. <strong>Mitigation:</strong> detect mirrors
+explicitly with segmentation, mask them out of geometry, and treat them as flat reflective planes in the
+final render.</p>
+
+<h4>5. The unobserved majority of every room</h4>
+<p>No pipeline recovers what was never photographed. The choice is between showing nothing, showing a
+plausible-looking invention, or choosing a navigation format where it does not arise.
+<strong>Mitigation:</strong> waypoint navigation plus honest visual treatment of inferred surfaces.</p>
+
+<h4>6. Benchmark-to-reality transfer</h4>
+<p>Every accuracy figure in §4 was measured on data unlike yours. <strong>Mitigation:</strong> this is the
+one you can actually fix, and §9 puts it first — build your own evaluation set from real listings with
+ground truth you have measured, before building anything else.</p>
+
+<div class="card flag">
+  <h4>One more, on the VLM-as-reasoning-glue hypothesis</h4>
+  <p>It is tempting to hope a frontier VLM can supply the missing spatial priors — "which room is this next
+  to", "how high is this ceiling". Worth tempering: the VSI-Bench work
+  (<em>Thinking in Space</em>, arXiv 2412.14171) found that multimodal models' spatial reasoning is
+  competitive but distinctly sub-human, that it is the primary bottleneck on that benchmark, and — notably —
+  that chain-of-thought, self-consistency and tree-of-thoughts all <em>fail to improve</em> spatial
+  performance <span class="conf">✓ VERIFIED</span>. What did help was having the model explicitly build a
+  cognitive map during answering. Read that as: use the VLM for semantics and adjudication, where it is
+  strong, and do not ask it for metric quantities. It is a good judge and a poor tape measure.</p>
+</div>
+
+<h2 id="cost"><span class="num">08</span>What it costs to run</h2>
+
+<p>Compute turns out not to be the interesting cost. Working from a listing of fifteen photographs across
+five rooms, on a rented L40S or A100-class GPU at roughly $1–2 per hour:</p>
+
+<div class="tablewrap">
+<table>
+  <thead><tr><th style="width:34%">Stage</th><th style="width:22%">Time</th><th>Cost driver</th></tr></thead>
+  <tbody>
+    <tr><td>Triage and VLM adjudication</td><td>seconds</td><td>~€0.02–0.05 in API calls, or self-hosted</td></tr>
+    <tr><td>Calibration, grouping, matching</td><td>&lt; 1 min GPU</td><td>Negligible</td></tr>
+    <tr><td>Pointmap reconstruction (5 groups)</td><td>~1 min GPU</td><td>Feed-forward — seconds per group, not minutes</td></tr>
+    <tr><td>Layout, plan parsing, scale solve</td><td>seconds, mostly CPU</td><td>Negligible</td></tr>
+    <tr><td>Gaussian splatting (5 rooms)</td><td>5–10 min GPU</td><td><strong>Dominant compute cost.</strong> Recent fast variants report ~100 s per scene <span class="conf">○ REPORTED</span></td></tr>
+    <tr><td>Packaging and compression</td><td>~1 min CPU</td><td>Negligible</td></tr>
+    <tr><td><strong>Total</strong></td><td><strong>8–15 GPU-minutes</strong></td><td><strong>≈ €0.30–1.50 per listing</strong></td></tr>
+  </tbody>
+</table>
+</div>
+
+<p class="fn">One of the research passes returned a much higher figure of €6–20 per property. That estimate
+assumed 20 minutes for pointmap inference on 10–20 images, which was true of DUSt3R-era pairwise
+optimisation but is not true of the current feed-forward models — these run in seconds. I would plan around
+the lower figure and measure it properly in phase 0.</p>
+
+<h4>The cost that actually matters</h4>
+
+<p>If 25% of listings need three minutes of human review — checking that rooms landed in the right places,
+nudging an assignment, rejecting a bad reconstruction — that is €0.30 per listing at €25/hour of reviewer
+time. In other words, <strong>human review costs about the same as all the compute combined</strong>, and it
+scales linearly with volume while compute costs fall. Every point of accuracy you gain in stages 6 and 7
+converts directly into margin. That is a useful thing to know before deciding where to spend engineering
+effort: shaving GPU seconds is close to worthless, and reducing the review rate from 25% to 10% is worth
+more than any infrastructure optimisation you could do.</p>
+
+<p>Delivery bandwidth is the third line. At 5 MB per listing and a few hundred views over its life, CDN
+costs land in the same order of magnitude as compute — meaningful but not structural.</p>
+
+<h2 id="roadmap"><span class="num">09</span>A staged plan, with kill criteria</h2>
+
+<p>The sequencing principle: build the thing that is both most valuable and most verifiable first. That is
+not the photorealism — it is the measurable shell. A scaled, navigable, correctly-arranged 3D floor plan is
+already a product people pay for, and it is the foundation everything else sits on.</p>
+
+<h3>Phase 0 — Ground truth &nbsp;<span class="fn">2–3 weeks</span></h3>
+<p>Before any modelling. Assemble 30–50 real listings with genuine ground truth: photographs, the floor plan,
+the advertised surface, and — for a subset — actual measurements you have taken yourself, or a Matterport
+scan you have paid for. Define the metrics now: total area error in %, per-room area error, room adjacency
+accuracy, layout IoU, and a simple human "would you show this to a buyer" rating. Build the scoring harness
+before the pipeline.</p>
+<p>Note that ZInD, the obvious public dataset, is <strong>not licensed for commercial use</strong>
+<span class="conf">✓ VERIFIED</span>, so it can inform your research but should not be the basis of a
+product's evaluation. Your own set is more work and worth more.</p>
+<p class="fn"><strong>Kill criterion:</strong> if you cannot assemble 30 listings with usable ground truth,
+you do not have a data partner, and without a data partner this is much harder than it needs to be.</p>
+
+<h3>Phase 1 — The measurable shell &nbsp;<span class="fn">6–8 weeks</span></h3>
+<p>Stages 0, 1, 5, and a simplified 4, 6 and 7. Output: a scaled 3D architectural shell with correct room
+arrangement, plus an interactive floor plan, delivered as glTF and a Three.js viewer. No photorealism,
+no splats. Untextured or flat-shaded.</p>
+<p>This is deliberately unglamorous and it is the right first product. It is directly comparable to what
+Archilogic and CubiCasa sell today, it is fully verifiable against ground truth, and — critically — it
+exercises the stage that is most likely to kill the project (global assembly) before you have invested
+anything in appearance.</p>
+<p class="fn"><strong>Kill criterion:</strong> total area within ±8% and correct room arrangement on 70% of
+listings <em>that have a floor plan</em>. If you cannot hit that, the rest does not matter.</p>
+
+<h3>Phase 2 — Photorealism and the viewer &nbsp;<span class="fn">8–10 weeks</span></h3>
+<p>Stages 2, 3 and 8 in full: grouping, pointmap reconstruction, per-room splatting culled against the phase 1
+polygons, plus the waypoint viewer with dollhouse and minimap. This is where it starts to feel like a
+product.</p>
+<p class="fn"><strong>Kill criterion:</strong> a blind panel prefers your output to the listing's photo
+gallery for "getting a feel for the flat" on a majority of listings. If a splat with floaters is worse than
+just looking at the photos, you have added cost and subtracted value.</p>
+
+<h3>Phase 3 — The no-plan branch and hardening &nbsp;<span class="fn">6–8 weeks</span></h3>
+<p>Doorway chaining, layout inference, the human-assisted arrangement step, mirror handling, the failure
+taxonomy and the review console. Most of the reviewer-cost reduction from §8 happens here.</p>
+
+<h3>Phase 4 — Generative completion &nbsp;<span class="fn">optional, and I would wait</span></h3>
+<p>Only if phases 1–3 are solid, and only within the boundary described in §4.10. The regulatory environment
+is tightening rather than loosening, and being the company that got it wrong first in this category is an
+expensive position.</p>
+
+<h2 id="legal"><span class="num">10</span>Law, data and disclosure</h2>
+
+<p class="fn"><em>This section reports what sources say. It is not legal advice, and several parts could not
+be verified in this session — see §12. Take proper counsel in France before launch.</em></p>
+
+<h4>Where the training and input images come from</h4>
+<p>Scraping portal listing images is the obvious shortcut and a poor idea. Zillow's terms explicitly prohibit
+automated extraction and competitive product development from scraped data <span class="conf">○ REPORTED</span>,
+and there is live litigation between CoStar and Zillow over listing imagery running into tens of thousands of
+images <span class="conf">○ REPORTED</span>. The EU text-and-data-mining exception (DSM Directive Articles 3
+and 4) is narrower than people assume: Article 3 covers research organisations, Article 4's commercial
+exception is subject to a machine-readable opt-out, and both require lawful access in the first place
+<span class="conf">○ REPORTED</span>. A Dutch court reportedly clarified in early 2025 that opt-out signals
+must be machine-readable to be effective <span class="conf">○ REPORTED</span>.</p>
+<p>The clean path is a data partnership with an agency or a portal. It also happens to be the path that
+gives you ground truth, floor plans, verified surface areas, and a first customer — which is a strong
+argument for doing it even setting the legal question aside.</p>
+
+<h4>The EU AI Act, which became relevant seventeen days ago</h4>
+<p>Article 50 of the AI Act requires providers of AI systems generating synthetic image, audio or video
+content to mark that output in a <strong>machine-readable format, detectable as artificially generated or
+manipulated</strong>. Exemptions cover assistive editing functions that do not substantially alter the input
+data. <strong>Article 50 applies from 2 August 2026</strong> <span class="conf">✓ VERIFIED</span> — that is
+already in force as of the date of this report.</p>
+<p>Whether a geometric reconstruction is "synthetic content" is arguable; whether a diffusion-generated wall
+texture is, is much less arguable. The practical implication for your architecture: keep a clean internal
+boundary between reconstructed and generated surfaces, so that if marking is required you can apply it
+precisely rather than stamping the whole artefact.</p>
+
+<h4>Property marketing and misrepresentation</h4>
+<p>Two distinct concerns. The first is <em>size</em>: in France the <em>loi Carrez</em> governs the declared
+surface of a co-owned lot for sale, and misstating it carries real consequences. A 3D model that implies a
+different size than the legal figure is a problem regardless of any disclaimer, which is another argument for
+anchoring scale to the published area rather than to a model's estimate.</p>
+<p>The second is <em>condition</em>. The research pass surfaced a clear regulatory direction in the US:
+California now requires conspicuous disclosure on digitally altered listing images and distinguishes
+permitted brightness correction from prohibited removal of defects; New York's Department of State issued a
+warning in November 2025 that AI-generated listing images may constitute deceptive advertising; and MLS
+rules across boards require watermarking and disclosure of virtual staging, with fines
+<span class="conf">○ REPORTED</span>. I was unable to verify the French and UK equivalents in this session,
+but the direction is unmistakable and the underlying principle — do not create a misleading impression of
+the property — is universal.</p>
+
+<div class="card flag">
+  <h4>A design rule that keeps you on the right side of all of this</h4>
+  <p>Never generate anything that changes the perceived <strong>size, layout or condition</strong> of the
+  property. Generation is acceptable for the appearance of a surface whose existence and position you have
+  actually established; it is not acceptable for anything a buyer would rely on. Build the viewer so that
+  inferred regions read differently — a subtle desaturation or haze — and put a plain-language note on what
+  is photographed and what is inferred. Being visibly honest here is also a marketing asset in a category
+  where buyer distrust of AI imagery is already documented.</p>
+</div>
+
+<h4>GDPR</h4>
+<p>Interior photographs routinely contain personal data: family photographs on walls, documents on desks,
+faces reflected in mirrors, sometimes people. If you are storing and reprocessing agency image sets you are
+a processor at minimum. Detection-and-blurring of personal items is worth building early — it is also a
+feature agencies will want independently.</p>
+
+<h2 id="resources"><span class="num">11</span>Resources</h2>
+
+<h4>Reconstruction — start here</h4>
+<ul>
+  <li><a href="https://github.com/facebookresearch/map-anything">MapAnything</a> — Apache-2.0 code and an Apache weights variant, metric geometry, flexible inputs. <a href="https://arxiv.org/abs/2509.13414">Paper</a></li>
+  <li><a href="https://github.com/facebookresearch/vggt">VGGT</a> — CVPR 2025 best paper; note the separate commercial checkpoint. <a href="https://arxiv.org/abs/2503.11651">Paper</a></li>
+  <li><a href="https://github.com/naver/mast3r">MASt3R</a> and <a href="https://arxiv.org/abs/2312.14132">DUSt3R</a> — the lineage; research licences</li>
+  <li><a href="https://arxiv.org/abs/2507.16406">Sparse-View 3D Reconstruction: Recent Advances and Open Challenges</a> — a 2025 survey, good orientation</li>
+  <li><a href="https://github.com/justacar/Plane-DUSt3R">Plane-DUSt3R</a> — DUSt3R adapted to unposed room layout</li>
+</ul>
+
+<h4>Depth, calibration and scale</h4>
+<ul>
+  <li><a href="https://github.com/apple/ml-depth-pro">Depth Pro</a> (Apple, Apache-2.0) — metric depth with internally estimated FOV</li>
+  <li><a href="https://github.com/microsoft/moge">MoGe / MoGe-2</a> — metric point maps plus intrinsics from one image</li>
+  <li><a href="https://github.com/cvg/GeoCalib">GeoCalib</a> — single-image calibration, pinhole and fisheye</li>
+  <li><a href="https://github.com/DepthAnything/Depth-Anything-V2">Depth Anything V2</a> — Small is Apache-2.0, larger checkpoints are CC-BY-NC-4.0</li>
+</ul>
+
+<h4>Layout, floor plans and cross-modal matching</h4>
+<ul>
+  <li><a href="https://arxiv.org/abs/2511.18559">C3Po</a> — photo ↔ floor plan correspondence, with a 90K-pair dataset</li>
+  <li><a href="https://github.com/zillow/laser">LASER</a> (Zillow) — camera localisation in floor plans</li>
+  <li><a href="https://github.com/ywyue/RoomFormer">RoomFormer</a> and <a href="https://github.com/3dv-casia/PolyRoom/">PolyRoom</a> — floor plan polygon reconstruction</li>
+  <li><a href="https://github.com/cubicasa/cubicasa5k">CubiCasa5K</a> — the reference floor plan dataset</li>
+  <li><a href="https://github.com/crs4/AtlantaNet">AtlantaNet</a> — layout beyond the Manhattan assumption</li>
+  <li><a href="https://ai.meta.com/blog/scenescript-3d-scene-reconstruction-reality-labs-research/">SceneScript</a> — architecture as a token sequence; steal the representation</li>
+</ul>
+
+<h4>Splatting and delivery</h4>
+<ul>
+  <li><a href="https://github.com/NVlabs/InstantSplat">InstantSplat</a>, <a href="https://github.com/btsmart/splatt3r">Splatt3R</a>, <a href="https://github.com/wangys16/FreeSplat">FreeSplat</a>, <a href="https://github.com/cvg/depthsplat">DepthSplat</a> — sparse and pose-free splatting</li>
+  <li><a href="https://sparkjs.dev/">Spark</a> — World Labs' Three.js splat renderer with hybrid mesh support</li>
+  <li><a href="https://gltf-transform.dev/">gltf-transform</a> and <a href="https://meshoptimizer.org/gltf/">meshoptimizer / gltfpack</a> — mesh and texture compression</li>
+  <li><a href="https://github.com/nmoehrle/mvs-texturing">MVS-Texturing</a> and <a href="https://github.com/jpcy/xatlas">xatlas</a> — projective texturing and UV unwrapping</li>
+</ul>
+
+<h4>Datasets and evaluation</h4>
+<ul>
+  <li><a href="https://github.com/zillow/zind">ZInD</a> — 1,575 homes, 67,448 panoramas, 2,737 floor plans. Non-commercial only</li>
+  <li><a href="https://structured3d-dataset.org/">Structured3D</a> — 3.5k synthetic scenes with full structure annotation</li>
+  <li><a href="https://google.github.io/realestate10k/">RealEstate10K</a>, <a href="https://aihabitat.org/datasets/hm3d/">HM3D</a>, <a href="https://scannetpp.mlsg.cit.tum.de/scannetpp/">ScanNet++</a></li>
+</ul>
+
+<h4>Market and regulatory</h4>
+<ul>
+  <li><a href="https://www.worldlabs.ai/blog/marble-world-model">World Labs Marble</a> — the nearest thing to a productised world model</li>
+  <li><a href="https://artificialintelligenceact.eu/article/50/">EU AI Act, Article 50</a> — transparency obligations, in force since 2 August 2026</li>
+  <li><a href="https://arxiv.org/abs/2412.14171">Thinking in Space (VSI-Bench)</a> — sober evidence on VLM spatial reasoning</li>
+  <li><a href="https://arxiv.org/abs/2507.00263">Room Scene Discovery and Grouping in Unstructured Vacation Rental Image Collections</a> — closest prior art on photo grouping</li>
+</ul>
+
+<h2 id="caveats"><span class="num">12</span>Caveats on this report</h2>
+
+<p>Worth knowing how this was made, so you can weigh it properly.</p>
+
+<ul>
+  <li>Research was gathered by eleven parallel search agents. <strong>Nine returned substantive results;
+  two hit the session's web-search limit and returned nothing</strong> — the topics they covered were
+  vision-language model spatial reasoning and European legal specifics. I filled part of both gaps directly,
+  but §10's French and UK content is thinner than it should be, and you should treat it as a prompt for
+  proper research rather than a summary of one.</li>
+  <li>The search budget was exhausted before verification, so I confirmed load-bearing claims by fetching
+  primary sources directly. Everything marked <span class="conf">✓ VERIFIED</span> I read myself.
+  Everything marked <span class="conf">○ REPORTED</span> I did not.</li>
+  <li><strong>Benchmark numbers deserve particular scepticism.</strong> Search agents are prone to
+  reproducing figures with more precision than the sources support, and several of the 2026 arXiv
+  identifiers that came back were not confirmed to exist. Before you cite any specific accuracy figure from
+  §4, open the paper.</li>
+  <li>Two claims in §6 come from my own knowledge rather than this session's research and are flagged as
+  needing verification: the licence status of the original Inria 3DGS implementation versus gsplat, and the
+  Magic Leap licence on SuperPoint weights. Both are the kind of trap that is expensive to discover late,
+  so check them early.</li>
+  <li>Cost figures in §8 are my estimates from stated inference times, not measurements. The human-review
+  observation is a modelling argument, not an empirical finding — but it is the one I would most encourage
+  you to test early, because it changes where you spend effort.</li>
+</ul>
+
+<hr class="soft">
+
+<p class="fn">If it is useful, the natural next step is a short scoping pass on phase 0: which agencies or
+portals you could realistically partner with in France, and what thirty listings with ground truth would
+actually take to assemble. That decision shapes everything downstream more than any technical choice in
+this document.</p>
+
+</div>
+</body>
+</html>
