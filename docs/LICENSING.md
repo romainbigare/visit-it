@@ -67,7 +67,8 @@ All entries below were verified against primary sources (LICENSE files, model ca
 | **CubiCasa5K** | code: see repo | **dataset CC-BY-NC-4.0** | RESEARCH_ONLY | Cannot train the commercial vectoriser on it — **and no longer needed**, ResPlan + Swiss Dwellings cover it. |
 | Structured3D | code MIT | dataset: non-commercial Terms of Use | RESEARCH_ONLY | |
 | ZInD (Zillow) | code Apache-2.0 | dataset: non-commercial; commercial enquiries ZInD@zillowgroup.com | RESEARCH_ONLY | Consider a paid licence if it would accelerate Phase 1. |
-| Rent3D / Rent3D++ (Toronto) | — | **Not stated — must ask the authors** | CHECK (S1 task) | 215 London flats, ~1,570 photos + aligned floor plans. Closest public analogue to our problem, in a target market. |
+| Rent3D (Toronto, CVPR 2015) | — | **Not stated — must ask the authors** | CHECK (S1 task) | 215 London flats, ~1,570 photos + aligned plans; 1,312 rooms, 6,628 walls, 1,923 doors, 1,268 windows annotated. Evaluation use only — cannot validate metric accuracy (ground truth is agent-drawn plans). See `PRIOR-ART.md`. |
+| Rent3D++ / Plan2Scene (SFU, CVPR 2021) | **code MIT** | Dataset by Google Form request; terms to confirm on grant | CHECK (S1 task) | Same 215 apartments, richer annotations + the coverage-level evaluation protocol we want. Code MIT means the *pipeline* is reusable even if the data grant fails. |
 | LIFULL HOME'S (NII Japan) | — | Academic institutions only | RESEARCH_ONLY | 5.33M listings; wrong market regardless. |
 | Places365 / MIT Indoor67 | — | Reported non-commercial | AVOID | Verify directly if ever needed; assume closed for a shipped classifier. |
 | Unlicensed Kaggle/HF image sets | — | **No stated licence** | AVOID | No licence means no rights — worse than a restrictive licence. |

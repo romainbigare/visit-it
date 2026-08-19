@@ -11,7 +11,8 @@ Automatic 3D reconstruction of flat listings: an unlabelled bag of estate-agent 
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Decisions of record (AD-1…AD-15): product shape, pipeline DAG and artifact contracts, model choices, viewer stack, compliance posture. |
 | [`docs/LICENSING.md`](docs/LICENSING.md) | The licence ledger — every model/dataset/library with code licence, weights licence, and a PROD_OK / RESEARCH_ONLY verdict, verified against primary sources 2026-08-19. CI enforces it. |
 | [`docs/VARIANTS.md`](docs/VARIANTS.md) | Service profiles (instant / standard / premium), unit economics at different price points (incl. the 5–10 s / £0.05 target), and three alternative development journeys with a recommendation. |
-| [`docs/DATA-SOURCES.md`](docs/DATA-SOURCES.md) | Where listings, photos and floor plans legitimately come from: portal APIs (mostly closed), commercially-licensed datasets, the estate-agency CRM route, who owns listing photograph copyright, and why the aggregator category is a legal trap. |
+| [`docs/DATA-SOURCES.md`](docs/DATA-SOURCES.md) | Where listings, photos and floor plans come from: portal APIs (mostly closed), commercially-licensed datasets, the estate-agency CRM route, the in-house scraping decision, and who owns listing photograph copyright. |
+| [`docs/PRIOR-ART.md`](docs/PRIOR-ART.md) | Rent3D, Plan2Scene and the research line that attacked this problem in 2015–2021: what they built, why it stalled, why every commercial player controls capture instead, and what that implies for us. |
 
 ## The idea in four sentences
 

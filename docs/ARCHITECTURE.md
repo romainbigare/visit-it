@@ -146,7 +146,7 @@ visit-it/
 | M5 | Assignment accuracy | photos placed in the correct plan room, % |
 | M6 | Grouping quality | pairwise same-room precision/recall/F1 |
 | M7 | Triage accuracy | image type + room label top-1 |
-| M8 | Render quality | LPIPS/PSNR on held-out photo views + blind-panel rubric (1–5) |
+| M8 | Render quality | LPIPS/PSNR on held-out photo views + blind-panel rubric (1–5), **reported per observed-coverage level** (0.0/0.2/0.4/0.6/0.8/1.0, protocol adopted from Rent3D++ — see `docs/PRIOR-ART.md` §6) |
 | M9 | Yield | listings shippable with zero human touch, % |
 | M10 | Unit economics | GPU-seconds, API cost, **utilisation-adjusted COGS £/listing**, per profile |
 | M11 | Review cost | median human minutes per reviewed listing |
