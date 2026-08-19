@@ -19,6 +19,8 @@ Automatic 3D reconstruction of flat listings: unlabelled photos + (sometimes) a 
 
 Two products fall out along the way: the **P1 shell** is already sellable (scaled interactive floor plan — what Archilogic/CubiCasa sell), and **P2** is the differentiated walkthrough. This ordering deliberately front-loads the stage most likely to kill the project (global assembly) and the discipline most likely to save it (the eval harness).
 
+> **Amendment A (19 Aug 2026) — service profiles and price points.** A new target was set: serve paying customers at **5–10 s per analysis under £0.05** at crowd scale. The full analysis — three service profiles (`instant`/`standard`/`premium`), price-point variants, unit economics on verified Aug-2026 GPU pricing, and three alternative dev journeys — is in [`docs/VARIANTS.md`](docs/VARIANTS.md); the architectural decisions are AD-16/17/18 in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). **Journey C (twin-track) deltas are adopted into this plan**, marked ⚡ below: latency (M12) and COGS instrumentation from S1; feed-forward-splat and serverless cold-start spikes in S1; per-profile criteria added to G0–G3; the D-stream builds two stage-8 engines in P2 (+1 sprint, both-profiles GA ≈ week 32). The journey choice (A/B/C) is revisited once at G0 when the first customer conversation lands — until then C keeps all doors open at a cost of two spikes and some instrumentation.
+
 **Sequencing principle** (from the report, endorsed on review): build what is most valuable *and most verifiable* first; every stage ships with a fallback and a confidence; nothing enters `pipeline/` without a `PROD_OK` licence verdict.
 
 ---
@@ -80,11 +82,11 @@ Critical path: **golden set → plan channel → assembly → scale → shell (G
 | Stream | Work | Done means |
 |---|---|---|
 | A | Metric definitions doc (M1–M11 formulas, edge cases); annotation spec (room polygons, adjacency, door positions, per-room areas); collect first 10 listings internally; **start partner outreach week 1, day 1** (agency shortlist, LOI draft) — this is the longest lead item in the project | Spec reviewed; 10 listings ingested; ≥3 partner conversations booked |
-| B | **Spike:** MapAnything (`-apache` checkpoint) on 3 real listings' room groups (hand-grouped); GeoCalib on 20 listing photos; record runtime/VRAM/qualitative notes in `docs/spikes/` | Spike write-ups with numbers, go/no-go note per model |
+| B | **Spike:** MapAnything (`-apache` checkpoint) on 3 real listings' room groups (hand-grouped); GeoCalib on 20 listing photos; record runtime/VRAM/qualitative notes in `docs/spikes/`. ⚡ Measure MapAnything's **GPU seconds per forward pass** explicitly — no published figure exists and the instant profile's latency budget leans on it | Spike write-ups with numbers, go/no-go note per model |
 | C | **Spike:** VLM triage prompt v0 over 10 listings (image type, room label, staging/mirror flags, structured JSON); plan-area OCR spike on 10 French plans (the `Séjour 24,5 m²` trick) | ≥90% plan detection on the sample; OCR area extraction works on ≥7/10 plans |
-| D | **Spike:** gsplat on one photo-rich room (COLMAP poses) and one 4-photo room (MapAnything poses); floaters documented; SPZ export → file size | Splat spike write-up; format pipeline proven end-to-end |
+| D | **Spike:** gsplat on one photo-rich room (COLMAP poses) and one 4-photo room (MapAnything poses); floaters documented; SPZ export → file size. ⚡ **Feed-forward spike:** AnySplat and DepthSplat on the same rooms — seconds/room, VRAM, side-by-side quality vs gsplat; email AnySplat authors re weights licence (ledger blocker) | Splat spike write-up incl. feed-forward comparison; format pipeline proven end-to-end |
 | E | **Spike:** Spark hello-world — one mesh shell + one splat cloud, correct occlusion, on desktop + one mid-range Android + one iPhone; define the **reference device matrix** | Hybrid render proven on all three; device matrix in `docs/` |
-| F | Monorepo scaffold per ARCHITECTURE §8; `schemas/` v0 for all 10 artifacts; stage-runner CLI (`pipeline run <listing> --from <stage>`); artifact store (MinIO) + Postgres; CI with **licence gate** live (LICENSING.md §Process); GDPR: DPA template to counsel | `pipeline run` executes stub stages end-to-end on a fixture listing; licence CI red-tests correctly |
+| F | Monorepo scaffold per ARCHITECTURE §8; `schemas/` v0 for all 10 artifacts; stage-runner CLI (`pipeline run <listing> --from <stage> --profile <p>` ⚡ profile flag + per-stage wall-clock logging (M12) from day one); artifact store (MinIO) + Postgres; CI with **licence gate** live (LICENSING.md §Process); ⚡ serverless cold-start spike: our weight set on RunPod/Modal, cold-to-first-inference measured; GDPR: DPA template to counsel | `pipeline run` executes stub stages end-to-end on a fixture listing; licence CI red-tests correctly; latency log visible in the contact sheet |
 
 ### Sprint 2
 
@@ -104,6 +106,8 @@ Critical path: **golden set → plan channel → assembly → scale → shell (G
 - [ ] Spikes green: MapAnything runs on our inputs at seconds-per-group; gsplat→SPZ→Spark proven; hybrid rendering works on the device matrix.
 - [ ] Licence CI enforcing; zero non-`PROD_OK` deps in `pipeline/`.
 - [ ] Measured (not estimated) GPU cost/listing for the spike path recorded — sanity-check against the report's €0.30–1.50.
+- [ ] ⚡ Latency harness live (M12 per stage); utilisation-adjusted COGS model in the dashboard; feed-forward and cold-start spike numbers recorded — these decide whether the instant profile's 10 s / £0.05 envelope survives contact (VARIANTS.md §6 updated with our measurements).
+- [ ] ⚡ Journey decision reviewed (A/B/C per VARIANTS.md §4) against the first real customer conversations; default remains C.
 
 ---
 
@@ -156,6 +160,7 @@ On holdout listings **that have a floor plan**:
 - [ ] Correct room arrangement on ≥ **70%** of listings (M3/M5 composite).
 - [ ] Shell loads < 2 s desktop / < 5 s mid-range mobile.
 - [ ] Every shipped shell displays only the advertised area figure.
+- [ ] ⚡ Instant-profile shell: end-to-end **p95 ≤ 10 s** (warm/cached conditions stated) and **measured COGS ≤ £0.02** — the shell path is the instant product's core, so this is cheap to demand here and expensive to discover later.
 - **Kill criterion:** if after S6 we cannot hit this, the rest does not matter — stop and reassess (the honest fallbacks: human-assisted assembly as default posture, or pivot to the shell-from-plan-only product without photo assignment).
 
 ---
@@ -163,6 +168,8 @@ On holdout listings **that have a floor plan**:
 ## 4. Phase 2 — Photorealism and the walkthrough (S7–S11, weeks 13–22)
 
 > Goal: per-room Gaussian splats anchored inside the G1 shell; the waypoint walkthrough that feels like a product. D and E now carry the critical path; B's grouping/multi-view work feeds them.
+>
+> ⚡ **Amendment A:** the D-stream builds **two stage-8 engines behind one interface** — feed-forward (AnySplat/DepthSplat-class, instant profile) in S7–S8, optimised gsplat (standard profile) in S9–S10 — and the viewer gains hot-swap upgrade-in-place (instant result first, standard splats replace them minutes later). This adds one sprint to P2 under Journey C (G2 lands end of week 24; G3 week 32). Sprint contents below are otherwise unchanged.
 
 ### Sprint 7 — conditioning + grouping
 
@@ -211,6 +218,7 @@ Freeze the pipeline; run the **blind panel** on ≥30 holdout listings (external
 - [ ] ≥70% of rooms with ≥3 usable photos reach "acceptable" on the panel rubric.
 - [ ] Device matrix: 30 fps, first-room-interactive ≤5 s on 4G mobile, zero OOM tab-kills across the test suite.
 - [ ] Measured cost ≤ €2/listing at current quality (M10), and G1 metrics have not regressed (shell accuracy is non-negotiable ballast).
+- [ ] ⚡ Per-profile matrix published: **instant** — p95 ≤ 10 s, COGS ≤ £0.03, beats the "plan + photo lightbox" baseline in the panel; **standard** — ≤ 5 min, COGS ≤ £0.15, meets the beats-the-gallery bar above. Upgrade-in-place demonstrated on a live listing.
 - **Pivot rule:** if the panel prefers the gallery, ship the Phase-1 shell product (+ plan minimap + photo lightbox anchored to rooms) commercially while appearance quality is reworked — the shell alone is a sellable product and the company does not stall.
 
 ---
@@ -251,6 +259,7 @@ Freeze the pipeline; run the **blind panel** on ≥30 holdout listings (external
 - [ ] Privacy: audit sample of shipped scenes shows zero readable personal data; blur runs pre-storage.
 - [ ] Compliance posture: counsel sign-off on viewer disclosures (FR consumer law + AI Act Art. 50 position); provenance tags verified machine-readable end-to-end.
 - [ ] Ops: 99% pipeline completion without manual intervention at 200/day; cost dashboard green.
+- [ ] ⚡ Economics at declared price points over a 200-listing/day week: instant COGS ≤ £0.03 with SLO held; standard ≤ £0.15; premium COGS review-dominated as modelled (VARIANTS.md §3 margins validated with the partner). Review never gates the instant profile (confidence-degrade/refuse only).
 
 ---
 
@@ -284,6 +293,7 @@ Fifth engineer takes D as a dedicated stream from S1 (fixture-driven), pulling s
 4. Failure taxonomy updated when a new failure mode is seen twice.
 5. Demo listing regenerated at sprint end (the same 3 listings throughout the project — progress must be visible on *stable* examples).
 6. The never-rules hold (ARCHITECTURE §10): no generated content that changes perceived size/layout/condition; only the advertised area is user-facing; Tier B never presented as measured.
+7. ⚡ Every stage lands its **fast binding first** (AD-17); per-stage latency budgets asserted in CI perf tests; a PR that pushes a stage over budget needs an explicit waiver in the PR description.
 
 ---
 
@@ -299,6 +309,8 @@ Fifth engineer takes D as a dedicated stream from S1 (fixture-driven), pulling s
 | R6 | Vectoriser training data gap (CubiCasa NC confirmed) | High (known) | Med | Partner plans + synthetic generator from S3; annotation tooling investment; optional: negotiate CubiCasa/ZInD commercial licence in parallel |
 | R7 | Mobile memory ceilings kill the viewer on iOS | Med | High | Budgets CI-enforced from S9; room-at-a-time streaming from S7; device matrix testing every sprint from P2 |
 | R8 | Review economics don't converge (>25% review rate persists) | Med | Margin | M11 instrumented from S13; auto-QA calibration is a first-class task, not a cleanup; pricing model keeps a human-reviewed tier |
+| R9 ⚡ | Instant-engine licence gaps (AnySplat weights unstated; FastGS licence chain possibly Inria-tainted) | Med | Med | Author contact + legal read in S1; fallbacks already identified: DepthSplat (MIT) for feed-forward, techniques ported onto gsplat for fast optimisation |
+| R10 ⚡ | Feed-forward splat quality too low even for the instant tier's honest bar | Med | Med (V1 variant only) | S1 spike gives the answer 6 months early; fallback: instant profile ships shell + projected textures (still a real product), splats stay standard-only |
 
 ---
 

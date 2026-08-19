@@ -10,6 +10,7 @@ Automatic 3D reconstruction of flat listings: an unlabelled bag of estate-agent 
 | [`ROADMAP.md`](ROADMAP.md) | The full development roadmap: phases P0–P3, sprint-by-sprint plans, gates G0–G3 with kill criteria, workstream parallelisation, staffing variants, risk register. |
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Decisions of record (AD-1…AD-15): product shape, pipeline DAG and artifact contracts, model choices, viewer stack, compliance posture. |
 | [`docs/LICENSING.md`](docs/LICENSING.md) | The licence ledger — every model/dataset/library with code licence, weights licence, and a PROD_OK / RESEARCH_ONLY verdict, verified against primary sources 2026-08-19. CI enforces it. |
+| [`docs/VARIANTS.md`](docs/VARIANTS.md) | Service profiles (instant / standard / premium), unit economics at different price points (incl. the 5–10 s / £0.05 target), and three alternative development journeys with a recommendation. |
 
 ## The idea in four sentences
 

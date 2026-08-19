@@ -25,6 +25,9 @@
 | AD-13 | Backend | Python 3.11 + PyTorch monorepo; FastAPI control plane; Redis-backed GPU worker queue; Postgres metadata; S3-compatible artifact store | Kubeflow/Temporal/Airflow (overkill at this stage) |
 | AD-14 | Human review | Review console is a product component from Phase 1; every artifact inspectable; corrections feed the eval set | Review as an afterthought |
 | AD-15 | Provenance & compliance | Every surface tagged `photographed / reconstructed / inferred / generated` from day one; GDPR blur pre-processing; no generative content in v1 | Retro-fitting provenance later |
+| AD-16 *(added 19 Aug 2026)* | Service profiles | One DAG, three **profiles** — `instant` / `standard` / `premium` — differing only in per-stage engine bindings, budgets and SLOs (see `docs/VARIANTS.md`) | Separate pipelines per tier; one-size-fits-all latency |
+| AD-17 *(added 19 Aug 2026)* | Hot-path policy | The synchronous (`instant`) path bans: frontier-VLM calls, per-scene optimisation loops, human gates, cold model loads. Self-hosted small models only, warm pools, per-room GPU fan-out | "Optimise later" |
+| AD-18 *(added 19 Aug 2026)* | Reconstruction cache & serving split | Reconstructions cached by listing content hash (photos+plan bytes); viewers served purely from CDN — GPU cost is per *unique listing*, never per viewer | Recompute per request |
 
 The rest of this document expands the non-obvious ones.
 
@@ -145,10 +148,22 @@ visit-it/
 | M7 | Triage accuracy | image type + room label top-1 |
 | M8 | Render quality | LPIPS/PSNR on held-out photo views + blind-panel rubric (1–5) |
 | M9 | Yield | listings shippable with zero human touch, % |
-| M10 | Unit economics | GPU-minutes, API €, wall-clock per listing |
+| M10 | Unit economics | GPU-seconds, API cost, **utilisation-adjusted COGS £/listing**, per profile |
 | M11 | Review cost | median human minutes per reviewed listing |
+| M12 *(added 19 Aug 2026)* | Latency | p50/p95 wall-clock per stage and end-to-end, per profile, warm-pool conditions stated |
 
 Harness rules: frozen holdout split untouched by development; nightly run on the dev split; every PR that touches `pipeline/` posts its eval delta; gates are measured on the holdout only.
+
+## 9b. AD-16/17/18 — Profiles, the hot path, and the serving split *(amendment, 19 Aug 2026)*
+
+The product must serve two economic regimes at once: a **synchronous** regime (a paying user waits 5–10 s for an analysis, marginal cost must sit in single-digit pence) and a **quality** regime (minutes are fine, fidelity sells). These are not two pipelines — they are two *profiles* over the same DAG:
+
+- A profile is a config: per-stage **engine binding** (e.g. stage 8 = `feedforward_splats` vs `optimised_gsplat`), per-stage **latency budget**, and an SLO. `pipeline run <listing> --profile instant|standard|premium`.
+- Every stage in `pipeline/` must ship its **fast binding first**; quality bindings are additive. CI perf tests assert each stage's fast binding stays inside its latency budget on the reference GPU.
+- **Hot-path bans (instant profile):** no frontier-VLM calls (fine-tuned SigLIP-class classifiers instead), no per-scene optimisation loops, no human gates, no cold model loads (warm pools with all weights resident), no stage that cannot fan out per room. Confidence gating replaces review: a listing that fails checks **degrades** (shell-only, or Tier-B badge) or is **refused with a reason** — it never silently ships wrong and never waits for a human.
+- **Serving split:** reconstruction writes static artifacts to the CDN; viewers cost egress only. The cache key is a content hash of (photos + plan + listing text); a repeated analysis is a cache hit and costs ~nothing. GPU economics therefore scale with *unique listings*, not with traffic.
+
+Numbers, price points and the dev-journey variants live in [`VARIANTS.md`](VARIANTS.md).
 
 ## 10. Security, privacy, compliance hooks (built in, not bolted on)
 

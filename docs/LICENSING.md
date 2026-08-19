@@ -74,6 +74,15 @@ All entries below were verified against primary sources (LICENSE files, model ca
 | DNGaussian | Inria-style NC research licence | RESEARCH_ONLY | Reimplement depth regularisation natively on gsplat. |
 | SparseGS | Licence file not accessible at review | AVOID until clarified | |
 | InstantSplat (NVlabs) | Unconfirmed + depends on MASt3R (NC) | RESEARCH_ONLY | Pipeline idea (pointmap init → joint pose+splat optimisation) is what we reimplement on MapAnything + gsplat. |
+| **AnySplat** (SIGGRAPH Asia 2025) | Code MIT; **weights licence unstated** (HF `lhjiang/anysplat`) | CONDITIONAL | Prime instant-profile engine candidate (unposed, 2–64 views). Blocked on weights-licence clarification — ask the authors in S1; do not ship until stated. |
+| **DepthSplat** (cvg) | MIT | CONDITIONAL → PROD_OK pending checkpoint provenance | Verified 0.6 s / 12 views on A100. Second instant-engine candidate (posed input — fine, stage 3 provides poses). |
+| pixelSplat / latentSplat | MIT / MIT | CONDITIONAL | Stereo-pair only; partial coverage. Check checkpoint provenance. |
+| GS-LRM (Adobe) | Adobe Research License, no official open release | AVOID | |
+| Long-LRM / Long-LRM++ | Unclear; unofficial reimplementations | AVOID until clarified | |
+| MV-DUSt3R+ (Meta) | CC-BY-NC-4.0 | RESEARCH_ONLY | |
+| PreF3R | Licence unstated | AVOID until clarified | |
+| FastGS | Labeled MIT but README requires adherence to 3DGS/Taming-3DGS/Speedy-Splat licences — possible Inria taint in the chain | CONDITIONAL | Standard-profile fast-optimisation candidate. Legal read of the licence chain required; if tainted, port the *techniques* onto gsplat instead. |
+| Taming-3DGS | Licence unstated | RESEARCH_ONLY | Comparison point (7–13 min/scene A100). |
 | Splatt3R | CC-BY-NC-4.0 | RESEARCH_ONLY | |
 | DepthSplat | MIT | CONDITIONAL | Check its checkpoint provenance before prod. |
 | MVSplat | MIT | CONDITIONAL | Same. |
