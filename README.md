@@ -11,6 +11,7 @@ Automatic 3D reconstruction of flat listings: an unlabelled bag of estate-agent 
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Decisions of record (AD-1…AD-15): product shape, pipeline DAG and artifact contracts, model choices, viewer stack, compliance posture. |
 | [`docs/LICENSING.md`](docs/LICENSING.md) | The licence ledger — every model/dataset/library with code licence, weights licence, and a PROD_OK / RESEARCH_ONLY verdict, verified against primary sources 2026-08-19. CI enforces it. |
 | [`docs/VARIANTS.md`](docs/VARIANTS.md) | Service profiles (instant / standard / premium), unit economics at different price points (incl. the 5–10 s / £0.05 target), and three alternative development journeys with a recommendation. |
+| [`docs/DATA-SOURCES.md`](docs/DATA-SOURCES.md) | Where listings, photos and floor plans legitimately come from: portal APIs (mostly closed), commercially-licensed datasets, the estate-agency CRM route, who owns listing photograph copyright, and why the aggregator category is a legal trap. |
 
 ## The idea in four sentences
 
@@ -18,4 +19,4 @@ Photos alone cannot tell you where rooms sit relative to each other — the floo
 
 ## Status
 
-Pre-development. Next step: Sprint 1 (see [`ROADMAP.md`](ROADMAP.md) §9, kickoff checklist) — golden-set collection, data-partner outreach, and the de-risking spikes.
+Pre-development. Next step: Sprint 1 (see [`ROADMAP.md`](ROADMAP.md) §9, kickoff checklist) — golden-set collection, agent outreach via the CRM route, the derivative-works rights grant, and the de-risking spikes.

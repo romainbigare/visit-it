@@ -60,10 +60,17 @@ All entries below were verified against primary sources (LICENSE files, model ca
 | SceneScript (Meta) | CC-BY-NC (code IS released — report corrected) | CC-BY-NC | RESEARCH_ONLY | Steal the token representation, reimplement. |
 | LASER (Zillow) | CC-BY-NC-ND-4.0 | — | RESEARCH_ONLY | |
 | F3Loc | MIT | check | CONDITIONAL | Photo-in-plan localisation, later phases. |
-| C3Po (arXiv 2511.18559, NeurIPS 2025) | check on adoption | 90K photo/plan pairs, 597 scenes — check dataset terms | CONDITIONAL | Closest prior art for photo↔plan matching. |
-| **CubiCasa5K** | code: see repo | **dataset CC-BY-NC-4.0** | RESEARCH_ONLY | **Cannot train the commercial vectoriser on it.** Partner plans + own annotations + synthetic generation instead, or negotiate a licence. |
+| **C3Po** (arXiv 2511.18559, NeurIPS 2025) | see repo | **dataset CC-BY-4.0 — commercial use permitted with attribution** ✅ (verified 19 Aug 2026) | **PROD_OK** (with attribution) | 90K photo/plan pairs, 597 scenes, on HF (~427 GB). Domain gap: internet/landmark buildings, not agent flat photography — pretrain here, fine-tune on partner data. |
+| **ResPlan** | MIT | **dataset CC-BY-4.0** ✅ | **PROD_OK** (with attribution) | 17,000 vector floor plans with room graphs and metric scale. US-derived. Primary vectoriser training corpus. |
+| **Swiss Dwellings** (Archilyse) | — | **CC-BY-4.0** ✅ | **PROD_OK** (attribute Archilyse AG) | 42,207 apartments / 242,257 rooms, European. Second vectoriser corpus. |
+| MSD (Modified Swiss Dwellings) | — | CC-BY-SA-4.0 | CONDITIONAL | Share-alike: assess whether it reaches released model weights before training on it. European multi-apartment stock, vector+raster+graph. |
+| **CubiCasa5K** | code: see repo | **dataset CC-BY-NC-4.0** | RESEARCH_ONLY | Cannot train the commercial vectoriser on it — **and no longer needed**, ResPlan + Swiss Dwellings cover it. |
 | Structured3D | code MIT | dataset: non-commercial Terms of Use | RESEARCH_ONLY | |
 | ZInD (Zillow) | code Apache-2.0 | dataset: non-commercial; commercial enquiries ZInD@zillowgroup.com | RESEARCH_ONLY | Consider a paid licence if it would accelerate Phase 1. |
+| Rent3D / Rent3D++ (Toronto) | — | **Not stated — must ask the authors** | CHECK (S1 task) | 215 London flats, ~1,570 photos + aligned floor plans. Closest public analogue to our problem, in a target market. |
+| LIFULL HOME'S (NII Japan) | — | Academic institutions only | RESEARCH_ONLY | 5.33M listings; wrong market regardless. |
+| Places365 / MIT Indoor67 | — | Reported non-commercial | AVOID | Verify directly if ever needed; assume closed for a shipped classifier. |
+| Unlicensed Kaggle/HF image sets | — | **No stated licence** | AVOID | No licence means no rights — worse than a restrictive licence. |
 
 ## Splatting & delivery
 
