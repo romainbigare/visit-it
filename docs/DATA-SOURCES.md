@@ -129,6 +129,28 @@ A deliberately skeptical pass on the "European property data API" vendors found 
 
 Together with **CoStar v. Zillow** (53,000+ images claimed, active in 2026), this closes the question: **the aggregator/scraper category is not a shortcut, it is the single largest legal risk available to us**, and the roadmap's existing no-scraping rule stands reinforced.
 
+### 3.9 Decision of record: in-house scraping of Rightmove and Zoopla (19 Aug 2026)
+
+**Decided by the founder: we will build our own scraper for Rightmove and Zoopla.** Recorded here as the project's data-acquisition position, superseding the earlier "no scraping" scope fence for the acquisition of *input* imagery. The rest of this section is the engineering consequence, not a re-argument.
+
+**What scraping does and does not solve.** It solves **access** — getting pixels and plans onto disk quickly, without waiting on a partner. It does **not** solve **rights**, and those are separate problems (§3.7): the photographer owns the copyright, so no amount of access creates permission to *publish a derived 3D model* of their photograph to end users. Planning must therefore keep two tracks:
+
+| Use of scraped data | Status | Note |
+|---|---|---|
+| Internal R&D, algorithm development, the golden set, regression testing | Workable now | No redistribution, no publication of outputs |
+| Training shipped models | ⚠ Avoid | Zoopla's terms specifically prohibit use of the site for "developing or contributing towards a solution utilising artificial intelligence" without a licence. A model trained on scraped data carries that taint into the product |
+| Publishing 3D outputs to end users | ⚠ Needs a rights grant regardless of how the images were obtained | This is the copyright question, not the access question |
+
+**The exposures, so they're costed rather than discovered.** Three distinct ones, all verified: portal terms explicitly prohibit scraping (both portals); the **EU sui generis database right** (Directive 96/9/EC) protects the portal's collection independently of image copyright — the French precedent **Entreparticuliers.com v. Leboncoin (2021), €50,000** was exactly systematic extraction of property listings; and image copyright itself, which is what **CoStar v. Zillow** (53,000+ images, active 2026) turns on. Practical exposure also includes IP blocking and anti-bot measures (both portals run active detection), which is an ongoing engineering cost rather than a one-off build.
+
+**Risk reducers worth building in from the start** (cheap now, expensive to retrofit):
+1. **Tag every asset with its provenance** (`scraped` / `partner_granted` / `self_captured`) in the manifest, and make the pipeline able to filter on it. This is what lets you later prove a shipped model saw no scraped data, or purge a source if a position changes. It reuses the provenance machinery already in the architecture.
+2. **Keep a hard split**: scraped data in the R&D/eval lane; partner-granted data in the training-and-publishing lane. Enforce it in CI the same way the licence gate works.
+3. **Rate-limit and respect robots.txt.** Reduces the "systematic extraction" characterisation and the blocking arms race, though it does not remove database-right exposure.
+4. **Note the clean path stays available for the product:** where the *agent is the customer*, they supply their own listing imagery — identical pixels, zero exposure. Scraping is only needed for listings where we have no relationship (speculative demos, consumer "paste any listing" use). That makes it a **bootstrapping and demo tool**, not the production input channel — the CRM route (§3.6) remains the production answer.
+
+**Owner:** founder decision; counsel should still be briefed before any customer-facing output derives from scraped imagery.
+
 ## 4. Recommendation
 
 **Headline: no dataset or API removes the need for a data partner — but the partner just got much easier to land, and the training-data blocker has largely dissolved.**

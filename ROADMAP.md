@@ -93,6 +93,7 @@ Critical path: **golden set → plan channel → assembly → scale → shell (G
 | Stream | Work | Done means |
 |---|---|---|
 | A | Golden set to 30–50 listings: photos + plan + advertised area for all; per-room laser measurements for ≥10; Matterport (or equivalent) scans for ≥5; frozen **holdout split** (≥20) sealed; harness computes M1–M8 against stubs; naive baseline recorded (monocular depth only, no plan) | Harness runs nightly; scoreboard page exists; baseline numbers published internally |
+| F | **Scraper build** (Rightmove + Zoopla per DATA-SOURCES §3.9): listing fetch, image + floor-plan download, listing-text parse for area/room count, rate limiting, robots.txt handling, and **`provenance: scraped` stamped on every asset at ingest**. CI rule: assets tagged `scraped` are rejected by training-data loaders | Scraper fills the golden set; provenance filter demonstrably blocks scraped assets from a training run |
 | B | Turn spikes into stage skeletons: stage 1 (GeoCalib undistort + intrinsics artifact), stage 3 API (`reconstruct(images, priors)` plugin interface with MapAnything + MoGe-2 monocular backends) | Stages 1,3 produce schema-valid artifacts on 10 listings |
 | C | Stage 0 triage v1 (VLM, structured outputs, phash dedup, listing-text parser for Carrez area/room count); measured against golden labels (M7) | M7 report: plan detection, image type, room label accuracies |
 | D | Splat trainer as a service stub (queue in, SPZ out) on hand-posed rooms | 5 golden rooms splatted reproducibly by job id |
@@ -102,8 +103,10 @@ Critical path: **golden set → plan channel → assembly → scale → shell (G
 ### Gate G0 (end of week 4) — go / kill
 
 - [ ] ≥30 listings with usable ground truth in the harness; holdout frozen.
-- [ ] **Data access (reworded 19 Aug 2026 after the data-source research).** The binding constraints are not a portal deal but: (a) ≥30 ground-truth listings, and (b) **a signed rights grant from at least one agent covering process / store / create derivative 3D works / publish**, with the de-listing position stated. Two or three agents on Street.co.uk or Reapit satisfy both. **Kill criterion:** if no agent will grant derivative-work rights and we cannot assemble 30 ground-truth listings ⇒ stop. (The original "no data partner ⇒ stop" framing set the bar at a portal partnership; that was the wrong target — portals cannot grant image rights they do not hold.)
-- [ ] Working ingestion connector against Street.co.uk **or** Reapit OAuth, pulling a real agent's listings with images.
+- [ ] **Data access (reworded twice, 19 Aug 2026).** Two constraints, now on different clocks:
+  - **(a) Ground truth for P0 — no longer partner-blocked.** With the in-house scraper (§3.9) plus our own measurements, ≥30 listings with ground truth is an engineering task, not a negotiation. **Kill criterion:** cannot assemble 30 ground-truth listings with verified measurements ⇒ stop.
+  - **(b) A rights grant covering derivative 3D works — a launch blocker, not a P0 blocker.** Scraping gets pixels; it does not get the right to publish a 3D model derived from someone else's photograph. Drafting starts in P0, signature required before any customer-facing output (moved to **G2**). Track it from week 1 — it is still the longest-lead item, just no longer on the critical path to a working prototype.
+- [ ] Ingestion connector against Street.co.uk **or** Reapit OAuth, pulling a real agent's listings with images — the production channel, developed alongside the scraper rather than instead of it.
 - [ ] Spikes green: MapAnything runs on our inputs at seconds-per-group; gsplat→SPZ→Spark proven; hybrid rendering works on the device matrix.
 - [ ] Licence CI enforcing; zero non-`PROD_OK` deps in `pipeline/`.
 - [ ] Measured (not estimated) GPU cost/listing for the spike path recorded — sanity-check against the report's €0.30–1.50.
@@ -220,6 +223,7 @@ Freeze the pipeline; run the **blind panel** on ≥30 holdout listings (external
 - [ ] Device matrix: 30 fps, first-room-interactive ≤5 s on 4G mobile, zero OOM tab-kills across the test suite.
 - [ ] Measured cost ≤ €2/listing at current quality (M10), and G1 metrics have not regressed (shell accuracy is non-negotiable ballast).
 - [ ] ⚡ Per-profile matrix published: **instant** — p95 ≤ 10 s, COGS ≤ £0.03, beats the "plan + photo lightbox" baseline in the panel; **standard** — ≤ 5 min, COGS ≤ £0.15, meets the beats-the-gallery bar above. Upgrade-in-place demonstrated on a live listing.
+- [ ] **Rights grant signed** (moved here from G0): at least one agent/agency agreement covering process, store, create derivative 3D works, and publish, with the de-listing position stated. **No customer-facing output ships before this**, and nothing customer-facing derives from scraped imagery (provenance filter verified in CI).
 - **Pivot rule:** if the panel prefers the gallery, ship the Phase-1 shell product (+ plan minimap + photo lightbox anchored to rooms) commercially while appearance quality is reworked — the shell alone is a sellable product and the company does not stall.
 
 ---
@@ -308,7 +312,8 @@ Fifth engineer takes D as a dedicated stream from S1 (fixture-driven), pulling s
 | R4 | Splat quality below "beats the gallery" | Med | High (G2) | Quality tiers by view count; polygon culling; pivot rule at G2 keeps the company shipping |
 | R5 | Licence landscape shifts (model re-licensed, ledger entry invalidated) | Med | Med | Ledger re-verification each release; engine plugin abstraction (AD-4) makes swaps cheap |
 | R6 | ~~Vectoriser training data gap~~ **largely resolved 19 Aug 2026** | Low | Low | ResPlan + Swiss Dwellings are CC BY 4.0 and commercially usable; residual risk is only *stylistic* (neither is French/UK agency-drawn), handled by partner fine-tuning |
-| R11 | **Image rights don't extend to derivative 3D works** — photographer owns copyright, agent holds a marketing-only, listing-lifetime licence (DATA-SOURCES §3.7) | Med | **High** | Rights grant drafted in S1 before ingestion; de-listing behaviour defined in product; if grants prove unobtainable, the fallback is a per-agent SaaS where the agent supplies and controls their own imagery |
+| R11 | **Image rights don't extend to derivative 3D works** — photographer owns copyright, agent holds a marketing-only, listing-lifetime licence (DATA-SOURCES §3.7). Unaffected by the scraping decision, which solves access and not rights | Med | **High** | Rights grant drafted in S1, signed before G2; de-listing behaviour defined in product; fallback is per-agent SaaS where the agent supplies and controls their own imagery |
+| R12 | **Scraping exposure** — portal ToS, EU database right (Entreparticuliers v. Leboncoin, €50k), image copyright (CoStar v. Zillow), plus IP blocking as an ongoing engineering cost (DATA-SOURCES §3.9) | Accepted by founder decision | Med–High | Provenance tagging + CI split keeps scraped assets out of training and out of customer-facing output; rate limiting and robots.txt; counsel briefed before any output derives from scraped imagery |
 | R7 | Mobile memory ceilings kill the viewer on iOS | Med | High | Budgets CI-enforced from S9; room-at-a-time streaming from S7; device matrix testing every sprint from P2 |
 | R8 | Review economics don't converge (>25% review rate persists) | Med | Margin | M11 instrumented from S13; auto-QA calibration is a first-class task, not a cleanup; pricing model keeps a human-reviewed tier |
 | R9 ⚡ | Instant-engine licence gaps (AnySplat weights unstated; FastGS licence chain possibly Inria-tainted) | Med | Med | Author contact + legal read in S1; fallbacks already identified: DepthSplat (MIT) for feed-forward, techniques ported onto gsplat for fast optimisation |
@@ -320,7 +325,7 @@ Fifth engineer takes D as a dedicated stream from S1 (fixture-driven), pulling s
 
 - No generative completion of unseen content (Phase 4 is unscheduled; requires founders + counsel go, AI-Act Art. 50 marking machinery, and the never-rules).
 - No free-roam navigation; no watertight meshing of splats (SuGaR etc.) — the shell is the mesh.
-- No scraping of portals (CoStar v. Zillow is the cautionary tale; partnership is the channel).
+- ~~No scraping of portals.~~ **Superseded 19 Aug 2026 by founder decision** (DATA-SOURCES §3.9): we build our own Rightmove/Zoopla scraper for acquisition. Scope fence becomes narrower but still binding — **scraped imagery is for R&D, the golden set and demos only**; it does not go into training corpora for shipped models, and no customer-facing 3D output derives from it without a rights grant. Provenance tagging enforces the split.
 - No panorama capture path (the whole point is photos-that-already-exist; panoramas would be a different product with a mature competitive field).
 - No self-hosted VLM in v1 (API with an abstraction seam; revisit at volume).
 - No displayed measurements other than the advertised legal figure.

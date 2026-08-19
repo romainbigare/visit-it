@@ -55,7 +55,7 @@ Ten stages (0–9), exactly as in report §5. Non-negotiable properties:
 
 | Stage | Artifact | Key contents |
 |-------|----------|--------------|
-| 0 Triage | `manifest.json` | per-image: `{type, room_label, quality_flags[], phash, confidence}`; listing: `{advertised_area_m2, room_count, floor, source_text_refs}` |
+| 0 Triage | `manifest.json` | per-image: `{type, room_label, quality_flags[], phash, confidence, provenance}` where `provenance ∈ {scraped, partner_granted, self_captured}` — drives what the asset may be used for (see `docs/DATA-SOURCES.md` §3.9); listing: `{advertised_area_m2, room_count, floor, source_text_refs}` |
 | 1 Conditioning | `conditioned/` + `calibration.json` | undistorted images, per-image intrinsics (GeoCalib + pointmap-model estimate + agreement score), photometric alignment report |
 | 2 Grouping | `groups.json` | room groups, pairwise match scores, VLM adjudication log, singletons |
 | 3 Per-room geometry | `rooms/<id>/geometry.npz` + `poses.json` | camera poses, point maps, per-point confidence, engine used (`mapanything\|monocular\|colmap`) |
