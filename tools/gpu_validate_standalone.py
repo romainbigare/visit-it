@@ -98,14 +98,20 @@ def fetch_media(golden_json: Path, media_root: Path, groups: list[dict],
         rel, url = item
         dest = media_root.parent / rel
         dest.parent.mkdir(parents=True, exist_ok=True)
-        try:
-            r = sess.get(url, timeout=60)
-            r.raise_for_status()
-            dest.write_bytes(r.content)
-            return True
-        except Exception as e:  # noqa: BLE001
-            print(f"    failed {rel}: {e}")
-            return False
+        # Retry: a single dropped connection previously cost a whole group,
+        # which then failed as "missing images" long after the fetch stage.
+        for attempt in range(3):
+            try:
+                r = sess.get(url, timeout=60)
+                r.raise_for_status()
+                dest.write_bytes(r.content)
+                return True
+            except Exception as e:  # noqa: BLE001
+                if attempt == 2:
+                    print(f"    failed {rel}: {e}")
+                    return False
+                time.sleep(1.5 * (attempt + 1))
+        return False
 
     with ThreadPoolExecutor(workers) as ex:
         ok = sum(ex.map(one, todo))
@@ -337,7 +343,11 @@ def stage_gsplat(groups, media_parent: Path, out: Path, max_groups: int, iters: 
         scales = torch.nn.Parameter(torch.full((N, 3), float(np.log(s0)), device=dev))
         quats = torch.nn.Parameter(torch.tensor([[1.0, 0, 0, 0]], device=dev).repeat(N, 1))
         # Opaque-ish init: 0.1 plus oversized blobs washed the image out.
-        opac = torch.nn.Parameter(torch.full((N,), 0.5, device=dev).logit())
+        # 0.5 saturates alpha in the first few splats along a ray, so a view
+        # whose own surface sits behind another view's slightly misaligned
+        # points renders those instead. Start semi-transparent and let it
+        # learn upward where the evidence supports it.
+        opac = torch.nn.Parameter(torch.full((N,), 0.25, device=dev).logit())
         colors = torch.nn.Parameter(torch.tensor(init_rgb, dtype=torch.float32, device=dev))
 
         opt = torch.optim.Adam([{"params": [means], "lr": 1.6e-4},
@@ -395,6 +405,20 @@ def stage_gsplat(groups, media_parent: Path, out: Path, max_groups: int, iters: 
               f"train {psnr_tr:5.2f} / held {psnr:5.2f} dB  "
               f"contrast {std_render:.3f} vs {std_gt:.3f}"
               f"{'  <-- FLAT' if std_render < 0.25 * std_gt else ''}", flush=True)
+
+    ok = [r for r in rows if "error" not in r]
+    res = {"stage": "8-gsplat", "gpu": _gpu_name(), "n_scenes": len(rows), "n_ok": len(ok),
+           "median_heldout_psnr_db": (round(float(np.median([r["heldout_psnr_db"] for r in ok])), 2)
+                                      if ok else None),
+           "median_trainview_psnr_db": (round(float(np.median([r["trainview_psnr_db"] for r in ok])), 2)
+                                        if ok else None),
+           "n_flat": sum(1 for r in ok if r.get("looks_flat")),
+           "median_train_seconds": (round(float(np.median([r["train_seconds"] for r in ok])), 1)
+                                    if ok else None),
+           "results": rows}
+    (out / "results_gsplat.json").write_text(json.dumps(res, indent=2))
+    return res
+
 
 def stage_moge(groups, media_parent: Path, out: Path, n_images: int) -> dict:
     import numpy as np
@@ -486,6 +510,8 @@ def main(argv=None) -> int:
 
     print("\n==== SUMMARY ====")
     for k, v in summary.items():
+        if not isinstance(v, dict):
+            print(f"{k}: (stage did not return a result)"); continue
         print(f"{k}: " + json.dumps({kk: vv for kk, vv in v.items() if kk != "results"}))
     print(f"\nresults in {a.out}  (send the results_*.json and splat_*.png back)")
     return 0
