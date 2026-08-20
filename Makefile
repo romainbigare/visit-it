@@ -57,3 +57,15 @@ test:
 
 clean-cache:
 	rm -rf $(VISITIT_DATA_HOME)/_archives
+
+# --- GPU validation on Modal (module mode is required: relative imports) ---
+.PHONY: gpu-upload gpu-deploy gpu-all
+gpu-upload:
+	$(PY) -m eval.models.grouping
+	modal run -m modal_app.gpu_validate::upload
+
+gpu-deploy:
+	modal deploy -m modal_app.web
+
+gpu-all:
+	modal run -m modal_app.gpu_validate::run_all

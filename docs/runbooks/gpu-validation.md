@@ -6,6 +6,10 @@ HTTPS to `api.modal.com` returns 200; the gRPC channel cannot be established, an
 the proxy documentation lists gRPC as unsupported). Everything below is written
 and structure-checked; it just needs to be fired from a normal network.
 
+> **Note:** these modules use relative imports, so Modal must be invoked in
+> **module mode** (`-m modal_app.web`, not `modal_app/web.py`) from the repo
+> root. Script mode fails with `InvalidError: ... relative imports`.
+
 ## The split: one gRPC step for you, everything else over HTTP
 
 Modal has **no REST control plane** — `modal deploy` can only be done with the
@@ -34,8 +38,8 @@ modal secret create visit-it-gpu-token GPU_API_TOKEN=<that string>
 
 cd visit-it
 python -m eval.models.grouping                        # CPU, instant
-modal run modal_app/gpu_validate.py::upload           # push the golden set
-modal deploy modal_app/web.py                         # prints the public URL
+modal run -m modal_app.gpu_validate::upload           # push the golden set
+modal deploy -m modal_app.web                         # prints the public URL
 ```
 
 Then send the agent the URL and the token. It sets:
@@ -68,7 +72,7 @@ that could run anything on your GPU account would be a standing liability.
 ```bash
 cd visit-it
 python -m eval.models.grouping          # writes eval/results/room_groups.json (CPU, instant)
-modal run modal_app/gpu_validate.py::run_all
+modal run -m modal_app.gpu_validate::run_all
 ```
 
 That uploads the golden set, runs all three GPU stages and pulls the results
@@ -78,18 +82,18 @@ back into `eval/results/`. Expect **10–20 minutes** and **$1–3** on an L40S
 ## Run stages individually
 
 ```bash
-modal run modal_app/gpu_validate.py::upload          # push images + groups to the volume
-modal run modal_app/gpu_validate.py::inventory       # confirm what landed
-modal run modal_app/gpu_validate.py::moge_speed      # GPU timing baseline
-modal run modal_app/gpu_validate.py::mapanything     # stage 3, multi-view
-modal run modal_app/gpu_validate.py::gsplat_train    # stage 8, appearance
-modal run modal_app/gpu_validate.py::fetch_results   # pull JSON back down
+modal run -m modal_app.gpu_validate::upload          # push images + groups to the volume
+modal run -m modal_app.gpu_validate::inventory       # confirm what landed
+modal run -m modal_app.gpu_validate::moge_speed      # GPU timing baseline
+modal run -m modal_app.gpu_validate::mapanything     # stage 3, multi-view
+modal run -m modal_app.gpu_validate::gsplat_train    # stage 8, appearance
+modal run -m modal_app.gpu_validate::fetch_results   # pull JSON back down
 ```
 
 `gsplat_train` depends on `mapanything` having run — it starts from the point
 clouds and poses that stage writes into the volume.
 
-Pick a different GPU with `VISITIT_GPU=A100 modal run ...` (default `L40S`).
+Pick a different GPU with `VISITIT_GPU=A100 modal run -m ...` (default `L40S`).
 
 ## What each stage answers
 
