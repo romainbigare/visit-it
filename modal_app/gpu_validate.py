@@ -189,10 +189,15 @@ def mapanything(max_groups: int = 12) -> dict:
         baseline = float(np.linalg.norm(cams[:, None] - cams[None], axis=-1).max())
         extent = (good.max(0) - good.min(0)).tolist() if len(good) else None
 
-        # Save the point cloud + poses so gsplat can start from them.
+        # Per-view grid resolution of the prediction. gsplat must render at
+        # exactly this size or the intrinsics above do not apply.
+        shapes = np.array([list(p["pts3d"].shape[-3:-1]) for p in preds], dtype=np.int32)
+        per_view_pts = np.stack([p["pts3d"][0].float().cpu().numpy() for p in preds])
+
         np.savez_compressed(root / f"recon_{g['group_id']}.npz",
                             points=pts.astype(np.float32), conf=conf.astype(np.float32),
-                            poses=poses.astype(np.float32), Ks=Ks.astype(np.float32))
+                            poses=poses.astype(np.float32), Ks=Ks.astype(np.float32),
+                            shapes=shapes, per_view_pts=per_view_pts.astype(np.float32))
         row = {"group_id": g["group_id"], "room_type": g["room_type"],
                "n_views": len(paths), "seconds": round(dt, 2),
                "n_points": int(len(pts)), "n_points_conf": int(keep.sum()),
@@ -218,7 +223,7 @@ def mapanything(max_groups: int = 12) -> dict:
 @app.function(image=full_image, gpu=GPU_TYPE,
               volumes={DATA_DIR: data_volume, CACHE_DIR: model_cache},
               timeout=3600)
-def gsplat_train(max_groups: int = 4, iters: int = 1500, max_side: int = 512) -> dict:
+def gsplat_train(max_groups: int = 4, iters: int = 1500) -> dict:
     """Train a Gaussian splat per room, initialised from MapAnything (AD-6).
 
     This is the real stage 3 -> stage 8 chain: no COLMAP anywhere, poses come
@@ -243,20 +248,22 @@ def gsplat_train(max_groups: int = 4, iters: int = 1500, max_side: int = 512) ->
         poses, Ks = d["poses"], d["Ks"]
         pts, conf = d["points"], d["conf"]
 
+        # Render at MapAnything's own output resolution so its intrinsics apply
+        # unchanged - resampling the images to some other size would silently
+        # invalidate Ks.
+        H, W = (int(d["shapes"][0][0]), int(d["shapes"][0][1])) if "shapes" in d else (None, None)
+        if H is None:
+            rows.append({"group_id": g["group_id"],
+                         "error": "npz predates the shapes fix; re-run mapanything"})
+            continue
         imgs = []
         for p in g["paths"]:
-            im = Image.open(root / p).convert("RGB")
-            im.thumbnail((max_side, max_side))
+            im = Image.open(root / p).convert("RGB").resize((W, H), Image.LANCZOS)
             imgs.append(torch.tensor(np.array(im) / 255.0, dtype=torch.float32))
-        H, W = imgs[0].shape[:2]
         gt = torch.stack(imgs).to(dev)
 
-        # Rescale intrinsics to the working resolution.
         n_views = min(len(imgs), len(poses))
-        Ks_t = torch.tensor(Ks[:n_views], dtype=torch.float32, device=dev).clone()
-        # MapAnything K is for its own processing size; normalise via the pts3d grid.
-        sx = W / (2 * Ks_t[:, 0, 2]); sy = H / (2 * Ks_t[:, 1, 2])
-        Ks_t[:, 0, :] *= sx[:, None]; Ks_t[:, 1, :] *= sy[:, None]
+        Ks_t = torch.tensor(Ks[:n_views], dtype=torch.float32, device=dev)
 
         c2w = torch.tensor(poses[:n_views], dtype=torch.float32, device=dev)
         viewmats = torch.inverse(c2w)
