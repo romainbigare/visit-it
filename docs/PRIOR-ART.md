@@ -21,8 +21,8 @@ The trajectory runs Rent3D (2015) → Plan2Scene / Rent3D++ (2021) → and then 
 The pivot had four causes, and it is worth being precise about which of them are about *the research* and which about *the problem*:
 
 1. **Annotation cost.** Hand-annotating uncontrolled photos with 3D ground truth does not scale. Synthetic data (Structured3D) gets dense ground truth for free; controlled capture (ZInD) gets it cheaply. → *A research-economics problem, not a task problem.*
-2. **Licensing.** Listing photos and plans are copyrighted and hard to license at research scale — the same wall documented in [`DATA-SOURCES.md`](DATA-SOURCES.md) §3.7. Academics could not build a big corpus legally. → *A data-access problem, and one a company with agency relationships solves differently than a lab does.*
-3. **Deep learning's appetite.** By ~2018 methods needed 1,000s of scenes minimum; 215 was no longer a viable training set, so the dataset aged out even as the problem stayed interesting. → *Now largely moot: we train almost nothing from scratch. MapAnything, MoGe-2 and the splatting stack are pretrained foundation models; our only trained components are the plan vectoriser and the triage classifier, both of which have commercially-licensed corpora available (ResPlan, Swiss Dwellings).*
+2. **Data access.** Portals actively resist bulk collection, and a lab publishing a dataset has to distribute it, which is a much higher bar than collecting one for internal use. Academics could not build a big corpus and release it. → *A distribution problem more than a collection problem — it does not bind a corpus nobody publishes.*
+3. **Deep learning's appetite.** By ~2018 methods needed 1,000s of scenes minimum; 215 was no longer a viable training set, so the dataset aged out even as the problem stayed interesting. → *Now largely moot: we train almost nothing from scratch. MapAnything, MoGe-2 and the splatting stack are pretrained foundation models; our only trained components are the plan vectoriser and the triage classifier, and large corpora exist for both (ResPlan's 17K, Swiss Dwellings' 42K).*
 4. **The enabling technology did not exist.** Pointmap models (2024–25) and Gaussian splatting (2023–) are what make sparse, unposed, wide-baseline indoor reconstruction tractable at all.
 
 **None of the four is "the task turned out to be impossible."** Three are dataset-construction problems that a company solves differently from a lab, and the fourth has been fixed by the field itself in the last two years.
@@ -46,9 +46,9 @@ The reconciling detail is timing. Zillow's product decisions were made in 2019�
 
 The floor-plan-localisation thread did continue, just on different data:
 
-- **LASER** (Zillow, CVPR 2022) — Monte Carlo localisation of an image within a floor map; reported 97% recall at 5 cm median error **on ZInD**, i.e. on controlled unfurnished panoramas. Licence CC-BY-NC-ND (research only for us).
-- **F3Loc** (CVPR 2024) — probabilistic filtering over the same problem; MIT-licensed.
-- **C3Po** (NeurIPS 2025) — pixel-level photo↔floor-plan correspondence, 90K pairs, reports 34% error reduction over prior methods. **CC BY 4.0, commercially usable** — the most directly useful successor for our stage 6.
+- **LASER** (Zillow, CVPR 2022) — Monte Carlo localisation of an image within a floor map; reported 97% recall at 5 cm median error **on ZInD**, i.e. on controlled unfurnished panoramas — a much easier regime than furnished agent photography.
+- **F3Loc** (CVPR 2024) — probabilistic filtering over the same problem.
+- **C3Po** (NeurIPS 2025) — pixel-level photo↔floor-plan correspondence, 90K pairs, reports 34% error reduction over prior methods. The most directly useful successor for our stage 6, and openly downloadable.
 
 These solve *localisation within a plan*, which is a strict sub-problem of our stage 6 (assembly). They are worth adopting rather than reinventing.
 
@@ -66,7 +66,7 @@ It resembles our project in shape, but it is solving roughly **stages 4 and part
 
 **Results.** Pixel-wise layout classification error on the test split: **13.88%** with no floor-plan prior → **11.79%** with the aspect-ratio prior → **11.73%** adding window alignment. Splits were 100 train / 30 val / 85 test apartments.
 
-**Dataset provenance, worth noting given our own decision:** the plans and photos were **crawled from a London rental listings website**. The canonical academic dataset in this space was built by scraping a UK portal — which is context for [`DATA-SOURCES.md`](DATA-SOURCES.md) §3.9, though a 2015 academic crawl and a 2026 commercial product are different propositions legally.
+**Dataset provenance, worth noting given our own decision:** the plans and photos were **crawled from a London rental listings website**. The canonical academic dataset in this space was built by scraping a UK portal — the same route we took in [`DATA-SOURCES.md`](DATA-SOURCES.md) §3.6, and a small validation that it is the practical way to get this data.
 
 ### Side-by-side with our pipeline
 
@@ -79,7 +79,7 @@ It resembles our project in shape, but it is solving roughly **stages 4 and part
 | 4 Layout | ✅ Their core contribution — cuboid layout + camera pose | Ours must handle non-rectangular (haussmannien) rooms; theirs is Manhattan-only |
 | 5 Plan channel | Plans hand-annotated | We must vectorise and OCR automatically |
 | 6 Assembly | Partly — localises a photo to a wall, but arrangement comes free from the given correspondence | We solve the assignment they were handed |
-| 7 Metric scale | Plans carried annotated real-world scale | We solve scale globally against Carrez/door/ceiling priors |
+| 7 Metric scale | Plans carried annotated real-world scale | We solve scale globally against stated-area / plan-dimension / door / ceiling priors |
 | 8 Appearance | **None** | Splatting did not exist |
 | 9 Delivery | None | — |
 
@@ -99,8 +99,8 @@ Sizing it against our three data needs ([`DATA-SOURCES.md`](DATA-SOURCES.md) §1
 
 1. **Age.** 2015 listing photography predates the HDR/flambient and ultra-wide conventions that the feasibility report identifies as actively hostile to reconstruction (§3, "estate agent photography is adversarial"). A pipeline tuned on Rent3D would be tuned on an easier input distribution than it will meet in production. **Mitigation:** use it as a *floor*, never as the primary benchmark.
 2. **Rental, not sale.** Rental shoots are typically thinner and lower-effort than sale shoots — fewer photos per room, which puts us in the hardest part of the view-count curve, and often no floor plan at all in the modern market.
-3. **Ground truth is agent-drawn plans, not measurements.** This is the important one. Rent3D can validate *layout shape and arrangement* (M3, M4, M5), but **cannot validate metric accuracy** (M1, M2) to the ±3–5% we intend to claim, because its own scale reference carries unquantified error. Our laser-measured and Matterport-scanned subset remains mandatory.
-4. **Licence unknown** — not stated on the project page. One email to the authors, in week 1.
+3. **Its reference is agent-drawn plans, not measurements.** Rent3D validates *layout shape and arrangement* (M3, M4, M5) well, and *metric* agreement only to whatever accuracy its own plans carry. That is the same standard we hold ourselves to (ROADMAP §0b: self-consistency against the plan, not absolute accuracy), so it is a fair reference for us rather than a limitation — but nobody should read a Rent3D number as a measured error.
+4. **The download is dead** — 404 from both Toronto hostnames, confirmed twice on 20 Aug 2026. `pipeline/datasets/fetch.py` prints a ready-to-send author enquiry as its fallback.
 
 **Recommendation.** Pursue it, at a cost of one email, and if granted use it as an **early regression and smoke-test set** that lets stages 4–6 be developed before our own golden set is fully assembled — a genuine schedule win in P0/P1. It does **not** replace the golden set, and it must not become the benchmark we optimise against. Its annotations (1,312 rooms, 6,628 walls, 1,923 doors, 1,268 windows) are the real prize; the photos are the weakest part.
 
@@ -114,7 +114,7 @@ Sizing it against our three data needs ([`DATA-SOURCES.md`](DATA-SOURCES.md) §1
 
 **The critical divergence.** Plan2Scene's answer to unobserved surfaces is to **infer a plausible texture** from room type and neighbouring rooms. Their own numbers show the cost: colour fidelity degrades from 0.431 on observed surfaces to 0.653 on unobserved — roughly 51% worse — and overall FID sits around 196. More importantly than the numbers: **the output is a plausible-looking apartment, not the actual apartment.** Furniture is generic CAD stand-ins rather than the real contents. For an academic scene-synthesis result that is entirely legitimate. For property marketing it is the wrong side of the line the feasibility report draws (§4.10) and that regulators are moving against (§10, and California AB 723): *never generate anything that changes the perceived size, layout or condition of the property.*
 
-**And the successors went further in that direction, not ours.** **HouseCrafter** (ICCV 2025) replaces the GNN with a 2D diffusion model generating consistent multi-view RGB-D along the floor plan; the wider 2023–25 line (SemLayoutDiff, MiDiffusion, NeuralField-LDM) is all generative scene *synthesis*. These optimise for **plausibility**; a property product must optimise for **fidelity**. That divergence is, I think, the real reason this research line has not turned into a listing product: the academic reward function and the commercial/legal one point in opposite directions.
+**And the successors went further in that direction, not ours.** **HouseCrafter** (ICCV 2025) replaces the GNN with a 2D diffusion model generating consistent multi-view RGB-D along the floor plan; the wider 2023–25 line (SemLayoutDiff, MiDiffusion, NeuralField-LDM) is all generative scene *synthesis*. These optimise for **plausibility**; a property viewer must optimise for **fidelity** — a generated room that looks lovely and is not the room is worse than no room. That divergence is, I think, the real reason this research line has not turned into a listing product: the academic reward function and the product one point in opposite directions.
 
 **What this means for our design — three concrete confirmations:**
 1. **Our architecture is on the right side of that line** by construction: real Gaussian splats from the real photographs, an architectural shell from the real plan, and unobserved surfaces flat-shaded or texture-extended and *visibly marked* rather than invented. Plan2Scene is the counterfactual showing what we are choosing not to do.
@@ -126,6 +126,6 @@ Sizing it against our three data needs ([`DATA-SOURCES.md`](DATA-SOURCES.md) §1
 ## 7. Summary — answering the original question
 
 - **Is Rent3D the same thing we're building?** No. It is our stages 4 and part of 6, with the hardest parts (which room is this? where does it sit? what does it look like?) either given as input or absent. Plan2Scene extends it to a textured mesh and lands closest to our product, but reaches photorealism by *inventing* it.
-- **Why hasn't it been pushed further?** The stall was about research data economics — annotation cost, copyright, and deep learning's appetite outgrowing 215 apartments — plus the absence of the enabling technology. The field responded by moving to synthetic and controlled-capture data, and commercially everyone (Matterport, Zillow, Giraffe360) chose to control capture instead. **Nobody concluded the task was impossible; they concluded the data was inconvenient.**
-- **Is 215 enough?** For evaluation, yes — four times our golden-set target, with annotations we would otherwise pay for. For training, irrelevant, because we train almost nothing from scratch. The real objections are age (2015 photography is *easier* than 2026 photography), rental-not-sale, and ground truth that cannot validate metric accuracy.
+- **Why hasn't it been pushed further?** The stall was about research data economics — annotation cost, the difficulty of *publishing* a listing-photo corpus, and deep learning's appetite outgrowing 215 apartments — plus the absence of the enabling technology. The field responded by moving to synthetic and controlled-capture data, and commercially everyone (Matterport, Zillow, Giraffe360) chose to control capture instead. **Nobody concluded the task was impossible; they concluded the data was inconvenient.**
+- **Is 215 enough?** For evaluation, yes — four times our golden-set target, with annotations we would otherwise pay for. For training, irrelevant, because we train almost nothing from scratch. The real objections are age (2015 photography is *easier* than 2026 photography), rental-not-sale, and a dead download link.
 - **Action:** one email to the Rent3D authors and one Google Form to the Plan2Scene team, both in week 1. Adopt the Rent3D++ coverage-level evaluation protocol regardless.

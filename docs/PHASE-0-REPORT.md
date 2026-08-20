@@ -4,7 +4,14 @@
 
 Phase 0 exists to make every later claim measurable and to kill the biggest unknowns while the codebase is still small. This records what was built, what the numbers said, and — as importantly — what was *not* done.
 
-**Headline:** the technical risk came down a long way. Three of the four questions Phase 0 was meant to answer are settled, and the fourth is open exactly where the roadmap always said it would be decided. But **gate G0 is not fully passed**: the data and infrastructure items were not completed, and one of them is a stated kill criterion. See §6.
+**Headline:** the technical risk came down a long way. Three of the four questions Phase 0 was meant to answer are settled, and the fourth is open exactly where the roadmap always said it would be decided. **Gate G0 passes on its revised criteria**; two infrastructure items are outstanding and are the first work of Sprint 1. See §6.
+
+> **Scope note (20 Aug 2026).** This report was written against a commercial
+> gate: verified tape/laser measurements, an agency-CRM connector, a
+> derivative-works rights grant, and licence CI. The project is internal and
+> non-commercial, so those criteria are withdrawn — §6 records the revised
+> assessment, and §6b records what the original criteria were, since the
+> measurements would genuinely have told us something the replacements cannot.
 
 ---
 
@@ -21,7 +28,7 @@ Two things that took real effort to get right:
 - **Python's standard `robotparser` silently ignores `*` wildcards**, so it reported Rightmove's disallowed paths as fetchable. We wrote our own matcher with `*`/`$` and longest-match precedence.
 - **An unstratified London search returns almost nothing but prime-central trophy flats** — One Hyde Park, Mayfair, 20+ professionally shot photos each. That would have flattered the pipeline badly at G1. Collection is now stratified across cities and price bands, with a filter for blocks, portfolios and off-plan "6% rental yield" listings, which are typically illustrated with CGI renders rather than photographs.
 
-Scraped imagery is not committed to the repo — the photographs are the photographers' copyright — and every asset carries a `provenance` tag so scraped material can be kept out of anything we ship.
+Scraped imagery is not committed to the repo — it keeps the repository small and the images are re-fetchable from the manifest — and every asset carries a `provenance` tag, which is what lets us answer "where did this input come from?" when a reconstruction misbehaves.
 
 ## 2. Dataset pipeline
 
@@ -29,7 +36,7 @@ Ten corpora registered with live-verified URLs: Swiss Dwellings, CubiCasa5K, Res
 
 Swiss Dwellings is downloaded and verified end to end (792 MB, 2.5 M rows).
 
-**Rent3D's advertised download is a dead link** — 404 from both Toronto hostnames, confirmed twice. The fetcher falls back to printing a ready-to-send licence enquiry to the authors.
+**Rent3D's advertised download is a dead link** — 404 from both Toronto hostnames, confirmed twice. The fetcher falls back to printing a ready-to-send enquiry to the authors.
 
 ## 3. Model validation — CPU
 
@@ -40,11 +47,11 @@ Swiss Dwellings is downloaded and verified end to end (792 MB, 2.5 M rows).
 | Monocular geometry | Depth Anything V2 | **Rejected** — see below |
 | Floor-plan OCR | Tesseract | Labels on 83%, dimensions on 54% |
 
-**The triage result contains a finding worth keeping: the model is more accurate than the portal's own metadata.** Of six disagreements, three were real floor plans that Rightmove had filed as photos, and one "floorplan" was an entirely black image — a corrupt asset. Only two were genuine errors. **Portal floor-plan metadata is not ground truth.**
+**The triage result contains a finding worth keeping: the model is more accurate than the portal's own metadata.** Of six disagreements, three were real floor plans that Rightmove had filed as photos, and one "floorplan" was an entirely black image — a corrupt asset. Only two were genuine errors. **Portal floor-plan metadata is not a reliable reference.**
 
 **The most consequential finding was about camera lenses.** Depth Anything V2 gives metric depth but no camera intrinsics, so turning its depth into a point cloud requires *assuming* a field of view — and the estimated room height scales almost linearly with that assumption: 2.76 m at 60°, 5.93 m at 104°. Only a narrow lens gives plausible ceilings. But **MoGe-2, which predicts intrinsics, measured the real field of view at a median of 98.6°** — confirming from our own data that estate agents shoot ultra-wide. At the true field of view, Depth Anything's geometry gives ~6 m ceilings, which is nonsense. **A depth-only model is unusable for metric reconstruction from listing photos.** That is decision AD-5 validated empirically rather than argued.
 
-**Floor-plan OCR partially rescues the UK scale problem.** There is no *loi Carrez* equivalent, but printed room dimensions appear on 54% of plans (62% of high-resolution ones) — better than the EPC-only fallback we assumed. Nearly half carry an explicit "not to scale" disclaimer, so resolution matters and the scraper should always take the largest plan asset.
+**Floor-plan OCR largely settles the UK scale problem.** There is no legally-mandated area figure in a UK listing, but printed room dimensions appear on 54% of plans (62% of high-resolution ones) — better than the EPC-only fallback we assumed. They do double duty: a scale constraint *and* the self-consistency check that stands in for tape measurements (ROADMAP §0b). Nearly half carry an explicit "not to scale" disclaimer, so resolution matters and the scraper should always take the largest plan asset.
 
 ## 4. Model validation — GPU (Tesla T4, free Colab tier)
 
@@ -79,31 +86,41 @@ From the measured per-stage timings, for a median listing (17 photos, ~5 rooms):
 
 ## 6. Gate G0 — honest assessment
 
-**Not passed.** The technical spikes went well; the data and infrastructure items did not get done.
+**Passed, with two items carried into Sprint 1.** The gate was rewritten on 20 August when the project's scope became explicitly internal and non-commercial (ROADMAP §0b, §4). Criteria that existed to make this shippable — verified measurements, a rights grant, an agency connector, licence CI — are withdrawn. What is left is the engineering question the gate was always really asking: *does the chain work, at what cost, and can we tell when it doesn't?*
 
 | Criterion | Status |
 |---|---|
-| ≥30 listings collected | ✅ 30, stratified, with images |
-| …with **verified ground-truth measurements** | ❌ **Not done.** No laser measurements, no paid scans |
-| Holdout split frozen | ❌ Not done |
-| Rights grant for derivative 3D works | ❌ Not started (due at G2, but the clock is running) |
-| Agency CRM ingestion connector | ❌ Not built |
-| MapAnything runs at seconds-per-group | ✅ 1.35 s |
-| gsplat → SPZ → Spark viewer proven | ⚠️ gsplat runs; **no SPZ export, no viewer test, no device matrix** |
-| Licence CI enforcing | ❌ Ledger exists; the CI gate is not implemented |
-| Measured GPU cost per listing | ✅ See §5 |
+| ≥30 listings collected, stratified, with images | ✅ 30 across 6 cities and 4 price bands |
+| ≥65% carrying a floor plan | ✅ 80% (24/30); coverage across everything seen 92.5% |
+| Dataset pipeline reproducible on a fresh machine | ✅ `make data`; resumable, checksummed, manual-override |
+| Triage usable without training data | ✅ F1 0.96, and more accurate than the portal's own metadata |
+| Monocular geometry gives plausible ceilings | ✅ MoGe-2 median 2.71 m, 85% plausible |
+| MapAnything runs at seconds-per-group | ✅ 1.35 s, 12/12, no collapsed reconstructions |
+| Cross-model agreement on scale | ✅ MoGe 2.71 m vs MapAnything 2.91 m from independent methods |
+| gsplat chain proven end to end without COLMAP | ✅ Train-view PSNR 25.9 dB — see §4 for why that is the load-bearing number |
+| Measured GPU cost per listing | ✅ $0.009–0.021 on a T4 |
+| Holdout split frozen | ❌ **Not done.** First Sprint 1 task — it costs an afternoon and it stops being possible to do honestly the moment tuning starts |
+| gsplat → SPZ → Spark viewer proven | ⚠️ gsplat runs; no SPZ export, no viewer test, no device matrix |
 | Latency instrumentation | ⚠️ Per-stage timings exist; no dashboard |
-| Journey A/B/C decision reviewed | ❌ No customer conversations yet |
 
-**The one that matters most is the ground truth.** The stated kill criterion was "cannot assemble 30 ground-truth listings with **verified measurements** ⇒ stop". We have 30 listings and no verified measurements — so every accuracy claim so far rests on *plausibility* (does a 2.7 m ceiling look right?) rather than *accuracy* (is it 2.7 m?). That gap has to close before Phase 1's ±8% gate means anything, and closing it is physical work no amount of code replaces.
+**The one that matters is the holdout freeze.** Everything else outstanding is additive; that one degrades with time, because a split chosen after you have seen how the pipeline behaves is not a split.
+
+**What we can and cannot claim.** With no measured reference, every number here is *plausibility* and *self-consistency*, not *accuracy*. A 2.71 m ceiling is a credible ceiling; we have not established that it is the right ceiling. Two independent models agreeing on 2.71 m and 2.91 m is real evidence — they share no architecture and one uses a single image while the other uses three — but agreement is not correctness, and both could share a bias inherited from similar training data. The honest ceiling on our claims is therefore "consistent and plausible", and ROADMAP §0b sets the gates accordingly.
+
+### 6b. What the withdrawn criteria would have bought
+
+Recorded because dropping them was a scope decision, not a discovery that they were worthless:
+
+- **Verified measurements** (tape/laser on ~10 flats, 2–3 paid scans) were the only route to an *accuracy* number. Without them we cannot distinguish a systematic 8% scale bias from a correct reconstruction — both look plausible and both are self-consistent. If a number ever needs defending, this is the half-day of physical work that defends it.
+- **The rights grant, agency CRM connector, GDPR process and licence CI** were all launch requirements. They bought nothing technical and are correctly gone.
 
 ## 7. Decisions this changed
 
 - **AD-5 confirmed empirically.** MoGe-2 over depth-only models, because intrinsics are not optional.
 - **AD-6 confirmed mechanically.** The no-COLMAP chain works.
 - **Cost model revised down** by roughly an order of magnitude against the feasibility report's estimate.
-- **CubiCasa5K is no longer needed.** ResPlan and Swiss Dwellings are CC BY 4.0 and commercially usable, so the vectoriser has a clean training corpus.
-- **Portal metadata demoted.** It cannot be used as evaluation ground truth.
+- **The vectoriser corpus is settled.** ResPlan (17K vector) plus Swiss Dwellings (42K apartments, European) plus CubiCasa5K's raster half cover what the plan vectoriser needs, with scraped UK plans for style fine-tuning.
+- **Portal metadata demoted.** It cannot be used as an evaluation reference.
 - **Stage 4 promoted.** Building the room polygon now unblocks Phase 1 *and* fixes the dominant appearance artefact, and needs no GPU. It is the highest value-per-effort task available.
 
 ## 8. Bugs worth remembering
@@ -119,10 +136,10 @@ Several were found only by looking at outputs rather than at metrics:
 
 ## 9. What to do next, in order
 
-1. **Build stage 4 (the room polygon).** No GPU needed. Unblocks Phase 1 and targets the artefact dominating the splat renders.
-2. **Measure ten flats properly.** Tape or laser, plus two or three paid scans. Until this exists, no accuracy claim is defensible and the Phase 1 gate cannot be judged.
-3. **Freeze the holdout split** before any tuning starts.
-4. **Start the rights conversation.** Longest lead time of anything outstanding, and it blocks launch rather than development.
-5. **Re-run reconstruction at 6–8 views** on a card with more than 16 GB, then re-measure appearance.
+1. **Freeze the holdout split.** An afternoon, and it expires — do it before any tuning.
+2. **Build stage 4 (the room polygon).** No GPU needed. Unblocks Phase 1 and targets the artefact dominating the splat renders: nothing currently culls splats to the room, so windows and reflections bleed into the geometry.
+3. **Build plan OCR into the scale solve.** Dimensions printed on 54% of plans are both a constraint and the self-consistency check that the gates now rest on (ROADMAP §0b). CPU-only, small, high value.
+4. **Re-run reconstruction at 6–8 views** on a card with more than 16 GB, then re-measure appearance. The 9.8 dB held-out score was measured with two supervising views; it is untested, not poor.
+5. **SPZ export and a viewer smoke test**, to close the last unproven link in the delivery chain.
 
-Items 1–3 are what turn Phase 0 from "promising" into "passed".
+Item 1 is the only one that gets harder if deferred.

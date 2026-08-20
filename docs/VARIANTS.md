@@ -4,6 +4,16 @@
 
 Cost basis: the feasibility report's §8 figures (L40S/A100-class at ~$1–2/hr rented) plus stage timings from the report; £1 ≈ $1.27. Figures marked **(est.)** are engineering estimates to be replaced by measured numbers in P0 — an evidence appendix at the end tracks verification status. Everything here is COGS (cost of goods sold), not price.
 
+> **Scope note (20 Aug 2026): internal, non-commercial.** The project is built for
+> ourselves and not sold, so the price points below are no longer a business plan.
+> They are kept because they are the clearest way to express a **cost and latency
+> budget**: "instant" means p95 ≤ 10 s at ≤ £0.03 of compute, whoever is or isn't
+> paying. Read the £ columns as budgets, and the "customer" language as shorthand
+> for the usage regime the profile is designed for. Phase 0 measured the real
+> number at **$0.009–0.021 per listing on a T4** — an order of magnitude under
+> this document's estimates, because feed-forward models replaced the per-scene
+> optimisation those estimates assumed.
+
 ---
 
 ## 1. First, the two reframings that change the maths
@@ -52,24 +62,26 @@ Conclusion: **£0.05 is comfortably achievable for compute — but only under th
 | Latency SLO | **p95 ≤ 10 s** (warm) | ≤ 3–5 min, async | ≤ 24 h, incl. human pass |
 | COGS target (at scale) | **≤ £0.02–0.03** | ≤ £0.10–0.15 | £1.0–1.7 |
 | Geometry | MapAnything fan-out per room; MoGe-2 singletons | same | same + COLMAP path where dense |
-| Appearance | Shell + projected textures + **feed-forward splats** — candidate engines, verified: **AnySplat** (MIT code, *unposed*, 2–64 views — weights licence unstated, ledger check pending) and **DepthSplat** (MIT, posed — we have poses from stage 3; 0.6 s/12 views on A100). Falls back to textures-only | + **optimised gsplat** (FastGS-class fast config ≈100 s/scene → ~10–30 s/room, depth-regularised, polygon-culled) | + high-iteration splats, careful texture blending, mirror handling at full strength |
+| Appearance | Shell + projected textures + **feed-forward splats** — candidate engines: **AnySplat** (*unposed*, 2–64 views) and **DepthSplat** (posed — we have poses from stage 3; 0.6 s/12 views on A100). Falls back to textures-only | + **optimised gsplat** (FastGS-class fast config ≈100 s/scene → ~10–30 s/room, depth-regularised, polygon-culled) | + high-iteration splats, careful texture blending, mirror handling at full strength |
 | Triage/adjudication | Fine-tuned SigLIP-class classifiers only | + small fast VLM on low-confidence cases | + frontier VLM adjudication |
 | Human involvement | **None.** Confidence-gated: degrade to shell-only / Tier-B badge, or refuse with a reason | Sampled audit (2–5%), non-blocking | Review console pass on every listing |
-| Quality posture | Honest and legible; softer splats acceptable; refusal is a feature | The G2 "beats the gallery" bar | Guaranteed arrangement, agency-branded |
+| Quality posture | Honest and legible; softer splats acceptable; refusal is a feature | The G2 "beats the gallery" bar | Guaranteed arrangement, full fidelity |
 | Failure mode | Visible degradation, never silent wrongness | flagged + queued | human-corrected |
 
 The `instant` profile's output is a strict subset of `standard`'s stages with cheaper bindings — so a listing analysed instantly can be **upgraded in place** (standard splats arrive 3 minutes later; the viewer hot-swaps them). That "instant result, quality follows" pattern is the best of both and costs nothing extra architecturally: same DAG, second pass on stages 8–9 only.
 
-## 3. Price-point variants (business shapes these profiles support)
+## 3. Price-point variants (the usage shapes these profiles support)
+
+*Retained as cost budgets, not as a commercial plan — see the scope note.*
 
 | Variant | Profile | Price point | Margin logic | Notes |
 |---|---|---|---|---|
 | **V1 — Portal/API at scale** | Instant (+background upgrade to Standard) | **£0.03–0.10 per unique listing**; cache hits free; or per-1,000-views | COGS £0.02–0.05 blended ⇒ thin per-unit, volume business; the user's stated target lives here | Needs sustained volume for warm-pool utilisation; contract minimums solve that |
-| **V2 — Agency self-serve** | Standard | **£0.50–1.50 per listing** (or bundles: e.g. £99/mo for 100) | COGS ≤£0.15 ⇒ 80%+ gross margin at modest volume | The default wedge; matches the committed roadmap |
+| **V2 — Self-serve, listing at a time** | Standard | **£0.50–1.50 per listing** | COGS ≤£0.15 | The default shape; matches the committed roadmap |
 | **V3 — Premium marketing** | Premium | **£5–20 per listing** | COGS ~£1.1–1.7 (review-dominated) ⇒ 70–90% margin | Reference points: a Matterport shoot is £100–300; virtual staging £15–30/photo. Easy value story |
-| **V4 — Consumer one-off** | Standard (async ~2–3 min) | **£0.99–2.99 per listing** | Impulse price, COGS ≤£0.15 | Buyer pastes a listing they're viewing. ⚠️ input-rights question (user-supplied images of someone else's listing) — counsel before launch; V1–V3 use partner-licensed inputs |
+| **V4 — One-off, paste a URL** | Standard (async ~2–3 min) | **£0.99–2.99 per listing** | COGS ≤£0.15 | Paste a listing you're looking at and get a walkthrough. The most likely shape for our own use |
 
-These are not mutually exclusive — they are one pipeline sold three ways, and V2 revenue funds the utilisation that makes V1's price point real.
+These are not mutually exclusive — they are one pipeline used four ways, and the cheap-at-volume case is what forces the engineering discipline the expensive one can skip.
 
 ---
 
@@ -93,7 +105,7 @@ Build the 5–10 s path from day one; optimised splatting waits.
 
 - Instant profile is retrofitted in P3+ (engine swaps + serving work: warm pools, classifier triage, fan-out).
 - **Timeline: standard GA ~week 30; instant ~week 36–38.**
-- **Choose when:** the first customer is an agency and the demo must dazzle.
+- **Choose when:** the first thing that has to work is a beautiful demo.
 - **Risks:** hot-path retrofit late (sync serving, no-VLM triage, per-stage latency budgets touch every stage after the fact — the classic "we'll optimise later" trap AD-17 exists to prevent); the £0.05 market stays unserved for 9 months.
 
 ### Journey C — Twin-track profiles ★ recommended
@@ -109,13 +121,13 @@ One DAG, both bindings, latency as a first-class metric from S1. Concretely, aga
 
 ### Decision table
 
-| If the first paying customer is… | …take | First revenue | Both profiles live |
+| If the first thing that must work is… | …take | First usable output | Both profiles live |
 |---|---|---|---|
-| A portal / high-volume API buyer | Journey A | wk 20 (instant) | wk 30 |
-| A single agency wanting beautiful tours | Journey B | wk 30 (standard) | wk 36–38 |
+| High-volume, low-cost throughput | Journey A | wk 20 (instant) | wk 30 |
+| One beautiful tour, quality over throughput | Journey B | wk 30 (standard) | wk 36–38 |
 | Unknown / both plausible | **Journey C** | wk 22–24 (instant shell+FF) | **wk 32** |
 
-The decision is commercially led: **pick the journey when the first customer conversation lands (P0 exit at the latest)** — G0 already forces the partner question, so the information arrives exactly when the fork must be chosen. Until then, Journey C's P0/P1 deltas (latency instrumentation, feed-forward spike, SLO criteria) are cheap and keep all three journeys open — they are adopted into the plan **now**.
+**Journey C is adopted.** Its P0/P1 deltas (latency instrumentation, the feed-forward spike, SLO criteria) are cheap, keep all three journeys open, and the twin-track discipline is architectural — near-free to impose early, expensive to retrofit. Phase 0's measured $0.009–0.021 per listing strengthens the case: the instant profile's cost budget is already met on a T4, so the remaining question is purely latency and quality, not economics.
 
 ---
 
@@ -147,18 +159,19 @@ Implication check: instant-profile GPU budget of ~15–30 GPU-s costs $0.010–0
 
 ### Feed-forward splatting & fast optimisation
 
-| Model | Speed (verified) | Views / posing | Licence | Fit |
+| Model | Speed | Views / posing | Availability | Fit |
 |---|---|---|---|---|
-| **AnySplat** (SIGGRAPH Asia 2025) | "real-time" class; exact s/scene unpublished — P0 spike measures | 2–64, **unposed** | Code MIT; **weights licence unstated on HF** | Prime instant-engine candidate, pending weights-licence check |
-| **DepthSplat** (CVPR 2025) | **0.6 s for 12 views @512×960 on A100** | posed (we have stage-3 poses) | MIT | Strong instant-engine candidate |
-| MVSplat | ~22 fps claim | sparse, posed | paper CC-BY; code licence to confirm | Candidate |
-| pixelSplat / latentSplat | 0.1 s encode / <100 ms | 2, posed | MIT / MIT | Pairs only — partial coverage |
-| GS-LRM (Adobe) | 0.23 s on A100 | 2–4 posed | **Adobe Research License** (no official open release) | Ruled out |
-| Long-LRM / ++ | 1 s / 32 views; 5 s / 64 views (A100) | posed | unclear / unofficial reimpl. | Watch |
-| MV-DUSt3R+ (Meta) | 0.89–1.54 s (12–20 views) | **unposed** | CC-BY-NC-4.0 | Research only |
-| PreF3R | 20 fps incremental (H100) | unposed sequences | unstated | Watch |
-| **FastGS** (per-scene opt.) | **~100 s/scene**, 3.3–15× vs vanilla 3DGS | n/a | "MIT" but says it must adhere to 3DGS/Taming/Speedy-Splat licences — **legal check required** (possible Inria taint) | Standard-profile candidate, conditional |
-| Taming-3DGS (per-scene opt.) | 7–13 min on A100 | n/a | unstated | Comparison point |
-| MapAnything | GPU per-pass time **not published** — P0 spike measures (only a CPU figure found) | 1–2000, unposed | Apache (code + `-apache` weights) | Committed engine; timing assumption must be validated in S1 |
+| **AnySplat** (SIGGRAPH Asia 2025) | "real-time" class; exact s/scene unpublished — spike measures | 2–64, **unposed** | Open | Prime instant-engine candidate |
+| **DepthSplat** (CVPR 2025) | **0.6 s for 12 views @512×960 on A100** | posed (we have stage-3 poses) | Open | Strong instant-engine candidate |
+| MVSplat | ~22 fps claim | sparse, posed | Open | Candidate |
+| pixelSplat / latentSplat | 0.1 s encode / <100 ms | 2, posed | Open | Pairs only — partial coverage |
+| GS-LRM (Adobe) | 0.23 s on A100 | 2–4 posed | **No official open release** | Ruled out on availability |
+| Long-LRM / ++ | 1 s / 32 views; 5 s / 64 views (A100) | posed | Unofficial reimplementations only | Watch |
+| MV-DUSt3R+ (Meta) | 0.89–1.54 s (12–20 views) | **unposed** | Open | Candidate |
+| PreF3R | 20 fps incremental (H100) | unposed sequences | Open | Watch |
+| **FastGS** (per-scene opt.) | **~100 s/scene**, 3.3–15× vs vanilla 3DGS | n/a | Open | Standard-profile candidate |
+| Taming-3DGS (per-scene opt.) | 7–13 min on A100 | n/a | Open | Comparison point |
+| **gsplat** (per-scene opt.) | **10.4 s/room measured** at 1500 iters on a T4, once initialisation was fixed | n/a | Open | **In use.** The 143 s figure before the nearest-neighbour scale fix is what a bad initialisation costs |
+| MapAnything | **1.35 s per 3-view group measured on a T4** | 1–2000, unposed | Open (`-apache` checkpoint) | Committed engine; timing now verified, not assumed |
 
-All rows above must clear `docs/LICENSING.md` (rows added there) before an engine choice is final; the two open items that could move the plan are AnySplat's weights licence and FastGS's licence chain.
+Availability for all rows is tracked in `docs/LICENSING.md`. The open items are empirical, not administrative: AnySplat's real per-scene time, and whether feed-forward output holds up against optimised gsplat once stage 4 culls it.

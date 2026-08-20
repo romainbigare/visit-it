@@ -41,7 +41,7 @@ Zero-shot SigLIP over all 553 images, scored against the portal's own asset labe
 
 After adjudication, **recall is 1.000 — not one real floor plan was missed** in 553 images, at 177 ms/image on CPU.
 
-Two consequences for the roadmap. First, this stage is done: it is cheap, accurate and needs no training data. Second, **portal floor-plan metadata cannot be used as ground truth** — 3 of 27 real plans (11%) were mis-filed, so our true plan coverage is slightly *higher* than the 92.5% measured earlier from the portal's own `numberOfFloorplans` field.
+Two consequences for the roadmap. First, this stage is done: it is cheap, accurate and needs no training data. Second, **portal floor-plan metadata cannot be used as a reference** — 3 of 27 real plans (11%) were mis-filed, so our true plan coverage is slightly *higher* than the 92.5% measured earlier from the portal's own `numberOfFloorplans` field.
 
 Room-type classification produced a plausible spread over 439 interior photos — bedroom 104, living_room 94, bathroom 66, hallway 47, kitchen 45 — but with no labels there is no honest accuracy figure. Hand-labelling ~200 images is a half-day task and should happen in Sprint 2.
 
@@ -97,7 +97,7 @@ Tesseract over the 24 real UK plans, at 0.48 s each:
 
 Two findings. **Good:** room labels come through on 83% of plans, which is what stage 6 actually needs to match photos to rooms. **Less good:** dimensions appear on only 54% of plans, and nearly half carry an explicit "not to scale / approximate" disclaimer.
 
-This partially rescues the UK scale problem flagged in `docs/DATA-SOURCES.md` §5. There is no loi Carrez, but printed room dimensions give a direct anchor on roughly **62% of high-resolution plans** — better than the EPC-only fallback assumed. Resolution is the limiting factor, so the scraper should always fetch the largest available plan asset.
+This largely settles the UK scale problem flagged in `docs/DATA-SOURCES.md` §5. There is no legally-mandated area figure, but printed room dimensions give a direct anchor on roughly **62% of high-resolution plans** — better than the EPC-only fallback assumed, and they double as the self-consistency check that replaces tape measurements (`ROADMAP.md` §0b). Resolution is the limiting factor, so the scraper should always fetch the largest available plan asset.
 
 ---
 
