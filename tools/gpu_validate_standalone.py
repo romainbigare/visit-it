@@ -114,51 +114,137 @@ def fetch_media(golden_json: Path, media_root: Path, groups: list[dict],
 
 
 # ------------------------------------------------------------------ stages
-def stage_mapanything(groups, media_parent: Path, out: Path, max_groups: int) -> dict:
+def _amp_dtype() -> str:
+    """T4/V100 (compute capability < 8.0) have no native bf16 - use fp16 there."""
+    import torch
+    major = torch.cuda.get_device_capability()[0]
+    return "bf16" if major >= 8 else "fp16"
+
+
+def _vram_gb() -> float:
+    import torch
+    return torch.cuda.get_device_properties(0).total_memory / 1e9
+
+
+def _auto_max_views(explicit: int | None) -> int:
+    """MapAnything's backbone is a ViT-g; 8 views at full size OOMs a 16 GB T4.
+
+    Scale the view count to the card rather than failing on every group.
+    """
+    if explicit:
+        return explicit
+    gb = _vram_gb()
+    return 3 if gb < 20 else (6 if gb < 40 else 8)
+
+
+def _pick(d: dict, *names, required: bool = True):
+    """MapAnything's output key names are not stable across versions, and an
+    earlier run died on a hard-coded 'confidence'. Try the known aliases and
+    fail with the actual keys listed rather than a bare KeyError."""
+    for n in names:
+        if n in d:
+            return d[n]
+    if required:
+        raise KeyError(f"none of {names} in prediction; available keys: {sorted(d)}")
+    return None
+
+
+def _resized_copies(paths: list[str], max_side: int, tmp: Path) -> list[str]:
+    """Shrink inputs before load_images. Memory scales with pixel count, and
+    listing photos are far larger than the model needs."""
+    from PIL import Image
+    tmp.mkdir(parents=True, exist_ok=True)
+    out = []
+    for i, p in enumerate(paths):
+        im = Image.open(p).convert("RGB")
+        im.thumbnail((max_side, max_side), Image.LANCZOS)
+        q = tmp / f"v{i:02d}.jpg"
+        im.save(q, quality=92)
+        out.append(str(q))
+    return out
+
+
+def stage_mapanything(groups, media_parent: Path, out: Path, max_groups: int,
+                      max_views: int | None = None, max_side: int = 384) -> dict:
+    import gc
+    import tempfile
     import numpy as np
     import torch
     from mapanything.models import MapAnything
     from mapanything.utils.image import load_images
 
     dev = "cuda"
+    n_views_cap = _auto_max_views(max_views)
+    dtype = _amp_dtype()
+    print(f"  VRAM {_vram_gb():.1f} GB -> max {n_views_cap} views/group, "
+          f"{max_side}px, amp {dtype}", flush=True)
+
     model = MapAnything.from_pretrained("facebook/map-anything-apache").to(dev).eval()
-    rows = []
+    rows, logged_keys = [], False
     for i, g in enumerate(groups[:max_groups], 1):
-        paths = [str(media_parent / p) for p in g["paths"]]
+        paths = [str(media_parent / p) for p in g["paths"]][:n_views_cap]
         if not all(Path(p).exists() for p in paths):
             rows.append({"group_id": g["group_id"], "error": "missing images"}); continue
         try:
-            views = load_images(paths)
-            torch.cuda.synchronize(); t0 = time.time()
-            preds = model.infer(views, memory_efficient_inference=True,
-                                use_amp=True, amp_dtype="bf16")
-            torch.cuda.synchronize(); dt = time.time() - t0
-        except Exception as e:  # noqa: BLE001
-            rows.append({"group_id": g["group_id"], "error": f"{type(e).__name__}: {e}"})
-            print(f"  [{i}] {g['group_id']} FAILED: {e}"); continue
+            with tempfile.TemporaryDirectory() as td:
+                small = _resized_copies(paths, max_side, Path(td))
+                views = load_images(small)
+                torch.cuda.synchronize(); t0 = time.time()
+                preds = model.infer(views, memory_efficient_inference=True,
+                                    use_amp=True, amp_dtype=dtype)
+                torch.cuda.synchronize(); dt = time.time() - t0
 
-        pts = torch.cat([p["pts3d"].reshape(-1, 3).float().cpu() for p in preds]).numpy()
-        conf = torch.cat([p["confidence"].reshape(-1).float().cpu() for p in preds]).numpy()
-        poses = np.stack([p["camera_poses"][0].float().cpu().numpy() for p in preds])
-        Ks = np.stack([p["intrinsics"][0].float().cpu().numpy() for p in preds])
-        shapes = np.array([list(p["pts3d"].shape[-3:-1]) for p in preds], dtype=np.int32)
-        cams = poses[:, :3, 3]
-        baseline = float(np.linalg.norm(cams[:, None] - cams[None], axis=-1).max())
-        keep = np.isfinite(pts).all(1) & (conf > np.percentile(conf, 40))
-        good = pts[keep]
-        extent = [round(float(v), 2) for v in (good.max(0) - good.min(0))] if len(good) else None
-        np.savez_compressed(out / f"recon_{g['group_id']}.npz", points=pts.astype(np.float32),
-                            conf=conf.astype(np.float32), poses=poses.astype(np.float32),
-                            Ks=Ks.astype(np.float32), shapes=shapes)
-        rows.append({"group_id": g["group_id"], "room_type": g["room_type"],
-                     "n_views": len(paths), "seconds": round(dt, 2),
-                     "n_points": int(len(pts)), "max_camera_baseline_m": round(baseline, 3),
-                     "scene_extent_m": extent, "mean_confidence": round(float(conf.mean()), 3)})
-        print(f"  [{i}] {g['group_id']:26} {len(paths)}v {dt:5.1f}s "
-              f"baseline {baseline:.2f}m extent {extent}", flush=True)
+            if not logged_keys:
+                print(f"  prediction keys: {sorted(preds[0])}", flush=True)
+                logged_keys = True
+
+            pts_l = [_pick(p, "pts3d", "points_3d", "points", "pts3d_in_other_view")
+                     for p in preds]
+            pts = torch.cat([t.reshape(-1, 3).float().cpu() for t in pts_l]).numpy()
+            conf_l = [_pick(p, "confidence", "conf", "conf_mask", required=False)
+                      for p in preds]
+            if all(c is not None for c in conf_l):
+                conf = torch.cat([c.reshape(-1).float().cpu() for c in conf_l]).numpy()
+            else:
+                conf = np.ones(len(pts), dtype=np.float32)
+            poses = np.stack([_pick(p, "camera_poses", "camera_pose", "cam2world")[0]
+                              .float().cpu().numpy() for p in preds])
+            Ks = np.stack([_pick(p, "intrinsics", "camera_intrinsics", "K")[0]
+                           .float().cpu().numpy() for p in preds])
+            shapes = np.array([list(t.shape[-3:-1]) for t in pts_l], dtype=np.int32)
+
+            cams = poses[:, :3, 3]
+            baseline = float(np.linalg.norm(cams[:, None] - cams[None], axis=-1).max())
+            keep = np.isfinite(pts).all(1) & (conf > np.percentile(conf, 40))
+            good = pts[keep]
+            extent = [round(float(v), 2) for v in (good.max(0) - good.min(0))] if len(good) else None
+            np.savez_compressed(out / f"recon_{g['group_id']}.npz",
+                                points=pts.astype(np.float32), conf=conf.astype(np.float32),
+                                poses=poses.astype(np.float32), Ks=Ks.astype(np.float32),
+                                shapes=shapes)
+            rows.append({"group_id": g["group_id"], "room_type": g["room_type"],
+                         "n_views": len(paths), "seconds": round(dt, 2),
+                         "n_points": int(len(pts)), "max_camera_baseline_m": round(baseline, 3),
+                         "scene_extent_m": extent,
+                         "mean_confidence": round(float(conf.mean()), 3)})
+            print(f"  [{i}] {g['group_id']:26} {len(paths)}v {dt:5.1f}s "
+                  f"baseline {baseline:.2f}m extent {extent}", flush=True)
+        except Exception as e:  # noqa: BLE001 - one bad group must not sink the run
+            rows.append({"group_id": g["group_id"], "error": f"{type(e).__name__}: {e}"})
+            print(f"  [{i}] {g['group_id']} FAILED: {type(e).__name__}: {str(e)[:160]}",
+                  flush=True)
+        finally:
+            # Without this the first OOM poisons every later group: the failed
+            # allocation stays resident and they all fail identically, which is
+            # exactly what happened on the first T4 run.
+            preds = views = pts_l = conf_l = None
+            gc.collect(); torch.cuda.empty_cache()
 
     ok = [r for r in rows if "error" not in r]
-    res = {"stage": "3-mapanything", "gpu": _gpu_name(), "n_groups": min(len(groups), max_groups),
+    res = {"stage": "3-mapanything", "gpu": _gpu_name(),
+           "vram_gb": round(_vram_gb(), 1), "max_views": n_views_cap,
+           "max_side_px": max_side, "amp_dtype": dtype,
+           "n_groups": min(len(groups), max_groups),
            "n_ok": len(ok), "n_failed": len(rows) - len(ok),
            "seconds_per_group_median": (round(float(np.median([r["seconds"] for r in ok])), 2)
                                         if ok else None), "results": rows}
@@ -301,6 +387,9 @@ def main(argv=None) -> int:
     ap.add_argument("--moge", action="store_true"); ap.add_argument("--mapanything", action="store_true")
     ap.add_argument("--gsplat", action="store_true")
     ap.add_argument("--max-groups", type=int, default=12)
+    ap.add_argument("--max-views", type=int, default=None,
+                    help="views per group; default scales with VRAM")
+    ap.add_argument("--ma-max-side", type=int, default=384)
     ap.add_argument("--iters", type=int, default=1500)
     ap.add_argument("--n-images", type=int, default=20)
     ap.add_argument("--skip-install", action="store_true")
@@ -329,7 +418,8 @@ def main(argv=None) -> int:
     if a.moge:
         print("== MoGe-2 (GPU timing)"); summary["moge"] = stage_moge(groups, media_parent, a.out, a.n_images)
     if a.mapanything:
-        print("== MapAnything"); summary["mapanything"] = stage_mapanything(groups, media_parent, a.out, a.max_groups)
+        print("== MapAnything"); summary["mapanything"] = stage_mapanything(groups, media_parent, a.out, a.max_groups,
+                                                                  a.max_views, a.ma_max_side)
     if a.gsplat:
         print("== gsplat"); summary["gsplat"] = stage_gsplat(groups, media_parent, a.out, min(a.max_groups, 4), a.iters)
 
