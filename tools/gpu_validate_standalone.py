@@ -355,8 +355,17 @@ def stage_gsplat(groups, media_parent: Path, out: Path, max_groups: int, iters: 
                                 {"params": [quats], "lr": 1e-3},
                                 {"params": [opac], "lr": 5e-2},
                                 {"params": [colors], "lr": 1e-2}])
+        def make_opt(params):
+            means, scales, quats, opac, colors = params
+            return torch.optim.Adam([{"params": [means], "lr": 1.6e-4},
+                                     {"params": [scales], "lr": 5e-3},
+                                     {"params": [quats], "lr": 1e-3},
+                                     {"params": [opac], "lr": 5e-2},
+                                     {"params": [colors], "lr": 1e-2}])
+
         train = list(range(n))[:-1] or [0]
         held = n - 1
+        n_pruned = 0
         torch.cuda.synchronize(); t0 = time.time()
         for it in range(iters):
             i = train[it % len(train)]
@@ -369,6 +378,24 @@ def stage_gsplat(groups, media_parent: Path, out: Path, max_groups: int, iters: 
             opt.zero_grad(); loss.backward(); opt.step()
             with torch.no_grad():
                 colors.clamp_(0, 1)
+
+            # Periodic pruning. Gaussians that stay near-transparent, or that
+            # inflate into large blobs, are the floaters that dominate a
+            # novel view - they are unconstrained by only two training views,
+            # so nothing else removes them. Standard 3DGS prunes during
+            # densification; we have no densification, so this is the whole
+            # of the cleanup.
+            if 500 < it < iters - 200 and it % 300 == 0:
+                with torch.no_grad():
+                    live = (opac.sigmoid() > 0.02) & (scales.exp().max(dim=1).values < 0.3)
+                if live.sum() > 1000 and live.sum() < len(means):
+                    n_pruned += int(len(means) - live.sum())
+                    means = torch.nn.Parameter(means[live].detach())
+                    scales = torch.nn.Parameter(scales[live].detach())
+                    quats = torch.nn.Parameter(quats[live].detach())
+                    opac = torch.nn.Parameter(opac[live].detach())
+                    colors = torch.nn.Parameter(colors[live].detach())
+                    opt = make_opt((means, scales, quats, opac, colors))
         torch.cuda.synchronize(); train_s = time.time() - t0
 
         with torch.no_grad():
@@ -392,7 +419,9 @@ def stage_gsplat(groups, media_parent: Path, out: Path, max_groups: int, iters: 
                     out / f"splat_{g['group_id']}_{tag}.png")
 
         rows.append({"group_id": g["group_id"], "room_type": g["room_type"],
-                     "n_gaussians": N, "n_views": n, "iters": iters,
+                     "n_gaussians": N, "n_gaussians_final": int(len(means)),
+                     "n_pruned": n_pruned, "n_views": n, "iters": iters,
+                     "n_training_views": len(train),
                      "init_scale_m": round(s0, 4),
                      "train_seconds": round(train_s, 1),
                      "heldout_psnr_db": round(psnr, 2),
@@ -475,7 +504,7 @@ def main(argv=None) -> int:
     ap.add_argument("--max-views", type=int, default=None,
                     help="views per group; default scales with VRAM")
     ap.add_argument("--ma-max-side", type=int, default=384)
-    ap.add_argument("--iters", type=int, default=1500)
+    ap.add_argument("--iters", type=int, default=4000)
     ap.add_argument("--n-images", type=int, default=20)
     ap.add_argument("--skip-install", action="store_true")
     a = ap.parse_args(argv)

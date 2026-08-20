@@ -181,35 +181,71 @@ evidence the reconstruction is wrong.
 fallback filled it with ones. The key is present for the other 7. Worth
 resolving before confidence is used to weight anything downstream.
 
-## gsplat — ran, but the first attempt was my bug
+## gsplat — the chain is proven; novel-view quality is not
 
-PSNR 11.4–13.0 dB and **uniformly grey renders**. That is not a model failure,
-it is three initialisation errors on my side:
+Three initialisation bugs of mine had to be cleared first: colours were never
+seeded from the photographs (so every Gaussian started mid-grey and stayed
+there), Gaussian size came from distance-to-centroid rather than
+nearest-neighbour spacing (half-metre blobs on a 10 m room), and opacity
+started too low. Fixing those turned uniform grey into recognisable rooms —
+window, skyline, sofa and wall art all in the right places. Incidentally the
+scale bug was also a speed bug: training fell from 143 s to 10 s once the
+splats stopped overlapping by the thousand.
 
-1. **Colours were never initialised from the photographs.** Every Gaussian
-   started mid-grey and was expected to discover its colour through 1500 steps
-   at a low learning rate. They barely moved, so the scene converged to the
-   mean image — grey, at about 12 dB.
-2. **Gaussian size was computed from the wrong quantity** — the 5th percentile
-   of distance from the scene centroid, which is a scene-radius measure. On a
-   10 m room that seeds half-metre blobs that overlap into mush. It should be
-   nearest-neighbour spacing, which is centimetres.
-3. **Opacity initialised at 0.1**, washing out whatever was left.
+With that cleared, the real result:
 
-All three are fixed: colours now come from the source pixels (the point cloud
-is per-view pointmaps concatenated in order, so point *i* of view *v* maps
-exactly to pixel *i* of that view), scale uses median nearest-neighbour
-distance, opacity starts at 0.5.
+| | median |
+|---|---|
+| **Training-view PSNR** | **25.9 dB** (24.8 / 26.9 / 16.4 / 45.8) |
+| **Held-out-view PSNR** | **9.8 dB** (7.5 / 13.3 / 8.7 / 11.0) |
+| Generalisation gap | **16.1 dB** |
+| Training time | 10.4 s per room (T4, 1500 iterations) |
 
-**The lesson is worth keeping:** a flat grey render scored ~12 dB, which looks
-like a plausible bad-but-not-broken number in a results table. Only opening the
-image revealed it. The stage now reports render contrast against ground-truth
-contrast and flags `looks_flat`, so this cannot pass silently again.
+**What the 25.9 dB fit proves — and it is the thing we actually needed.** If
+MapAnything's poses were wrong, or its intrinsics, or the cam2world→viewmat
+inversion, or the point-to-pixel colour mapping, the training views could not
+converge at all. They converge to 26 dB. **The stage 3 → stage 8 chain is
+correct, with no COLMAP anywhere.** That is decision AD-6 validated.
+
+**What the 9.8 dB held-out score means.** Novel-view synthesis is not working,
+and the renders show why: structure is broadly right but riddled with floaters
+and speckle, which wrecks per-pixel error even where the layout is recognisable.
+
+This is not a surprise. It is the regime the feasibility report named: *"6–12
+views per room is where results become acceptable, and below 3 views floaters
+and smearing dominate."* Each scene here had **three views, one held out — so
+two supervising views.** Standard Gaussian-splatting captures use a hundred or
+more. Being at the bottom of that curve, with a 16 dB gap, is the predicted
+outcome rather than a contradiction of it.
+
+**The two designed fixes are both unbuilt, which is the honest reason quality
+is untested rather than poor:**
+
+1. **More views.** The T4's 16 GB caps MapAnything at 3 views per group. Our
+   groups have up to 8. Getting to 6–8 views needs a larger card, not a
+   different algorithm.
+2. **Culling against the room polygon.** The architecture specifies exactly
+   this to kill floaters (report §4.9 — geometry and appearance reinforcing
+   each other). Stage 4 does not exist yet, so nothing removes them. This is
+   the single most likely quality win and it costs no GPU at all.
+
+Opacity pruning and a longer schedule have been added as an interim measure,
+but neither substitutes for the two above.
 
 ## Where this leaves the three open questions
 
 | Question | Answer |
 |---|---|
-| Is the GPU fast enough for the cost model? | **Yes** — 39× speedup, 0.37 s/image on the weakest current GPU |
+| Is the GPU fast enough for the cost model? | **Yes** — 39× speedup, 0.36 s/image on the weakest current GPU |
 | Does multi-view reconstruction work on real agent photos (AD-4)? | **Yes** — 12/12, no collapses, scale corroborated by an independent model |
-| Does the stage 3 → 8 chain hold with no COLMAP (AD-6)? | **Not yet demonstrated** — first attempt was invalidated by my initialisation bugs; re-run pending |
+| Does the stage 3 → 8 chain hold with no COLMAP (AD-6)? | **Yes, mechanically** — 25.9 dB on training views proves poses, intrinsics and colour mapping are all correct |
+| Is appearance quality good enough to show a buyer? | **Unproven, and correctly so.** 9.8 dB on novel views at two supervising views, with both designed mitigations unbuilt. This is a **G2 question and it stays open** |
+
+## What to do next, in order of value per unit effort
+
+1. **Build stage 4 (room polygon) and cull splats against it.** No GPU needed,
+   and it targets the exact artefact dominating these renders.
+2. **Re-run MapAnything at 6–8 views on a card with more than 16 GB.** The
+   groups already exist; only VRAM is in the way.
+3. **Then, and only then, re-measure held-out PSNR.** Tuning the splat
+   optimiser before those two would be optimising the wrong variable.
