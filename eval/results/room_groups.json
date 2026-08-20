@@ -1,0 +1,373 @@
+{
+  "n_groups": 26,
+  "groups": [
+    {
+      "group_id": "91094415_living_room",
+      "listing_id": "91094415",
+      "room_type": "living_room",
+      "n_views": 8,
+      "paths": [
+        "media/91094415/photo_004.jpeg",
+        "media/91094415/photo_002.jpeg",
+        "media/91094415/photo_001.jpeg",
+        "media/91094415/photo_014.jpeg",
+        "media/91094415/photo_005.jpeg",
+        "media/91094415/photo_015.jpeg",
+        "media/91094415/photo_017.jpeg",
+        "media/91094415/photo_022.jpeg"
+      ],
+      "address": "Water Street, Jewellery Quater, Birmingham, B3",
+      "bedrooms": 2
+    },
+    {
+      "group_id": "90150621_living_room",
+      "listing_id": "90150621",
+      "room_type": "living_room",
+      "n_views": 8,
+      "paths": [
+        "media/90150621/photo_020.jpeg",
+        "media/90150621/photo_002.jpeg",
+        "media/90150621/photo_004.jpeg",
+        "media/90150621/photo_000.jpeg",
+        "media/90150621/photo_013.jpeg",
+        "media/90150621/photo_018.jpeg",
+        "media/90150621/photo_007.jpeg",
+        "media/90150621/photo_003.jpeg"
+      ],
+      "address": "Albion Street, Birmingham",
+      "bedrooms": 2
+    },
+    {
+      "group_id": "166489172_dining_room",
+      "listing_id": "166489172",
+      "room_type": "dining_room",
+      "n_views": 7,
+      "paths": [
+        "media/166489172/photo_007.png",
+        "media/166489172/photo_003.png",
+        "media/166489172/photo_004.png",
+        "media/166489172/photo_008.png",
+        "media/166489172/photo_009.png",
+        "media/166489172/photo_000.png",
+        "media/166489172/photo_031.jpeg"
+      ],
+      "address": "Snow Hill Wharf, Shadwell Street, Birmingham, B4",
+      "bedrooms": 3
+    },
+    {
+      "group_id": "159886049_living_room",
+      "listing_id": "159886049",
+      "room_type": "living_room",
+      "n_views": 6,
+      "paths": [
+        "media/159886049/photo_010.jpeg",
+        "media/159886049/photo_017.jpeg",
+        "media/159886049/photo_001.jpeg",
+        "media/159886049/photo_002.jpeg",
+        "media/159886049/photo_007.jpeg",
+        "media/159886049/photo_014.jpeg"
+      ],
+      "address": "Oxygen Tower, 50 Store Street, Manchester",
+      "bedrooms": 2
+    },
+    {
+      "group_id": "91642188_living_room",
+      "listing_id": "91642188",
+      "room_type": "living_room",
+      "n_views": 6,
+      "paths": [
+        "media/91642188/photo_017.jpeg",
+        "media/91642188/photo_004.jpeg",
+        "media/91642188/photo_018.jpeg",
+        "media/91642188/photo_002.jpeg",
+        "media/91642188/photo_003.jpeg",
+        "media/91642188/photo_020.jpeg"
+      ],
+      "address": "East Timber Yard, Pershore Street, Birmingham",
+      "bedrooms": 2
+    },
+    {
+      "group_id": "91558374_living_room",
+      "listing_id": "91558374",
+      "room_type": "living_room",
+      "n_views": 6,
+      "paths": [
+        "media/91558374/photo_000.jpeg",
+        "media/91558374/photo_004.jpeg",
+        "media/91558374/photo_012.jpeg",
+        "media/91558374/photo_014.jpeg",
+        "media/91558374/photo_016.jpeg",
+        "media/91558374/photo_020.jpeg"
+      ],
+      "address": "The Walmer, Vista River Gardens, Trinity Islands, Water Street, Manchester, M3",
+      "bedrooms": 2
+    },
+    {
+      "group_id": "91094415_dining_room",
+      "listing_id": "91094415",
+      "room_type": "dining_room",
+      "n_views": 5,
+      "paths": [
+        "media/91094415/photo_012.jpeg",
+        "media/91094415/photo_013.jpeg",
+        "media/91094415/photo_011.jpeg",
+        "media/91094415/photo_003.jpeg",
+        "media/91094415/photo_010.jpeg"
+      ],
+      "address": "Water Street, Jewellery Quater, Birmingham, B3",
+      "bedrooms": 2
+    },
+    {
+      "group_id": "91798662_living_room",
+      "listing_id": "91798662",
+      "room_type": "living_room",
+      "n_views": 5,
+      "paths": [
+        "media/91798662/photo_004.jpeg",
+        "media/91798662/photo_007.jpeg",
+        "media/91798662/photo_002.jpeg",
+        "media/91798662/photo_006.jpeg",
+        "media/91798662/photo_008.jpeg"
+      ],
+      "address": "Knowle Road, Totterdown, Bristol",
+      "bedrooms": 1
+    },
+    {
+      "group_id": "175050533_living_room",
+      "listing_id": "175050533",
+      "room_type": "living_room",
+      "n_views": 5,
+      "paths": [
+        "media/175050533/photo_005.png",
+        "media/175050533/photo_006.png",
+        "media/175050533/photo_002.png",
+        "media/175050533/photo_001.png",
+        "media/175050533/photo_003.png"
+      ],
+      "address": "Cornbrook Road, Old Trafford, Trafford",
+      "bedrooms": 2
+    },
+    {
+      "group_id": "91428111_living_room",
+      "listing_id": "91428111",
+      "room_type": "living_room",
+      "n_views": 4,
+      "paths": [
+        "media/91428111/photo_005.jpeg",
+        "media/91428111/photo_002.jpeg",
+        "media/91428111/photo_003.jpeg",
+        "media/91428111/photo_001.jpeg"
+      ],
+      "address": "Alexandra Park, Willow Road, Leeds, LS4",
+      "bedrooms": 2
+    },
+    {
+      "group_id": "172018976_living_room",
+      "listing_id": "172018976",
+      "room_type": "living_room",
+      "n_views": 3,
+      "paths": [
+        "media/172018976/photo_006.jpeg",
+        "media/172018976/photo_007.jpeg",
+        "media/172018976/photo_002.jpeg"
+      ],
+      "address": "Concordia Wharf, Cold Harbour, London E14",
+      "bedrooms": 1
+    },
+    {
+      "group_id": "169576625_living_room",
+      "listing_id": "169576625",
+      "room_type": "living_room",
+      "n_views": 3,
+      "paths": [
+        "media/169576625/photo_013.jpeg",
+        "media/169576625/photo_000.jpeg",
+        "media/169576625/photo_017.jpeg"
+      ],
+      "address": "Atlas Building, London, EC1V",
+      "bedrooms": 2
+    },
+    {
+      "group_id": "91953234_kitchen",
+      "listing_id": "91953234",
+      "room_type": "kitchen",
+      "n_views": 3,
+      "paths": [
+        "media/91953234/photo_010.jpeg",
+        "media/91953234/photo_012.jpeg",
+        "media/91953234/photo_011.jpeg"
+      ],
+      "address": "West Parkside,\r\nLondon,\r\nSE10 0JT",
+      "bedrooms": 3
+    },
+    {
+      "group_id": "91642188_dining_room",
+      "listing_id": "91642188",
+      "room_type": "dining_room",
+      "n_views": 3,
+      "paths": [
+        "media/91642188/photo_001.jpeg",
+        "media/91642188/photo_009.jpeg",
+        "media/91642188/photo_008.jpeg"
+      ],
+      "address": "East Timber Yard, Pershore Street, Birmingham",
+      "bedrooms": 2
+    },
+    {
+      "group_id": "91094415_bathroom",
+      "listing_id": "91094415",
+      "room_type": "bathroom",
+      "n_views": 3,
+      "paths": [
+        "media/91094415/photo_025.jpeg",
+        "media/91094415/photo_020.jpeg",
+        "media/91094415/photo_024.jpeg"
+      ],
+      "address": "Water Street, Jewellery Quater, Birmingham, B3",
+      "bedrooms": 2
+    },
+    {
+      "group_id": "92121960_kitchen",
+      "listing_id": "92121960",
+      "room_type": "kitchen",
+      "n_views": 3,
+      "paths": [
+        "media/92121960/photo_007.jpeg",
+        "media/92121960/photo_006.jpeg",
+        "media/92121960/photo_008.jpeg"
+      ],
+      "address": "Street Lane, Leeds, LS8",
+      "bedrooms": 3
+    },
+    {
+      "group_id": "92121960_dining_room",
+      "listing_id": "92121960",
+      "room_type": "dining_room",
+      "n_views": 3,
+      "paths": [
+        "media/92121960/photo_010.jpeg",
+        "media/92121960/photo_011.jpeg",
+        "media/92121960/photo_009.jpeg"
+      ],
+      "address": "Street Lane, Leeds, LS8",
+      "bedrooms": 3
+    },
+    {
+      "group_id": "92181366_dining_room",
+      "listing_id": "92181366",
+      "room_type": "dining_room",
+      "n_views": 3,
+      "paths": [
+        "media/92181366/photo_007.jpeg",
+        "media/92181366/photo_002.jpeg",
+        "media/92181366/photo_004.jpeg"
+      ],
+      "address": "2/2 Claremont Mansions, 20 Clifton Street, Park, G3 7XS",
+      "bedrooms": 3
+    },
+    {
+      "group_id": "91798662_kitchen",
+      "listing_id": "91798662",
+      "room_type": "kitchen",
+      "n_views": 3,
+      "paths": [
+        "media/91798662/photo_009.jpeg",
+        "media/91798662/photo_001.jpeg",
+        "media/91798662/photo_003.jpeg"
+      ],
+      "address": "Knowle Road, Totterdown, Bristol",
+      "bedrooms": 1
+    },
+    {
+      "group_id": "91798662_bathroom",
+      "listing_id": "91798662",
+      "room_type": "bathroom",
+      "n_views": 3,
+      "paths": [
+        "media/91798662/photo_016.jpeg",
+        "media/91798662/photo_015.jpeg",
+        "media/91798662/photo_017.jpeg"
+      ],
+      "address": "Knowle Road, Totterdown, Bristol",
+      "bedrooms": 1
+    },
+    {
+      "group_id": "170816573_living_room",
+      "listing_id": "170816573",
+      "room_type": "living_room",
+      "n_views": 3,
+      "paths": [
+        "media/170816573/photo_010.jpeg",
+        "media/170816573/photo_011.jpeg",
+        "media/170816573/photo_001.jpeg"
+      ],
+      "address": "Pembroke Road, Clifton, Bristol",
+      "bedrooms": 2
+    },
+    {
+      "group_id": "91558374_kitchen",
+      "listing_id": "91558374",
+      "room_type": "kitchen",
+      "n_views": 3,
+      "paths": [
+        "media/91558374/photo_003.jpeg",
+        "media/91558374/photo_001.jpeg",
+        "media/91558374/photo_015.jpeg"
+      ],
+      "address": "The Walmer, Vista River Gardens, Trinity Islands, Water Street, Manchester, M3",
+      "bedrooms": 2
+    },
+    {
+      "group_id": "91558374_bathroom",
+      "listing_id": "91558374",
+      "room_type": "bathroom",
+      "n_views": 3,
+      "paths": [
+        "media/91558374/photo_009.jpeg",
+        "media/91558374/photo_007.jpeg",
+        "media/91558374/photo_005.jpeg"
+      ],
+      "address": "The Walmer, Vista River Gardens, Trinity Islands, Water Street, Manchester, M3",
+      "bedrooms": 2
+    },
+    {
+      "group_id": "90150621_kitchen",
+      "listing_id": "90150621",
+      "room_type": "kitchen",
+      "n_views": 3,
+      "paths": [
+        "media/90150621/photo_014.jpeg",
+        "media/90150621/photo_015.jpeg",
+        "media/90150621/photo_017.jpeg"
+      ],
+      "address": "Albion Street, Birmingham",
+      "bedrooms": 2
+    },
+    {
+      "group_id": "90150621_dining_room",
+      "listing_id": "90150621",
+      "room_type": "dining_room",
+      "n_views": 3,
+      "paths": [
+        "media/90150621/photo_019.jpeg",
+        "media/90150621/photo_021.jpeg",
+        "media/90150621/photo_016.jpeg"
+      ],
+      "address": "Albion Street, Birmingham",
+      "bedrooms": 2
+    },
+    {
+      "group_id": "166489172_kitchen",
+      "listing_id": "166489172",
+      "room_type": "kitchen",
+      "n_views": 3,
+      "paths": [
+        "media/166489172/photo_011.png",
+        "media/166489172/photo_012.png",
+        "media/166489172/photo_010.png"
+      ],
+      "address": "Snow Hill Wharf, Shadwell Street, Birmingham, B4",
+      "bedrooms": 3
+    }
+  ]
+}
