@@ -1,0 +1,223 @@
+{
+  "stage": "3-4-geometry-moge",
+  "model": "Ruicheng/moge-2-vitl-normal",
+  "device": "cpu",
+  "n_images": 20,
+  "max_side_px": 512,
+  "seconds_per_image": 14.4,
+  "fov": {
+    "median_deg": 98.6,
+    "p10_deg": 86.5,
+    "p90_deg": 103.3
+  },
+  "room_height": {
+    "n": 20,
+    "median_m": 2.71,
+    "p10_m": 2.38,
+    "p90_m": 4.38,
+    "frac_plausible": 0.85,
+    "frac_typical": 0.65
+  },
+  "results": [
+    {
+      "path": "media/87977241/photo_000.jpeg",
+      "listing_id": "87977241",
+      "pred_room": "bedroom",
+      "fov_x_deg": 101.1,
+      "fov_y_deg": 78.1,
+      "depth_median_m": 1.75,
+      "room_height_m": 3.181,
+      "seconds": 15.8
+    },
+    {
+      "path": "media/172018976/photo_000.jpeg",
+      "listing_id": "172018976",
+      "pred_room": "garden",
+      "fov_x_deg": 86.8,
+      "fov_y_deg": 64.4,
+      "depth_median_m": 13.49,
+      "room_height_m": 4.899,
+      "seconds": 16.0
+    },
+    {
+      "path": "media/169576625/photo_000.jpeg",
+      "listing_id": "169576625",
+      "pred_room": "living_room",
+      "fov_x_deg": 94.2,
+      "fov_y_deg": 71.5,
+      "depth_median_m": 2.81,
+      "room_height_m": 2.689,
+      "seconds": 14.9
+    },
+    {
+      "path": "media/91953234/photo_000.jpeg",
+      "listing_id": "91953234",
+      "pred_room": "bedroom",
+      "fov_x_deg": 106.8,
+      "fov_y_deg": 74.3,
+      "depth_median_m": 1.76,
+      "room_height_m": 2.521,
+      "seconds": 15.6
+    },
+    {
+      "path": "media/159886049/photo_001.jpeg",
+      "listing_id": "159886049",
+      "pred_room": "living_room",
+      "fov_x_deg": 103.2,
+      "fov_y_deg": 86.9,
+      "depth_median_m": 1.82,
+      "room_height_m": 2.835,
+      "seconds": 14.7
+    },
+    {
+      "path": "media/175050626/photo_000.jpeg",
+      "listing_id": "175050626",
+      "pred_room": "living_room",
+      "fov_x_deg": 99.2,
+      "fov_y_deg": 81.2,
+      "depth_median_m": 2.32,
+      "room_height_m": 4.317,
+      "seconds": 15.2
+    },
+    {
+      "path": "media/87781278/photo_001.jpeg",
+      "listing_id": "87781278",
+      "pred_room": "kitchen",
+      "fov_x_deg": 96.6,
+      "fov_y_deg": 73.5,
+      "depth_median_m": 2.33,
+      "room_height_m": 2.965,
+      "seconds": 14.8
+    },
+    {
+      "path": "media/92098362/photo_001.jpeg",
+      "listing_id": "92098362",
+      "pred_room": "dining_room",
+      "fov_x_deg": 103.8,
+      "fov_y_deg": 87.4,
+      "depth_median_m": 1.87,
+      "room_height_m": 3.378,
+      "seconds": 13.0
+    },
+    {
+      "path": "media/91850037/photo_001.jpeg",
+      "listing_id": "91850037",
+      "pred_room": "kitchen",
+      "fov_x_deg": 100.9,
+      "fov_y_deg": 84.5,
+      "depth_median_m": 1.43,
+      "room_height_m": 2.423,
+      "seconds": 13.8
+    },
+    {
+      "path": "media/91642188/photo_001.jpeg",
+      "listing_id": "91642188",
+      "pred_room": "dining_room",
+      "fov_x_deg": 97.6,
+      "fov_y_deg": 74.7,
+      "depth_median_m": 2.35,
+      "room_height_m": 2.74,
+      "seconds": 14.5
+    },
+    {
+      "path": "media/90594978/photo_001.jpeg",
+      "listing_id": "90594978",
+      "pred_room": "kitchen",
+      "fov_x_deg": 102.7,
+      "fov_y_deg": 86.3,
+      "depth_median_m": 1.58,
+      "room_height_m": 2.096,
+      "seconds": 13.5
+    },
+    {
+      "path": "media/91094415/photo_001.jpeg",
+      "listing_id": "91094415",
+      "pred_room": "living_room",
+      "fov_x_deg": 97.9,
+      "fov_y_deg": 75.0,
+      "depth_median_m": 2.91,
+      "room_height_m": 2.426,
+      "seconds": 14.8
+    },
+    {
+      "path": "media/91428111/photo_001.jpeg",
+      "listing_id": "91428111",
+      "pred_room": "living_room",
+      "fov_x_deg": 101.4,
+      "fov_y_deg": 85.0,
+      "depth_median_m": 2.01,
+      "room_height_m": 2.415,
+      "seconds": 15.0
+    },
+    {
+      "path": "media/92121960/photo_001.jpeg",
+      "listing_id": "92121960",
+      "pred_room": "other_room",
+      "fov_x_deg": 84.0,
+      "fov_y_deg": 61.9,
+      "depth_median_m": 3.28,
+      "room_height_m": 1.769,
+      "seconds": 13.3
+    },
+    {
+      "path": "media/91968666/photo_001.jpeg",
+      "listing_id": "91968666",
+      "pred_room": "bedroom",
+      "fov_x_deg": 95.6,
+      "fov_y_deg": 72.6,
+      "depth_median_m": 3.42,
+      "room_height_m": 2.647,
+      "seconds": 14.0
+    },
+    {
+      "path": "media/161130452/photo_000.jpeg",
+      "listing_id": "161130452",
+      "pred_room": "garden",
+      "fov_x_deg": 69.4,
+      "fov_y_deg": 46.8,
+      "depth_median_m": 5.7,
+      "room_height_m": 3.237,
+      "seconds": 14.0
+    },
+    {
+      "path": "media/91958238/photo_001.jpeg",
+      "listing_id": "91958238",
+      "pred_room": "living_room",
+      "fov_x_deg": 102.2,
+      "fov_y_deg": 85.8,
+      "depth_median_m": 2.17,
+      "room_height_m": 2.658,
+      "seconds": 14.6
+    },
+    {
+      "path": "media/89229111/photo_001.jpeg",
+      "listing_id": "89229111",
+      "pred_room": "living_room",
+      "fov_x_deg": 100.8,
+      "fov_y_deg": 68.4,
+      "depth_median_m": 3.06,
+      "room_height_m": 2.81,
+      "seconds": 14.4
+    },
+    {
+      "path": "media/92182410/photo_001.jpeg",
+      "listing_id": "92182410",
+      "pred_room": "living_room",
+      "fov_x_deg": 93.7,
+      "fov_y_deg": 70.8,
+      "depth_median_m": 3.54,
+      "room_height_m": 5.203,
+      "seconds": 13.7
+    },
+    {
+      "path": "media/92181366/photo_001.jpeg",
+      "listing_id": "92181366",
+      "pred_room": "hallway",
+      "fov_x_deg": 93.4,
+      "fov_y_deg": 70.7,
+      "depth_median_m": 3.1,
+      "room_height_m": 2.646,
+      "seconds": 13.3
+    }
+  ]
+}

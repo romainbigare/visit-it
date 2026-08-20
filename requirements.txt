@@ -1,0 +1,26 @@
+# Core pipeline
+requests>=2.31
+numpy>=1.26
+pillow>=10.0
+beautifulsoup4>=4.12
+lxml>=5.0
+
+# Models (CPU wheels: pip install --index-url https://download.pytorch.org/whl/cpu)
+torch>=2.2
+torchvision>=0.17
+transformers>=4.40
+sentencepiece>=0.2
+protobuf>=4.25
+safetensors>=0.4
+huggingface_hub>=0.23
+
+# MoGe-2 (vendored via tools/vendor_moge.py - not on PyPI)
+utils3d>=0.1
+scipy>=1.11
+opencv-python-headless>=4.9
+
+# Floor-plan OCR (also needs the tesseract binary: apt-get install tesseract-ocr)
+pytesseract>=0.3.10
+
+# Figures
+matplotlib>=3.8

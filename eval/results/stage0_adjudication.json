@@ -1,0 +1,23 @@
+{
+  "note": "Manual visual adjudication of every disagreement between the SigLIP prediction and Rightmove's own asset labels. Reviewed at full resolution on 2026-08-20. 'actual' is what the image really is.",
+  "items": [
+    {"path": "media/87977241/floorplan_008.png", "portal_label": "floorplan",
+     "predicted": "map", "actual": "blank",
+     "comment": "Entirely black image (mean pixel value 3.7/255). A corrupt or placeholder asset that the portal files as a floor plan. The model was right to reject it."},
+    {"path": "media/161130452/photo_012.jpeg", "portal_label": "photo",
+     "predicted": "floorplan", "actual": "exterior",
+     "comment": "CGI exterior render of the building. Genuine false positive."},
+    {"path": "media/92182410/photo_034.jpeg", "portal_label": "photo",
+     "predicted": "floorplan", "actual": "floorplan",
+     "comment": "Real floor plan (ground + first floor) mis-filed by the portal as a photo. Model correct, portal wrong."},
+    {"path": "media/172441955/photo_005.jpeg", "portal_label": "photo",
+     "predicted": "floorplan", "actual": "floorplan",
+     "comment": "Real floor plan (Main Bedroom / Living-Dining / Kitchen / WC) mis-filed as a photo. Model correct, portal wrong."},
+    {"path": "media/172441955/photo_006.jpeg", "portal_label": "photo",
+     "predicted": "floorplan", "actual": "floorplan",
+     "comment": "Real floor plan (Bedroom 2 / Bedroom 3 / Ensuite / Store) mis-filed as a photo. Model correct, portal wrong."},
+    {"path": "media/172441955/photo_007.jpeg", "portal_label": "photo",
+     "predicted": "floorplan", "actual": "document",
+     "comment": "'Apartments Specification' text sheet. Not a floor plan. Genuine false positive, though it is marketing collateral rather than a room photo."}
+  ]
+}

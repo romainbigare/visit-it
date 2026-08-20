@@ -184,42 +184,79 @@ class TestListingModel(unittest.TestCase):
 
 
 class TestDatasets(unittest.TestCase):
+    """The dataset layer must be reproducible across machines: same cache root
+    from one env var, manual archives win, downloads are checksummed."""
+
     def setUp(self):
-        self.tmp = tempfile.TemporaryDirectory()
         import os
+        self.tmp = tempfile.TemporaryDirectory()
         os.environ["VISITIT_DATA_HOME"] = self.tmp.name
-        os.environ.pop("VISITIT_ACCEPT_RESEARCH_LICENCE", None)
 
     def tearDown(self):
         self.tmp.cleanup()
-
-    def test_restricted_dataset_refused_without_ack(self):
-        from pipeline.datasets import ensure, LicenceRefused
-        with self.assertRaises(LicenceRefused):
-            ensure("rent3d")
 
     def test_unknown_dataset_raises(self):
         from pipeline.datasets import ensure
         with self.assertRaises(KeyError):
             ensure("nope")
 
-    def test_incoming_archive_is_used_and_cached(self):
+    def test_registry_covers_the_corpora_we_planned(self):
+        from pipeline.datasets import REGISTRY
+        for name in ("swiss_dwellings", "cubicasa5k", "resplan", "msd", "c3po",
+                     "zind", "structured3d", "rent3d", "rent3dpp", "hypersim"):
+            self.assertIn(name, REGISTRY)
+
+    def test_every_direct_dataset_has_urls(self):
+        from pipeline.datasets import REGISTRY
+        for name, spec in REGISTRY.items():
+            if spec.acquisition == "direct":
+                self.assertTrue(spec.files, f"{name} is direct but has no files")
+                for f in spec.files:
+                    self.assertTrue(f.url.startswith("https://"), f"{name}: {f.url}")
+
+    def test_manual_datasets_explain_themselves(self):
+        from pipeline.datasets import REGISTRY
+        for name, spec in REGISTRY.items():
+            if spec.acquisition == "manual":
+                self.assertTrue(spec.manual_instructions,
+                                f"{name} is manual but gives no instructions")
+
+    def test_incoming_archive_wins_and_caches(self):
         from pipeline.datasets import ensure, data_home
         inc = data_home() / "_incoming"
         inc.mkdir(parents=True, exist_ok=True)
-        src = Path(self.tmp.name) / "src"
-        (src / "rent3d").mkdir(parents=True)
-        (src / "rent3d" / "meta.json").write_text("{}")
+        src = Path(self.tmp.name) / "src" / "rent3d"
+        src.mkdir(parents=True)
+        (src / "meta.json").write_text("{}")
         with tarfile.open(inc / "rent3d.tar.gz", "w:gz") as tf:
-            tf.add(src, arcname=".")
-        root = ensure("rent3d", accept_research_licence=True)
+            tf.add(src.parent, arcname=".")
+        root = ensure("rent3d")
         self.assertTrue((root / "rent3d" / "meta.json").exists())
-        self.assertTrue(ensure("rent3d", accept_research_licence=True).exists())
+        self.assertTrue(ensure("rent3d").exists())  # cached second call
 
-    def test_prod_ok_dataset_needs_no_ack(self):
-        from pipeline.datasets.registry import REGISTRY
-        self.assertFalse(REGISTRY["resplan"].needs_ack)
-        self.assertTrue(REGISTRY["rent3d"].needs_ack)
+    def test_manual_dataset_without_archive_gives_instructions(self):
+        from pipeline.datasets import ensure, ManualAcquisitionRequired
+        with self.assertRaises(ManualAcquisitionRequired) as cm:
+            ensure("zind")
+        self.assertIn("zind", str(cm.exception).lower())
+
+    def test_extract_rejects_path_traversal(self):
+        from pipeline.datasets.fetch import _extract
+        evil = Path(self.tmp.name) / "evil.tar.gz"
+        payload = Path(self.tmp.name) / "ok.txt"
+        payload.write_text("x")
+        with tarfile.open(evil, "w:gz") as tf:
+            tf.add(payload, arcname="../escaped.txt")
+        dest = Path(self.tmp.name) / "out"
+        _extract(evil, dest)
+        self.assertFalse((Path(self.tmp.name) / "escaped.txt").exists())
+
+    def test_sha256_is_stable(self):
+        from pipeline.datasets import sha256_of
+        f = Path(self.tmp.name) / "a.bin"
+        f.write_bytes(b"visit-it")
+        self.assertEqual(sha256_of(f), sha256_of(f))
+        self.assertEqual(len(sha256_of(f)), 64)
 
 
 if __name__ == "__main__":

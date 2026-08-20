@@ -1,0 +1,915 @@
+{
+  "stage": "5-plan-ocr",
+  "engine": "tesseract 5.3.4",
+  "n_plans": 24,
+  "seconds_total": 11.4,
+  "seconds_per_plan": 0.48,
+  "with_any_text": 0.833,
+  "with_room_labels": 0.833,
+  "with_dimensions": 0.542,
+  "with_area": 0.375,
+  "with_scale_ratio": 0.042,
+  "with_not_to_scale_disclaimer": 0.458,
+  "median_room_labels": 4,
+  "n_high_res": 21,
+  "with_dimensions_high_res": 0.619,
+  "plans": [
+    {
+      "room_labels": [],
+      "n_room_labels": 0,
+      "metric_dims": [],
+      "imperial_dims": [],
+      "n_dims": 0,
+      "areas_sqm": [],
+      "scale_ratio": null,
+      "not_to_scale_disclaimer": false,
+      "n_chars": 0,
+      "listing_id": "87977241",
+      "path": "media/87977241/floorplan_008.png",
+      "native_px": "1482x2048",
+      "native_max_side": 2048,
+      "stated_area_sqm": 62.0,
+      "raw_text": ""
+    },
+    {
+      "room_labels": [
+        "bedroom",
+        "kitchen",
+        "reception"
+      ],
+      "n_room_labels": 3,
+      "metric_dims": [
+        [
+          5.91,
+          2.8
+        ],
+        [
+          2.94,
+          2.7
+        ]
+      ],
+      "imperial_dims": [],
+      "n_dims": 2,
+      "areas_sqm": [
+        61.2,
+        61.3
+      ],
+      "scale_ratio": null,
+      "not_to_scale_disclaimer": true,
+      "n_chars": 640,
+      "listing_id": "172018976",
+      "path": "media/172018976/floorplan_011.jpeg",
+      "native_px": "849x1200",
+      "native_max_side": 1200,
+      "stated_area_sqm": null,
+      "raw_text": "CONCORDIA WHARF\nAPPROXIMATE GROSS INTERNAL FLOOR AREA: 659 SQFT - 61.26 SQM\n\nRECEPTION ROOM BEDROOM\n1811\" x 14'2\" 19'S\" x 92\n577x4.33M 5.91 x 2.80M\n\nKITCHEN\n9'8\" X 810\"\n2.94 x 2.70M\n\nSECOND FLOOR\n\nFOR ILLUSTRATION PURPOSES ONLY\n\nHIS FLOOR PLAN SHOULD BE USED AS A GENERAL OUTLINE FOR GUIDANCE ONLY AND DOES NOT CONSTITUTE IN WHOLE OR IN PART AN OFFER OR CONTRACT.\nANY wreNONG PURCHASER OR LESSEE SHOULD SATISFY THEMSELVES BY INSPECTION, SEARCHES, ENQUIRIES AND FULL SURVEY AS TO THE CORRECTNESS OF EAC! B STATE\nAREAS, MEASUREMENTS OR DISTANCES QUOTED ARE APPROXIMATE AND SHOULD NOT BE USED TO VALUE A PROPERTY OR BE THE BASIS OF ANY SALE Of"
+    },
+    {
+      "room_labels": [
+        "bedroom",
+        "kitchen",
+        "reception"
+      ],
+      "n_room_labels": 3,
+      "metric_dims": [
+        [
+          2.7,
+          3.7
+        ],
+        [
+          5.8,
+          6.3
+        ]
+      ],
+      "imperial_dims": [],
+      "n_dims": 2,
+      "areas_sqm": [
+        71.0,
+        71.0
+      ],
+      "scale_ratio": null,
+      "not_to_scale_disclaimer": true,
+      "n_chars": 615,
+      "listing_id": "169576625",
+      "path": "media/169576625/floorplan_018.jpeg",
+      "native_px": "1423x2048",
+      "native_max_side": 2048,
+      "stated_area_sqm": 71.0,
+      "raw_text": "ATLAS BUILDING, 145 CITY ROAD\nAPPROXIMATE GROSS INTERNAL FLOOR AREA 764 SQ.FT (71 SQ.M)\n\nA A Ht tet HH\n. Cee H 1H\nroe\n< > } i\nH no\n:\n< BEDROOM 1 > BEDROOM 2 HHH\n27mX35m 2.7mX3.7m HHH H EH\n8.8 ftX 11.5 ft 8.8 ftX 12.1 ft \u2014 a!\nA\nv\nVv\n< >\nRECEPTION / KITCHEN\n5.8mX 6.3m\n19. ftX 20.7 ft\n() IO\nww, | pS\n7~\\\nte }\n\\F\nv\nt\nENTRANCE\n\nELEVENTH FLOOR\n\nThis floor plan has been defined by the RICS Code of Measurement. This floor plan and all others are for approximate representative\npurposes only and upon usage is agreed to as such by the client.\n\nHD\n\nWWW: hdvirtualart.com | TEL: 0203.974.1567 | EMAIL: info@hdvirtualart.com"
+    },
+    {
+      "room_labels": [
+        "bathroom",
+        "bedroom",
+        "dining",
+        "kitchen",
+        "living"
+      ],
+      "n_room_labels": 5,
+      "metric_dims": [],
+      "imperial_dims": [],
+      "n_dims": 0,
+      "areas_sqm": [],
+      "scale_ratio": null,
+      "not_to_scale_disclaimer": false,
+      "n_chars": 114,
+      "listing_id": "91953234",
+      "path": "media/91953234/floorplan_023.png",
+      "native_px": "1730x1374",
+      "native_max_side": 1730,
+      "stated_area_sqm": 86.1,
+      "raw_text": "BATHROOM sol\nOO\nOO\n\nKITCHEN / LIVING / DINING\n\nBEDROOM 1 BEDROOM 2\n\nVv\n@eeeoeoeeveee\n\nVv\neeeoeoeoneo\n\neeeoeoevaeee"
+    },
+    {
+      "room_labels": [
+        "bathroom",
+        "bedroom",
+        "cupboard",
+        "diner",
+        "ensuite",
+        "kitchen",
+        "lounge"
+      ],
+      "n_room_labels": 7,
+      "metric_dims": [],
+      "imperial_dims": [],
+      "n_dims": 0,
+      "areas_sqm": [],
+      "scale_ratio": null,
+      "not_to_scale_disclaimer": true,
+      "n_chars": 177,
+      "listing_id": "159886049",
+      "path": "media/159886049/floorplan_018.jpeg",
+      "native_px": "1064x1024",
+      "native_max_side": 1064,
+      "stated_area_sqm": 64.0,
+      "raw_text": "26TH FLOOR\n\nBEDROOM 2\n\nBEDROOM 1\n\nLOUNGEIDINERIKITCHEN BATHROOM\n\nENSUITE\n\nAIRING CUPBOARD\n\nMeasurements are approxin Not to scale. Illustrative purposes only\nMa h Metropix \u00a92025"
+    },
+    {
+      "room_labels": [],
+      "n_room_labels": 0,
+      "metric_dims": [],
+      "imperial_dims": [],
+      "n_dims": 0,
+      "areas_sqm": [],
+      "scale_ratio": null,
+      "not_to_scale_disclaimer": false,
+      "n_chars": 0,
+      "listing_id": "175050626",
+      "path": "media/175050626/floorplan_014.png",
+      "native_px": "2000x1835",
+      "native_max_side": 2000,
+      "stated_area_sqm": 73.02,
+      "raw_text": ""
+    },
+    {
+      "room_labels": [
+        "bedroom",
+        "kitchen",
+        "landing",
+        "living"
+      ],
+      "n_room_labels": 4,
+      "metric_dims": [],
+      "imperial_dims": [],
+      "n_dims": 0,
+      "areas_sqm": [],
+      "scale_ratio": null,
+      "not_to_scale_disclaimer": true,
+      "n_chars": 343,
+      "listing_id": "87781278",
+      "path": "media/87781278/floorplan_014.jpeg",
+      "native_px": "2048x811",
+      "native_max_side": 2048,
+      "stated_area_sqm": null,
+      "raw_text": "Bedroom Two : Kitchen\n508 m x 381m Bedroom Three 371m x 246 m\n16'8\" x 126\" 5.08 m x 343m 122\" x st\"\n\n16'8\" x 113\"\n\u2018 Master Bedroom\n\n490 m x 343 m\n161\" x 113\"\n\nLiving Area\n482 m x 7.07 m\n1610\" x 23'2\"\n\nLanding\n\n| This plan is illustrative only, Top Floor\n\nits details cannot be relied upon and no liability is taken for any errors.\n\nThird Floor"
+    },
+    {
+      "room_labels": [
+        "bathroom",
+        "bedroom",
+        "dining",
+        "hall",
+        "kitchen",
+        "living",
+        "utility"
+      ],
+      "n_room_labels": 7,
+      "metric_dims": [
+        [
+          4.14,
+          3.79
+        ],
+        [
+          2.53,
+          1.89
+        ],
+        [
+          3.9,
+          2.66
+        ],
+        [
+          3.91,
+          3.67
+        ],
+        [
+          4.36,
+          3.23
+        ]
+      ],
+      "imperial_dims": [
+        [
+          2.54,
+          1.88
+        ],
+        [
+          3.91,
+          2.67
+        ],
+        [
+          4.42,
+          3.99
+        ],
+        [
+          3.1,
+          2.79
+        ],
+        [
+          4.34,
+          3.23
+        ]
+      ],
+      "n_dims": 10,
+      "areas_sqm": [
+        113.9,
+        113.9,
+        204.8,
+        204.8,
+        90.9,
+        90.9
+      ],
+      "scale_ratio": null,
+      "not_to_scale_disclaimer": true,
+      "n_chars": 1023,
+      "listing_id": "92098362",
+      "path": "media/92098362/floorplan_018.jpeg",
+      "native_px": "2048x1321",
+      "native_max_side": 2048,
+      "stated_area_sqm": 205.0,
+      "raw_text": "LOWER GROUND FLOOR\n1226 sq.ft. (113.9 sq.m.) approx.\n\nA a\n\nSS\n\n4.14m x 3.79m\n\nHALLWAY\nUTILITY ROOM,\n8'4\" x 6'2\"\n2.53m x 1.89m\nCINEMA ROOM\n12'10\" x 8'9\"\nBEDROOM 3.90m x 2.66m\n14'6\" x 13'1\"\n\n441m x 3.98m\n\n0 \u00b0\nBATHROOM\n10'2\" x 9'2\"\nase ) 3.09m x 2.79)\n\n[ow\n\nGYM\n12\u00b010\" x 12'0\"\n3.91m x 3.67m\n\nLIVING ROOM\nDINING ROOM\nBEDROOM\n14'3\" x 10'7\"\n4.36m x 3.23m\n> : a.\n\nTOTAL FLOOR AREA : 2204sq.ft. (204.8 sq.m.) approx.\n\nWhilst every attempt has been made to ensure the accuracy of the floorplan contained here, measurements\nof doors, windows, rooms and any other items are approximate and no responsibility is taken for any error,\nomission or mis-statement. This plan is for illustrative purposes only and should be used as such by any\nprospective purchaser. The services, systems and appliances shown have not"
+    },
+    {
+      "room_labels": [
+        "bedroom",
+        "lounge"
+      ],
+      "n_room_labels": 2,
+      "metric_dims": [],
+      "imperial_dims": [],
+      "n_dims": 0,
+      "areas_sqm": [],
+      "scale_ratio": null,
+      "not_to_scale_disclaimer": false,
+      "n_chars": 78,
+      "listing_id": "91850037",
+      "path": "media/91850037/floorplan_009.jpeg",
+      "native_px": "717x707",
+      "native_max_side": 717,
+      "stated_area_sqm": null,
+      "raw_text": "Ground Floor\n\nBedroom 3\n\nMaster\nBedroom\n\nBedroom 2\n\nbal _\n(exe)\n\nll\nC3\n\nLounge"
+    },
+    {
+      "room_labels": [
+        "bathroom",
+        "bedroom",
+        "kitchen",
+        "living"
+      ],
+      "n_room_labels": 4,
+      "metric_dims": [],
+      "imperial_dims": [],
+      "n_dims": 0,
+      "areas_sqm": [],
+      "scale_ratio": null,
+      "not_to_scale_disclaimer": false,
+      "n_chars": 52,
+      "listing_id": "91642188",
+      "path": "media/91642188/floorplan_023.jpeg",
+      "native_px": "2048x1815",
+      "native_max_side": 2048,
+      "stated_area_sqm": null,
+      "raw_text": "Bathroom\n\nKitchen\n\nBedroom 1\n\nBedroom 2\n\nLiving\nRoom"
+    },
+    {
+      "room_labels": [
+        "bedroom",
+        "dining",
+        "hall",
+        "kitchen"
+      ],
+      "n_room_labels": 4,
+      "metric_dims": [
+        [
+          7.5,
+          6.3
+        ],
+        [
+          9.2,
+          5.8
+        ],
+        [
+          4.1,
+          3.3
+        ]
+      ],
+      "imperial_dims": [
+        [
+          7.49,
+          6.3
+        ],
+        [
+          9.19,
+          5.77
+        ],
+        [
+          4.11,
+          3.33
+        ]
+      ],
+      "n_dims": 6,
+      "areas_sqm": [
+        207.8,
+        207.8,
+        207.8,
+        207.8
+      ],
+      "scale_ratio": null,
+      "not_to_scale_disclaimer": true,
+      "n_chars": 773,
+      "listing_id": "90594978",
+      "path": "media/90594978/floorplan_014.jpeg",
+      "native_px": "718x2048",
+      "native_max_side": 2048,
+      "stated_area_sqm": null,
+      "raw_text": "GROUND FLOOR\n2237 sq.ft. (207.8 sq.m.) approx\n\nROOF GARDEN\n\nBEDROOM 1\n24'7\" x 20'8\"\n7.5m x 6.3m\n\nSITTING/DINING ROOM\n30'2\" x 18'11\" I\n9.2m x 5.8m\n\nENTRANCE HALL\n\nKITCHEN\n13'6\" x 10'11\"\n4.1m x 3.3m\n\nBEDROOM 3\n\nENTRANCE HALL.\n\nTOTAL FLOOR AREA: 2237 sq.ft. (207.8 sq.m.) approx\n\nWhilst every attempt has been made to ensure the accuracy of the floorplan contained here, measurements\nof doors, windows, rooms and any other items are approximate and no responsibility is taken for any error,\nomission or mis-statement. This plan is for illustrative purposes only and should be used as such by any\nprospective purchaser. The services, systems and appliances shown have not been tested and no guarantee\na to their operability or efficiency can be given.\n\nMade with Metropix \u00a92026"
+    },
+    {
+      "room_labels": [
+        "bedroom",
+        "dining",
+        "hall",
+        "kitchen",
+        "living",
+        "utility"
+      ],
+      "n_room_labels": 6,
+      "metric_dims": [
+        [
+          1.6,
+          2.89
+        ],
+        [
+          2.96,
+          4.48
+        ],
+        [
+          2.87,
+          2.71
+        ]
+      ],
+      "imperial_dims": [
+        [
+          2.95,
+          4.47
+        ]
+      ],
+      "n_dims": 4,
+      "areas_sqm": [],
+      "scale_ratio": null,
+      "not_to_scale_disclaimer": false,
+      "n_chars": 229,
+      "listing_id": "91094415",
+      "path": "media/91094415/floorplan_030.jpeg",
+      "native_px": "1388x1128",
+      "native_max_side": 1388,
+      "stated_area_sqm": 307.0,
+      "raw_text": "Kitchen/Living/Dining\n\nArea 10.79m\n|\n=i]\n= \u2014\nHallway i Living\n. = Utility Area\n~~ 1.60m x 2.89m 2.96m x 4.48m\n(5\u00b03\u201d x 96\u201d) (9'8\" x 14'8\u201d)\n\n2.87m x 2.71m\n(9'S\u201d x 811\u201d)\n\nBedroom 2\n449m\n\nBedroom |\n6.27m (20'7\u201d) max\n7.50m (24'7\") max"
+    },
+    {
+      "room_labels": [],
+      "n_room_labels": 0,
+      "metric_dims": [],
+      "imperial_dims": [],
+      "n_dims": 0,
+      "areas_sqm": [],
+      "scale_ratio": null,
+      "not_to_scale_disclaimer": false,
+      "n_chars": 0,
+      "listing_id": "91428111",
+      "path": "media/91428111/floorplan_011.png",
+      "native_px": "382x618",
+      "native_max_side": 618,
+      "stated_area_sqm": 66.0,
+      "raw_text": ""
+    },
+    {
+      "room_labels": [
+        "bedroom",
+        "dining",
+        "hall",
+        "kitchen",
+        "landing",
+        "living"
+      ],
+      "n_room_labels": 6,
+      "metric_dims": [],
+      "imperial_dims": [],
+      "n_dims": 0,
+      "areas_sqm": [
+        103.9,
+        103.9
+      ],
+      "scale_ratio": null,
+      "not_to_scale_disclaimer": true,
+      "n_chars": 672,
+      "listing_id": "92121960",
+      "path": "media/92121960/floorplan_026.jpeg",
+      "native_px": "2048x1698",
+      "native_max_side": 2048,
+      "stated_area_sqm": 106.0,
+      "raw_text": "oR\n5.1.) approx\n\nKITCHEN\n\nBEDROOM\nBEDROOM 1\nDOWN\n\nLANDING WARDROBE\n\nHALLWAY\"\n\nDINING ROOM\n\nLIVING ROOM\n\n131B STREET LANE\n\nTOTAL FLOOR AREA: 1118 sq.ft. (103.9 sq.m.) approx.\n\nWhilst every attempt has been made to ensure the accuracy of the floorplan contained here, measurements\nof doors, windows, rooms and any other items are approximate and no responsibility is taken for any error,\nomission or mis-statement. This plan is for illustrative purposes only and should be used as such by any\nprospective purchaser. The services, systems and appliances shown have not been tested and no guarantee\nas to their operability or efficiency can be given.\n\nMade with Metropix \u00a92026"
+    },
+    {
+      "room_labels": [
+        "balcony",
+        "bedroom",
+        "dining",
+        "hall",
+        "kitchen"
+      ],
+      "n_room_labels": 5,
+      "metric_dims": [],
+      "imperial_dims": [
+        [
+          5.49,
+          4.72
+        ],
+        [
+          3.73,
+          3.28
+        ],
+        [
+          3.96,
+          3.51
+        ]
+      ],
+      "n_dims": 3,
+      "areas_sqm": [],
+      "scale_ratio": null,
+      "not_to_scale_disclaimer": false,
+      "n_chars": 164,
+      "listing_id": "91968666",
+      "path": "media/91968666/floorplan_017.gif",
+      "native_px": "1108x1417",
+      "native_max_side": 1417,
+      "stated_area_sqm": 103.0,
+      "raw_text": "Balcony\n\nSitting\na Room\nDining 18'0\" x 15'6\"\nKitchen 5.49 x 4.72\n12'3\" x 10'9\"\n3.73 x 3.28\n\nEntrance\nHall\n\nBedroom 2\n13'0\" x 11'6\"\n3.96 x 3.51\n\nDacre, Son & Hartley"
+    },
+    {
+      "room_labels": [],
+      "n_room_labels": 0,
+      "metric_dims": [],
+      "imperial_dims": [],
+      "n_dims": 0,
+      "areas_sqm": [],
+      "scale_ratio": 100,
+      "not_to_scale_disclaimer": false,
+      "n_chars": 19,
+      "listing_id": "161130452",
+      "path": "media/161130452/floorplan_013.jpeg",
+      "native_px": "553x681",
+      "native_max_side": 681,
+      "stated_area_sqm": 180.0,
+      "raw_text": "Apartment 03 1: 100"
+    },
+    {
+      "room_labels": [
+        "bathroom",
+        "bedroom",
+        "hall",
+        "kitchen",
+        "lounge"
+      ],
+      "n_room_labels": 5,
+      "metric_dims": [
+        [
+          2.88,
+          3.36
+        ],
+        [
+          4.72,
+          3.24
+        ],
+        [
+          0.9,
+          3.15
+        ],
+        [
+          1.81,
+          3.4
+        ],
+        [
+          1.8,
+          2.01
+        ]
+      ],
+      "imperial_dims": [],
+      "n_dims": 5,
+      "areas_sqm": [],
+      "scale_ratio": null,
+      "not_to_scale_disclaimer": true,
+      "n_chars": 278,
+      "listing_id": "91958238",
+      "path": "media/91958238/floorplan_010.png",
+      "native_px": "2048x1448",
+      "native_max_side": 2048,
+      "stated_area_sqm": null,
+      "raw_text": "i haroer\n\nzo\n\nproperty\nBedroom\ng'5\" x 1 10\u00b0\n2.88 x 3.36M\nLounge\n155\" x 10m\n4.72 x 3.24m\nApproximate total area\u201d\nHallway i ae\n2'11\" x@l0/3\"\n0.90 x 3.15m :\n=\nKitchen\nef\u00bb 5111\" x 11'1\"\n1.81 x 3.40 m\nla O\u00a9\n| . {Lt O\nBathroom\n5'1 (ow 4 6'7\" \u201cx e RICS IPMS.\n\n1.80 x 2.01 m\n\nGIRAFFE360"
+    },
+    {
+      "room_labels": [
+        "balcony",
+        "bathroom",
+        "bedroom",
+        "cupboard",
+        "hall",
+        "kitchen",
+        "lounge"
+      ],
+      "n_room_labels": 7,
+      "metric_dims": [
+        [
+          4.7,
+          3.83
+        ],
+        [
+          5.63,
+          4.3
+        ],
+        [
+          4.3,
+          3.87
+        ],
+        [
+          3.66,
+          4.44
+        ],
+        [
+          3.33,
+          3.5
+        ],
+        [
+          1.92,
+          2.01
+        ]
+      ],
+      "imperial_dims": [
+        [
+          4.7,
+          3.84
+        ],
+        [
+          5.64,
+          4.29
+        ],
+        [
+          3.66,
+          4.45
+        ],
+        [
+          3.33,
+          3.51
+        ]
+      ],
+      "n_dims": 10,
+      "areas_sqm": [
+        9.8,
+        98.4,
+        108.1
+      ],
+      "scale_ratio": null,
+      "not_to_scale_disclaimer": false,
+      "n_chars": 464,
+      "listing_id": "89229111",
+      "path": "media/89229111/floorplan_028.png",
+      "native_px": "2048x1419",
+      "native_max_side": 2048,
+      "stated_area_sqm": 108.0,
+      "raw_text": "vanilla square\n\n11a Fleurs Avenue\n\nDumbreck\nGlasgow BEDROOM 1 LOUNGE J\nG41 SAR BALCONY 15'5\u201d x 12'7\u201d LOUNGE\n4.70 m x 3.83 m 18'6\u201d x 14\u20191\n5.63 m x 4.30 m\n\nHALLWAY\n141\u201d x 12'8\u201d\n4.30 m x 3.87 m\n\nKITCHEN\n12\u20190\u201d x 14'7\u201d\n3.66 m x 4.44 m\n\nBEDROOM 2\n10\u201911\u201d x 11'6\u201d\n3.33 m x 3.50 m\n\nBATHROOM\n63\"x67\"\n1,92mx 2.01 m\n\nGROUND FLOOR\n\nCUPBOARD\n\nFIRST FLOOR\n\nGROSS INTERNAL AREA\nGROUND FLOOR: 105 sq. ft , 9 m?, FIRST FLOOR: 1,059 sq. ft , 98 m?:\nTOTAL AREA : 1,164 sq. ft , 108 m?"
+    },
+    {
+      "room_labels": [
+        "bedroom",
+        "living"
+      ],
+      "n_room_labels": 2,
+      "metric_dims": [
+        [
+          2.73,
+          3.19
+        ],
+        [
+          5.17,
+          6.3
+        ],
+        [
+          4.22,
+          0.99
+        ],
+        [
+          1.8,
+          2.88
+        ]
+      ],
+      "imperial_dims": [],
+      "n_dims": 4,
+      "areas_sqm": [],
+      "scale_ratio": null,
+      "not_to_scale_disclaimer": false,
+      "n_chars": 245,
+      "listing_id": "92182410",
+      "path": "media/92182410/floorplan_035.jpeg",
+      "native_px": "1632x1272",
+      "native_max_side": 1632,
+      "stated_area_sqm": 109.0,
+      "raw_text": "YATES\nHELLIER\n\nBedroom\n2.73mx3.19m\n\nWalk-in Sh\n\nLiving Room\n5.17mx6.30m\n\nLaundry\n\n4.22mx0.99m\n\nGround Floor\n\nFloor Plan Created By Cubicasa App. Measurements Deemed Highly Reliable But Not Guaranteed\n\nOpen To Below\n\n1st Floor\n\nRoom\n1.80 mx 2.88m"
+    },
+    {
+      "room_labels": [
+        "bedroom",
+        "dining",
+        "ensuite",
+        "hall",
+        "kitchen",
+        "lounge",
+        "terrace",
+        "utility"
+      ],
+      "n_room_labels": 8,
+      "metric_dims": [
+        [
+          3.14,
+          5.63
+        ],
+        [
+          4.71,
+          5.26
+        ],
+        [
+          1.46,
+          2.1
+        ],
+        [
+          2.71,
+          6.38
+        ],
+        [
+          3.54,
+          6.39
+        ],
+        [
+          4.42,
+          2.33
+        ],
+        [
+          4.74,
+          6.97
+        ],
+        [
+          1.87,
+          3.86
+        ],
+        [
+          8.08,
+          5.69
+        ],
+        [
+          6.67,
+          3.82
+        ]
+      ],
+      "imperial_dims": [
+        [
+          4.75,
+          6.96
+        ],
+        [
+          4.5,
+          2.44
+        ],
+        [
+          4.65,
+          5.03
+        ]
+      ],
+      "n_dims": 13,
+      "areas_sqm": [],
+      "scale_ratio": null,
+      "not_to_scale_disclaimer": false,
+      "n_chars": 510,
+      "listing_id": "92181366",
+      "path": "media/92181366/floorplan_025.png",
+      "native_px": "1176x1356",
+      "native_max_side": 1356,
+      "stated_area_sqm": 261.99,
+      "raw_text": "Kitchen \u201d\n10'4\" x 18\u00b06\n3.14mx5.63m\n\nHall\n\n15'5\" x 173\n4.71 mx5.26m\n\nwe\n4\u00b010\" 611\n1.46 mx 2.10 m\n\nTerrace\n14'6\"x 163\"\n4.43 mx 495m\n\nDining Area\n\n8'11\"x 2011\n2.71mx6.38m\n\nLounge\n\n11'7\" x 20111\n3.54 mx 6.39 m\n\nUtility Room\n146\" x78\n4.42 mx 2.33m\n\nFamily Room\n\n15'7\" x 22'10\"\n4.74mx6.97m\n\nEnsuite\n6'2\" x 128\n1.87 mx 3.86 m\n\nBedroom 1\n266\" x 18'8'\n8.08 mx 5.69 m\n\nDressing Area\n107\" x77\"\n3.22mx 232m\n\n73x62\n\nHall Bedroom 2\n14'9\" x 8'0' . wl 15'3\" x 16'6\n450m x2.44m 464m x5.04m\n\nBedroom 3\n21\u00b011\" x 126\n6.67 mx 3.82m"
+    },
+    {
+      "room_labels": [
+        "bedroom",
+        "dining",
+        "kitchen",
+        "living"
+      ],
+      "n_room_labels": 4,
+      "metric_dims": [
+        [
+          4.68,
+          3.28
+        ],
+        [
+          3.2,
+          2.72
+        ]
+      ],
+      "imperial_dims": [
+        [
+          4.67,
+          3.28
+        ],
+        [
+          3.2,
+          2.72
+        ]
+      ],
+      "n_dims": 4,
+      "areas_sqm": [
+        28.1,
+        28.1
+      ],
+      "scale_ratio": null,
+      "not_to_scale_disclaimer": true,
+      "n_chars": 305,
+      "listing_id": "91798662",
+      "path": "media/91798662/floorplan_020.jpeg",
+      "native_px": "1248x1032",
+      "native_max_side": 1248,
+      "stated_area_sqm": 28.0,
+      "raw_text": "Flat 3, 16 Knowle Road, Totterdown, Bristol, BS4 2EE\n\nApproximate Gross Internal Area = 303 sq ft / 28.14 sqm\n\n\\ A\nKitchen / Dining /\nLiving Room Bedroom\n4.68 x 3.28 m 3.20 x 2.72 m\n15'4\" x 10'9\" 10'6\" x 8'11\"\n\nIN\n\nIllustration for identification purposes only, measurements are approximate, not to scale."
+    },
+    {
+      "room_labels": [
+        "bedroom",
+        "diner",
+        "hall",
+        "lounge"
+      ],
+      "n_room_labels": 4,
+      "metric_dims": [
+        [
+          4.1,
+          3.6
+        ],
+        [
+          4.5,
+          2.2
+        ],
+        [
+          6.3,
+          5.1
+        ]
+      ],
+      "imperial_dims": [
+        [
+          4.06,
+          3.63
+        ],
+        [
+          4.5,
+          2.16
+        ],
+        [
+          6.35,
+          5.11
+        ]
+      ],
+      "n_dims": 6,
+      "areas_sqm": [
+        67.2,
+        67.2,
+        67.2,
+        67.2
+      ],
+      "scale_ratio": null,
+      "not_to_scale_disclaimer": true,
+      "n_chars": 744,
+      "listing_id": "170816573",
+      "path": "media/170816573/floorplan_014.jpeg",
+      "native_px": "985x2048",
+      "native_max_side": 2048,
+      "stated_area_sqm": 66.98,
+      "raw_text": "TOP FLOOR FLAT\n723 sq.ft. (67.2 sq.m.) approx.\n\nBEDROOM 1\n13'4\" x 11'11\"\n4.1m x 3.6m\n\nBEDROOM 2\n14'9\" x 7'1\" : HALLWAY\n4.5m x 2.2m\n\nOl) ~~ case\npe] ue xra\n\nLOUNGEIDINER\n20'10\" x 16'9\"\n6.3m x 5.1m\n\nTOTAL FLOOR AREA: 723 sq.ft. (67.2 sq.m.) approx\n\nWhilst every attempt has been made to ensure the accuracy of the floorplan contained here, measurements\nof doors, windows, rooms and any other items are approximate and no responsibility is taken for any error,\nomission or mis-statement. This plan is for illustrative purposes only and should be used as such by any\nprospective purchaser. The services, systems and appliances shown have not been tested and no guarantee\nas to their operability or efficiency can be given.\n\nMade with Metropix \u00a92025"
+    },
+    {
+      "room_labels": [
+        "bedroom",
+        "ensuite",
+        "hall",
+        "reception"
+      ],
+      "n_room_labels": 4,
+      "metric_dims": [
+        [
+          3.84,
+          3.27
+        ],
+        [
+          2.73,
+          2.03
+        ],
+        [
+          9.29,
+          2.04
+        ],
+        [
+          5.16,
+          4.48
+        ],
+        [
+          5.27,
+          2.31
+        ]
+      ],
+      "imperial_dims": [
+        [
+          3.84,
+          3.28
+        ],
+        [
+          2.72,
+          2.03
+        ],
+        [
+          5.16,
+          4.47
+        ],
+        [
+          5.26,
+          2.31
+        ]
+      ],
+      "n_dims": 9,
+      "areas_sqm": [
+        115.1,
+        115.1,
+        115.1,
+        115.1
+      ],
+      "scale_ratio": null,
+      "not_to_scale_disclaimer": true,
+      "n_chars": 837,
+      "listing_id": "91511466",
+      "path": "media/91511466/floorplan_017.jpeg",
+      "native_px": "1930x2048",
+      "native_max_side": 2048,
+      "stated_area_sqm": 111.48,
+      "raw_text": "GARDEN APARTMENT\n1239 sq.ft. (115.1 sq.m.) approx.\n\nOe}\ntO)\n\nPANTRY ENSUITE\n\nBEDROOM\nHALLWAY > 12'7\" x 10'9\"\n- E 3.84m x 3.27m\n\nBEDROOM\n8'11\" x 6'8\"\n\u2014\u2014~2.73m x 2.03m\n\nRECEPTION ROOM TCH Kes HALLWAY\n16'11\" x 14'8\" 9.29m x 2.04m\n/ 5.16m x 4.48m\n\n< BEDROOM\nORAGE 17'3\" x 7'7\"\n5.27m x 2.31m\n\nTOTAL FLOOR AREA: 1239 sq.ft. (115.1 sq.m.) approx\n\nWhilst every attempt has been made to ensure the accuracy of the floorplan contained here, measurements\nof doors, windows, rooms and any other items are approximate and no responsibility is taken for any error,\nomission or mis-statement. This plan is for illustrative purposes only and should be used as such by any\nprospective purchaser. The services, systems and appliances shown have not been tested and no guarantee\nas to their operability or efficiency ca"
+    },
+    {
+      "room_labels": [
+        "bathroom",
+        "bedroom",
+        "dining",
+        "en-suite",
+        "hall",
+        "kitchen",
+        "living",
+        "terrace"
+      ],
+      "n_room_labels": 8,
+      "metric_dims": [],
+      "imperial_dims": [],
+      "n_dims": 0,
+      "areas_sqm": [],
+      "scale_ratio": null,
+      "not_to_scale_disclaimer": false,
+      "n_chars": 127,
+      "listing_id": "90211176",
+      "path": "media/90211176/floorplan_009.jpeg",
+      "native_px": "1977x1854",
+      "native_max_side": 1977,
+      "stated_area_sqm": 118.0,
+      "raw_text": "Principal Bedroom\n\nEn-suite\n\nBathroom\n\nUS) WD\n\nEntrance Hall\n\nKitchen/Dining/Living\n\nBedroom 3\n\nEn-suite Bedroom 2\n\nTerrace\n\nbd"
+    }
+  ]
+}

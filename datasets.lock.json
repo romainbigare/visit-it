@@ -1,0 +1,11 @@
+{
+  "files": {
+    "swiss_dwellings/geometries.csv": {
+      "fetched_at": "2026-08-20T08:43:51Z",
+      "sha256": "8b1e376c01cad8db20c0bbd72350a1726e8cf1a524b96a009a568fc6e6188a15",
+      "size_bytes": 792527191,
+      "url": "https://zenodo.org/api/records/7070952/files/geometries.csv/content"
+    }
+  },
+  "version": 1
+}

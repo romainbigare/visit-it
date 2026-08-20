@@ -1,0 +1,5035 @@
+{
+  "stage": "0-triage",
+  "model": "google/siglip-base-patch16-224",
+  "params_m": 203.2,
+  "device": "cpu",
+  "n_images": 553,
+  "load_seconds": 5.4,
+  "type_seconds": 70.1,
+  "ms_per_image_type": 126.8,
+  "room_seconds": 48.9,
+  "floorplan_detection": {
+    "tp": 23,
+    "fp": 5,
+    "fn": 1,
+    "tn": 524,
+    "precision": 0.8214,
+    "recall": 0.9583,
+    "f1": 0.8846,
+    "accuracy": 0.9892
+  },
+  "predicted_type_distribution": {
+    "interior": 439,
+    "exterior": 77,
+    "map": 8,
+    "floorplan": 28,
+    "epc": 1
+  },
+  "predicted_room_distribution": {
+    "bedroom": 104,
+    "living_room": 94,
+    "kitchen": 45,
+    "bathroom": 66,
+    "garden": 22,
+    "dining_room": 45,
+    "hallway": 47,
+    "other_room": 16
+  },
+  "predictions": [
+    {
+      "path": "media/87977241/photo_000.jpeg",
+      "listing_id": "87977241",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0071965609677135944,
+      "pred_room": "bedroom",
+      "room_score": 0.09668555110692978
+    },
+    {
+      "path": "media/87977241/photo_001.jpeg",
+      "listing_id": "87977241",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.013251983560621738,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/87977241/photo_002.jpeg",
+      "listing_id": "87977241",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0074536558240652084,
+      "pred_room": "living_room",
+      "room_score": 0.06603089720010757
+    },
+    {
+      "path": "media/87977241/photo_003.jpeg",
+      "listing_id": "87977241",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.006549843121320009,
+      "pred_room": "kitchen",
+      "room_score": 0.031851354986429214
+    },
+    {
+      "path": "media/87977241/photo_004.jpeg",
+      "listing_id": "87977241",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.030352318659424782,
+      "pred_room": "bedroom",
+      "room_score": 0.2658659517765045
+    },
+    {
+      "path": "media/87977241/photo_005.jpeg",
+      "listing_id": "87977241",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0006970575195737183,
+      "pred_room": "bathroom",
+      "room_score": 0.0554727278649807
+    },
+    {
+      "path": "media/87977241/photo_006.jpeg",
+      "listing_id": "87977241",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.01243169791996479,
+      "pred_room": "living_room",
+      "room_score": 0.08910388499498367
+    },
+    {
+      "path": "media/87977241/photo_007.jpeg",
+      "listing_id": "87977241",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.01633431948721409,
+      "pred_room": "kitchen",
+      "room_score": 0.044220391660928726
+    },
+    {
+      "path": "media/87977241/floorplan_008.png",
+      "listing_id": "87977241",
+      "truth_type": "floorplan",
+      "pred_type": "map",
+      "type_score": 4.113341219635913e-06,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/172018976/photo_000.jpeg",
+      "listing_id": "172018976",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.00012445442553143948,
+      "pred_room": "garden",
+      "room_score": 0.0028313822112977505
+    },
+    {
+      "path": "media/172018976/photo_001.jpeg",
+      "listing_id": "172018976",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.006720413453876972,
+      "pred_room": "bedroom",
+      "room_score": 0.048910632729530334
+    },
+    {
+      "path": "media/172018976/photo_002.jpeg",
+      "listing_id": "172018976",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.010773411951959133,
+      "pred_room": "living_room",
+      "room_score": 0.05643265321850777
+    },
+    {
+      "path": "media/172018976/photo_003.jpeg",
+      "listing_id": "172018976",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 3.89934575650841e-05,
+      "pred_room": "garden",
+      "room_score": 7.225888839457184e-05
+    },
+    {
+      "path": "media/172018976/photo_004.jpeg",
+      "listing_id": "172018976",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.07702182978391647,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/172018976/photo_005.jpeg",
+      "listing_id": "172018976",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0013251726049929857,
+      "pred_room": "kitchen",
+      "room_score": 0.1097709909081459
+    },
+    {
+      "path": "media/172018976/photo_006.jpeg",
+      "listing_id": "172018976",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.006966025102883577,
+      "pred_room": "living_room",
+      "room_score": 0.23265472054481506
+    },
+    {
+      "path": "media/172018976/photo_007.jpeg",
+      "listing_id": "172018976",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.029003985226154327,
+      "pred_room": "living_room",
+      "room_score": 0.07073923945426941
+    },
+    {
+      "path": "media/172018976/photo_008.jpeg",
+      "listing_id": "172018976",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.00030358522781170905,
+      "pred_room": "bathroom",
+      "room_score": 0.3859698176383972
+    },
+    {
+      "path": "media/172018976/photo_009.jpeg",
+      "listing_id": "172018976",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.03929675370454788,
+      "pred_room": "bedroom",
+      "room_score": 0.4008514881134033
+    },
+    {
+      "path": "media/172018976/photo_010.jpeg",
+      "listing_id": "172018976",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.0005079405382275581,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/172018976/floorplan_011.jpeg",
+      "listing_id": "172018976",
+      "truth_type": "floorplan",
+      "pred_type": "floorplan",
+      "type_score": 0.0011461152462288737,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/169576625/photo_000.jpeg",
+      "listing_id": "169576625",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0045813387259840965,
+      "pred_room": "living_room",
+      "room_score": 0.007620456162840128
+    },
+    {
+      "path": "media/169576625/photo_001.jpeg",
+      "listing_id": "169576625",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.023853598162531853,
+      "pred_room": "dining_room",
+      "room_score": 0.022601332515478134
+    },
+    {
+      "path": "media/169576625/photo_002.jpeg",
+      "listing_id": "169576625",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0011171035002917051,
+      "pred_room": "kitchen",
+      "room_score": 0.08296787738800049
+    },
+    {
+      "path": "media/169576625/photo_003.jpeg",
+      "listing_id": "169576625",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.003083612769842148,
+      "pred_room": "bedroom",
+      "room_score": 0.020704612135887146
+    },
+    {
+      "path": "media/169576625/photo_004.jpeg",
+      "listing_id": "169576625",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.004475544672459364,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/169576625/photo_005.jpeg",
+      "listing_id": "169576625",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.41368114948272705,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/169576625/photo_006.jpeg",
+      "listing_id": "169576625",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0034872398246079683,
+      "pred_room": "dining_room",
+      "room_score": 0.02485063672065735
+    },
+    {
+      "path": "media/169576625/photo_007.jpeg",
+      "listing_id": "169576625",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0036456752568483353,
+      "pred_room": "bedroom",
+      "room_score": 0.059982944279909134
+    },
+    {
+      "path": "media/169576625/photo_008.jpeg",
+      "listing_id": "169576625",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.004213940817862749,
+      "pred_room": "bedroom",
+      "room_score": 0.17561648786067963
+    },
+    {
+      "path": "media/169576625/photo_009.jpeg",
+      "listing_id": "169576625",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.003915061708539724,
+      "pred_room": "bedroom",
+      "room_score": 0.15773636102676392
+    },
+    {
+      "path": "media/169576625/photo_010.jpeg",
+      "listing_id": "169576625",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0007628134917467833,
+      "pred_room": "bathroom",
+      "room_score": 0.6536064147949219
+    },
+    {
+      "path": "media/169576625/photo_011.jpeg",
+      "listing_id": "169576625",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.00012068668729625642,
+      "pred_room": "bathroom",
+      "room_score": 0.016640661284327507
+    },
+    {
+      "path": "media/169576625/photo_012.jpeg",
+      "listing_id": "169576625",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0008880917448550463,
+      "pred_room": "hallway",
+      "room_score": 0.001959104323759675
+    },
+    {
+      "path": "media/169576625/photo_013.jpeg",
+      "listing_id": "169576625",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0014819297939538956,
+      "pred_room": "living_room",
+      "room_score": 0.00951127614825964
+    },
+    {
+      "path": "media/169576625/photo_014.jpeg",
+      "listing_id": "169576625",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.000356017000740394,
+      "pred_room": "other_room",
+      "room_score": 0.0004940107464790344
+    },
+    {
+      "path": "media/169576625/photo_015.jpeg",
+      "listing_id": "169576625",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0001344152697129175,
+      "pred_room": "hallway",
+      "room_score": 8.566183169023134e-06
+    },
+    {
+      "path": "media/169576625/photo_016.jpeg",
+      "listing_id": "169576625",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0009998244931921363,
+      "pred_room": "hallway",
+      "room_score": 0.00311205442994833
+    },
+    {
+      "path": "media/169576625/photo_017.jpeg",
+      "listing_id": "169576625",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0014003502437844872,
+      "pred_room": "living_room",
+      "room_score": 0.0040193828754127026
+    },
+    {
+      "path": "media/169576625/floorplan_018.jpeg",
+      "listing_id": "169576625",
+      "truth_type": "floorplan",
+      "pred_type": "floorplan",
+      "type_score": 0.010649516247212887,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/91953234/photo_000.jpeg",
+      "listing_id": "91953234",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.015104076825082302,
+      "pred_room": "bedroom",
+      "room_score": 0.19968187808990479
+    },
+    {
+      "path": "media/91953234/photo_001.jpeg",
+      "listing_id": "91953234",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.00580302719026804,
+      "pred_room": "bedroom",
+      "room_score": 0.1585000902414322
+    },
+    {
+      "path": "media/91953234/photo_002.jpeg",
+      "listing_id": "91953234",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.006653455086052418,
+      "pred_room": "bedroom",
+      "room_score": 0.1537402719259262
+    },
+    {
+      "path": "media/91953234/photo_003.jpeg",
+      "listing_id": "91953234",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.00027791806496679783,
+      "pred_room": "bedroom",
+      "room_score": 0.04187034070491791
+    },
+    {
+      "path": "media/91953234/photo_004.jpeg",
+      "listing_id": "91953234",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0013483300572261214,
+      "pred_room": "bedroom",
+      "room_score": 0.0006625053938478231
+    },
+    {
+      "path": "media/91953234/photo_005.jpeg",
+      "listing_id": "91953234",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.009767545387148857,
+      "pred_room": "bedroom",
+      "room_score": 0.001626563840545714
+    },
+    {
+      "path": "media/91953234/photo_006.jpeg",
+      "listing_id": "91953234",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.002346478868275881,
+      "pred_room": "garden",
+      "room_score": 0.024395179003477097
+    },
+    {
+      "path": "media/91953234/photo_007.jpeg",
+      "listing_id": "91953234",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.009978123009204865,
+      "pred_room": "living_room",
+      "room_score": 0.015711670741438866
+    },
+    {
+      "path": "media/91953234/photo_008.jpeg",
+      "listing_id": "91953234",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.00177136086858809,
+      "pred_room": "dining_room",
+      "room_score": 0.07795222103595734
+    },
+    {
+      "path": "media/91953234/photo_009.jpeg",
+      "listing_id": "91953234",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.006191646214574575,
+      "pred_room": "dining_room",
+      "room_score": 0.22134806215763092
+    },
+    {
+      "path": "media/91953234/photo_010.jpeg",
+      "listing_id": "91953234",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.003984250593930483,
+      "pred_room": "kitchen",
+      "room_score": 0.11940371990203857
+    },
+    {
+      "path": "media/91953234/photo_011.jpeg",
+      "listing_id": "91953234",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.004995840135961771,
+      "pred_room": "kitchen",
+      "room_score": 0.011296422220766544
+    },
+    {
+      "path": "media/91953234/photo_012.jpeg",
+      "listing_id": "91953234",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.002100494457408786,
+      "pred_room": "kitchen",
+      "room_score": 0.0933268591761589
+    },
+    {
+      "path": "media/91953234/photo_013.jpeg",
+      "listing_id": "91953234",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.003078470705077052,
+      "pred_room": "bathroom",
+      "room_score": 0.723281979560852
+    },
+    {
+      "path": "media/91953234/photo_014.jpeg",
+      "listing_id": "91953234",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0018879034323617816,
+      "pred_room": "bathroom",
+      "room_score": 0.0769042894244194
+    },
+    {
+      "path": "media/91953234/photo_015.jpeg",
+      "listing_id": "91953234",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.0037876449059695005,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/91953234/photo_016.jpeg",
+      "listing_id": "91953234",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.004016905557364225,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/91953234/photo_017.jpeg",
+      "listing_id": "91953234",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.0010529446881264448,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/91953234/photo_018.jpeg",
+      "listing_id": "91953234",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.004302998539060354,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/91953234/photo_019.jpeg",
+      "listing_id": "91953234",
+      "truth_type": "photo",
+      "pred_type": "map",
+      "type_score": 0.00011067764717154205,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/91953234/photo_020.jpeg",
+      "listing_id": "91953234",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.00017462739197071642,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/91953234/photo_021.jpeg",
+      "listing_id": "91953234",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.00446942588314414,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/91953234/photo_022.jpeg",
+      "listing_id": "91953234",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 1.0765145816549193e-05,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/91953234/floorplan_023.png",
+      "listing_id": "91953234",
+      "truth_type": "floorplan",
+      "pred_type": "floorplan",
+      "type_score": 0.055715471506118774,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/159886049/photo_000.jpeg",
+      "listing_id": "159886049",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.11946479976177216,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/159886049/photo_001.jpeg",
+      "listing_id": "159886049",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.002762692514806986,
+      "pred_room": "living_room",
+      "room_score": 0.037731677293777466
+    },
+    {
+      "path": "media/159886049/photo_002.jpeg",
+      "listing_id": "159886049",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.004768734332174063,
+      "pred_room": "living_room",
+      "room_score": 0.02646695263683796
+    },
+    {
+      "path": "media/159886049/photo_003.jpeg",
+      "listing_id": "159886049",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.013708123005926609,
+      "pred_room": "kitchen",
+      "room_score": 0.03128979727625847
+    },
+    {
+      "path": "media/159886049/photo_004.jpeg",
+      "listing_id": "159886049",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0024250654969364405,
+      "pred_room": "bedroom",
+      "room_score": 0.13387876749038696
+    },
+    {
+      "path": "media/159886049/photo_005.jpeg",
+      "listing_id": "159886049",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.001634345157071948,
+      "pred_room": "bathroom",
+      "room_score": 0.06811127066612244
+    },
+    {
+      "path": "media/159886049/photo_006.jpeg",
+      "listing_id": "159886049",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.003325374098494649,
+      "pred_room": "bedroom",
+      "room_score": 0.1687009483575821
+    },
+    {
+      "path": "media/159886049/photo_007.jpeg",
+      "listing_id": "159886049",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0005844766274094582,
+      "pred_room": "living_room",
+      "room_score": 0.0034966329112648964
+    },
+    {
+      "path": "media/159886049/photo_008.jpeg",
+      "listing_id": "159886049",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.00026259635342285037,
+      "pred_room": "hallway",
+      "room_score": 3.916996865882538e-05
+    },
+    {
+      "path": "media/159886049/photo_009.jpeg",
+      "listing_id": "159886049",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.0017174654640257359,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/159886049/photo_010.jpeg",
+      "listing_id": "159886049",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0036048050969839096,
+      "pred_room": "living_room",
+      "room_score": 0.045908089727163315
+    },
+    {
+      "path": "media/159886049/photo_011.jpeg",
+      "listing_id": "159886049",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.00034915455034933984,
+      "pred_room": "bathroom",
+      "room_score": 0.6087248921394348
+    },
+    {
+      "path": "media/159886049/photo_012.jpeg",
+      "listing_id": "159886049",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.05913645401597023,
+      "pred_room": "other_room",
+      "room_score": 0.790777862071991
+    },
+    {
+      "path": "media/159886049/photo_013.jpeg",
+      "listing_id": "159886049",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0014227558858692646,
+      "pred_room": "dining_room",
+      "room_score": 0.0008892390178516507
+    },
+    {
+      "path": "media/159886049/photo_014.jpeg",
+      "listing_id": "159886049",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0007648752653039992,
+      "pred_room": "living_room",
+      "room_score": 4.215251829009503e-05
+    },
+    {
+      "path": "media/159886049/photo_015.jpeg",
+      "listing_id": "159886049",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 4.144947524764575e-05,
+      "pred_room": "other_room",
+      "room_score": 0.0015910661313682795
+    },
+    {
+      "path": "media/159886049/photo_016.jpeg",
+      "listing_id": "159886049",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.03639470413327217,
+      "pred_room": "dining_room",
+      "room_score": 0.04342149570584297
+    },
+    {
+      "path": "media/159886049/photo_017.jpeg",
+      "listing_id": "159886049",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.005830422975122929,
+      "pred_room": "living_room",
+      "room_score": 0.03779592737555504
+    },
+    {
+      "path": "media/159886049/floorplan_018.jpeg",
+      "listing_id": "159886049",
+      "truth_type": "floorplan",
+      "pred_type": "floorplan",
+      "type_score": 0.004785569384694099,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/175050626/photo_000.jpeg",
+      "listing_id": "175050626",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0025396200362592936,
+      "pred_room": "living_room",
+      "room_score": 0.01735190860927105
+    },
+    {
+      "path": "media/175050626/photo_001.jpeg",
+      "listing_id": "175050626",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.004288472700864077,
+      "pred_room": "dining_room",
+      "room_score": 0.05835558474063873
+    },
+    {
+      "path": "media/175050626/photo_002.jpeg",
+      "listing_id": "175050626",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.004857265390455723,
+      "pred_room": "kitchen",
+      "room_score": 0.018716314807534218
+    },
+    {
+      "path": "media/175050626/photo_003.jpeg",
+      "listing_id": "175050626",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.00024076794215943664,
+      "pred_room": "kitchen",
+      "room_score": 0.07986516505479813
+    },
+    {
+      "path": "media/175050626/photo_004.jpeg",
+      "listing_id": "175050626",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0006117483135312796,
+      "pred_room": "bedroom",
+      "room_score": 0.05726328119635582
+    },
+    {
+      "path": "media/175050626/photo_005.jpeg",
+      "listing_id": "175050626",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0028879151213914156,
+      "pred_room": "bedroom",
+      "room_score": 0.1349361389875412
+    },
+    {
+      "path": "media/175050626/photo_006.jpeg",
+      "listing_id": "175050626",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.002613133518025279,
+      "pred_room": "bedroom",
+      "room_score": 0.08273402601480484
+    },
+    {
+      "path": "media/175050626/photo_007.jpeg",
+      "listing_id": "175050626",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0005638988805003464,
+      "pred_room": "bedroom",
+      "room_score": 0.054636552929878235
+    },
+    {
+      "path": "media/175050626/photo_008.jpeg",
+      "listing_id": "175050626",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 4.084686952410266e-05,
+      "pred_room": "bathroom",
+      "room_score": 0.016063839197158813
+    },
+    {
+      "path": "media/175050626/photo_009.jpeg",
+      "listing_id": "175050626",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.002036353340372443,
+      "pred_room": "bedroom",
+      "room_score": 0.18262887001037598
+    },
+    {
+      "path": "media/175050626/photo_010.jpeg",
+      "listing_id": "175050626",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0007681941497139633,
+      "pred_room": "bedroom",
+      "room_score": 0.010902672074735165
+    },
+    {
+      "path": "media/175050626/photo_011.jpeg",
+      "listing_id": "175050626",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0006870122742839158,
+      "pred_room": "bathroom",
+      "room_score": 0.07138704508543015
+    },
+    {
+      "path": "media/175050626/photo_012.jpeg",
+      "listing_id": "175050626",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0006460327422246337,
+      "pred_room": "hallway",
+      "room_score": 0.056720200926065445
+    },
+    {
+      "path": "media/175050626/photo_013.jpeg",
+      "listing_id": "175050626",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0017024573171511292,
+      "pred_room": "other_room",
+      "room_score": 0.5596057176589966
+    },
+    {
+      "path": "media/175050626/floorplan_014.png",
+      "listing_id": "175050626",
+      "truth_type": "floorplan",
+      "pred_type": "floorplan",
+      "type_score": 0.09223020821809769,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/87781278/photo_000.jpeg",
+      "listing_id": "87781278",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.22089505195617676,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/87781278/photo_001.jpeg",
+      "listing_id": "87781278",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0008887939038686454,
+      "pred_room": "kitchen",
+      "room_score": 0.16049423813819885
+    },
+    {
+      "path": "media/87781278/photo_002.jpeg",
+      "listing_id": "87781278",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.006826941389590502,
+      "pred_room": "dining_room",
+      "room_score": 0.02187371626496315
+    },
+    {
+      "path": "media/87781278/photo_003.jpeg",
+      "listing_id": "87781278",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.0023990634363144636,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/87781278/photo_004.jpeg",
+      "listing_id": "87781278",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.004802381154149771,
+      "pred_room": "kitchen",
+      "room_score": 0.03914761170744896
+    },
+    {
+      "path": "media/87781278/photo_005.jpeg",
+      "listing_id": "87781278",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.007170605473220348,
+      "pred_room": "other_room",
+      "room_score": 0.7674805521965027
+    },
+    {
+      "path": "media/87781278/photo_006.jpeg",
+      "listing_id": "87781278",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.023262934759259224,
+      "pred_room": "dining_room",
+      "room_score": 0.04918650910258293
+    },
+    {
+      "path": "media/87781278/photo_007.jpeg",
+      "listing_id": "87781278",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0007613000925630331,
+      "pred_room": "bathroom",
+      "room_score": 0.017481671646237373
+    },
+    {
+      "path": "media/87781278/photo_008.jpeg",
+      "listing_id": "87781278",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.005005962215363979,
+      "pred_room": "bedroom",
+      "room_score": 0.1664561778306961
+    },
+    {
+      "path": "media/87781278/photo_009.jpeg",
+      "listing_id": "87781278",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.008221053518354893,
+      "pred_room": "bedroom",
+      "room_score": 0.2563391923904419
+    },
+    {
+      "path": "media/87781278/photo_010.jpeg",
+      "listing_id": "87781278",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.00028369587380439043,
+      "pred_room": "bathroom",
+      "room_score": 0.07921624183654785
+    },
+    {
+      "path": "media/87781278/photo_011.jpeg",
+      "listing_id": "87781278",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.022227412089705467,
+      "pred_room": "bedroom",
+      "room_score": 0.3284400403499603
+    },
+    {
+      "path": "media/87781278/photo_012.jpeg",
+      "listing_id": "87781278",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.00027587421936914325,
+      "pred_room": "bathroom",
+      "room_score": 0.6929849982261658
+    },
+    {
+      "path": "media/87781278/photo_013.jpeg",
+      "listing_id": "87781278",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.07175840437412262,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/87781278/floorplan_014.jpeg",
+      "listing_id": "87781278",
+      "truth_type": "floorplan",
+      "pred_type": "floorplan",
+      "type_score": 0.005295978393405676,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/92098362/photo_000.jpeg",
+      "listing_id": "92098362",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.0019637069199234247,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/92098362/photo_001.jpeg",
+      "listing_id": "92098362",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0016037136083468795,
+      "pred_room": "dining_room",
+      "room_score": 0.02171727828681469
+    },
+    {
+      "path": "media/92098362/photo_002.jpeg",
+      "listing_id": "92098362",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.02903924509882927,
+      "pred_room": "living_room",
+      "room_score": 0.22224169969558716
+    },
+    {
+      "path": "media/92098362/photo_003.jpeg",
+      "listing_id": "92098362",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.003153393277898431,
+      "pred_room": "dining_room",
+      "room_score": 0.06169404834508896
+    },
+    {
+      "path": "media/92098362/photo_004.jpeg",
+      "listing_id": "92098362",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0019042929634451866,
+      "pred_room": "bathroom",
+      "room_score": 0.00695444643497467
+    },
+    {
+      "path": "media/92098362/photo_005.jpeg",
+      "listing_id": "92098362",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.00468563474714756,
+      "pred_room": "bedroom",
+      "room_score": 0.06430017203092575
+    },
+    {
+      "path": "media/92098362/photo_006.jpeg",
+      "listing_id": "92098362",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0035303295589983463,
+      "pred_room": "other_room",
+      "room_score": 0.0004936066688969731
+    },
+    {
+      "path": "media/92098362/photo_007.jpeg",
+      "listing_id": "92098362",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0035211003851145506,
+      "pred_room": "other_room",
+      "room_score": 0.0019747719634324312
+    },
+    {
+      "path": "media/92098362/photo_008.jpeg",
+      "listing_id": "92098362",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0006503970362246037,
+      "pred_room": "garden",
+      "room_score": 0.04274158552289009
+    },
+    {
+      "path": "media/92098362/photo_009.jpeg",
+      "listing_id": "92098362",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0068845925852656364,
+      "pred_room": "living_room",
+      "room_score": 0.005757076665759087
+    },
+    {
+      "path": "media/92098362/photo_010.jpeg",
+      "listing_id": "92098362",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.0312623456120491,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/92098362/photo_011.jpeg",
+      "listing_id": "92098362",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.02736244909465313,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/92098362/photo_012.jpeg",
+      "listing_id": "92098362",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 2.6867487576964777e-06,
+      "pred_room": "garden",
+      "room_score": 0.002363351173698902
+    },
+    {
+      "path": "media/92098362/photo_013.jpeg",
+      "listing_id": "92098362",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.00024499031133018434,
+      "pred_room": "garden",
+      "room_score": 0.029950326308608055
+    },
+    {
+      "path": "media/92098362/photo_014.jpeg",
+      "listing_id": "92098362",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.0011447399156168103,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/92098362/photo_015.jpeg",
+      "listing_id": "92098362",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 2.421391855023103e-06,
+      "pred_room": "garden",
+      "room_score": 0.0003482546308077872
+    },
+    {
+      "path": "media/92098362/photo_016.jpeg",
+      "listing_id": "92098362",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.00014098065730649978,
+      "pred_room": "garden",
+      "room_score": 0.010119324550032616
+    },
+    {
+      "path": "media/92098362/photo_017.jpeg",
+      "listing_id": "92098362",
+      "truth_type": "photo",
+      "pred_type": "map",
+      "type_score": 0.023948220536112785,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/92098362/floorplan_018.jpeg",
+      "listing_id": "92098362",
+      "truth_type": "floorplan",
+      "pred_type": "floorplan",
+      "type_score": 0.0033143090549856424,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/91850037/photo_000.jpeg",
+      "listing_id": "91850037",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.03377889096736908,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/91850037/photo_001.jpeg",
+      "listing_id": "91850037",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0014761798083782196,
+      "pred_room": "kitchen",
+      "room_score": 0.1027212142944336
+    },
+    {
+      "path": "media/91850037/photo_002.jpeg",
+      "listing_id": "91850037",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.04150447994470596,
+      "pred_room": "living_room",
+      "room_score": 0.3483829200267792
+    },
+    {
+      "path": "media/91850037/photo_003.jpeg",
+      "listing_id": "91850037",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.005579046905040741,
+      "pred_room": "bedroom",
+      "room_score": 0.10697697103023529
+    },
+    {
+      "path": "media/91850037/photo_004.jpeg",
+      "listing_id": "91850037",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.013714520260691643,
+      "pred_room": "bedroom",
+      "room_score": 0.19177086651325226
+    },
+    {
+      "path": "media/91850037/photo_005.jpeg",
+      "listing_id": "91850037",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.05331305414438248,
+      "pred_room": "bedroom",
+      "room_score": 0.029405254870653152
+    },
+    {
+      "path": "media/91850037/photo_006.jpeg",
+      "listing_id": "91850037",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0005170669173821807,
+      "pred_room": "bathroom",
+      "room_score": 0.6198994517326355
+    },
+    {
+      "path": "media/91850037/photo_007.jpeg",
+      "listing_id": "91850037",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.0010313773527741432,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/91850037/photo_008.jpeg",
+      "listing_id": "91850037",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0019628857262432575,
+      "pred_room": "bathroom",
+      "room_score": 0.028506282716989517
+    },
+    {
+      "path": "media/91850037/floorplan_009.jpeg",
+      "listing_id": "91850037",
+      "truth_type": "floorplan",
+      "pred_type": "floorplan",
+      "type_score": 0.003968728240579367,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/91642188/photo_000.jpeg",
+      "listing_id": "91642188",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.0021422063000500202,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/91642188/photo_001.jpeg",
+      "listing_id": "91642188",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.004467465914785862,
+      "pred_room": "dining_room",
+      "room_score": 0.061230745166540146
+    },
+    {
+      "path": "media/91642188/photo_002.jpeg",
+      "listing_id": "91642188",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.001309322426095605,
+      "pred_room": "living_room",
+      "room_score": 0.005166542250663042
+    },
+    {
+      "path": "media/91642188/photo_003.jpeg",
+      "listing_id": "91642188",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.00031702875276096165,
+      "pred_room": "living_room",
+      "room_score": 0.004979743156582117
+    },
+    {
+      "path": "media/91642188/photo_004.jpeg",
+      "listing_id": "91642188",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0010091604199260473,
+      "pred_room": "living_room",
+      "room_score": 0.00978918094187975
+    },
+    {
+      "path": "media/91642188/photo_005.jpeg",
+      "listing_id": "91642188",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.00034208985744044185,
+      "pred_room": "kitchen",
+      "room_score": 0.04747074097394943
+    },
+    {
+      "path": "media/91642188/photo_006.jpeg",
+      "listing_id": "91642188",
+      "truth_type": "photo",
+      "pred_type": "epc",
+      "type_score": 5.891022283321945e-06,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/91642188/photo_007.jpeg",
+      "listing_id": "91642188",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.002750420942902565,
+      "pred_room": "kitchen",
+      "room_score": 0.018469281494617462
+    },
+    {
+      "path": "media/91642188/photo_008.jpeg",
+      "listing_id": "91642188",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.003131158882752061,
+      "pred_room": "dining_room",
+      "room_score": 0.003236952470615506
+    },
+    {
+      "path": "media/91642188/photo_009.jpeg",
+      "listing_id": "91642188",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0049668713472783566,
+      "pred_room": "dining_room",
+      "room_score": 0.03394380956888199
+    },
+    {
+      "path": "media/91642188/photo_010.jpeg",
+      "listing_id": "91642188",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0030575653072446585,
+      "pred_room": "hallway",
+      "room_score": 0.027375852689146996
+    },
+    {
+      "path": "media/91642188/photo_011.jpeg",
+      "listing_id": "91642188",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0015565598150715232,
+      "pred_room": "bedroom",
+      "room_score": 0.04407699778676033
+    },
+    {
+      "path": "media/91642188/photo_012.jpeg",
+      "listing_id": "91642188",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.00042744886013679206,
+      "pred_room": "bedroom",
+      "room_score": 0.01608738675713539
+    },
+    {
+      "path": "media/91642188/photo_013.jpeg",
+      "listing_id": "91642188",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 7.33815977582708e-05,
+      "pred_room": "bathroom",
+      "room_score": 0.023844117298722267
+    },
+    {
+      "path": "media/91642188/photo_014.jpeg",
+      "listing_id": "91642188",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.002722196513786912,
+      "pred_room": "bedroom",
+      "room_score": 0.035806868225336075
+    },
+    {
+      "path": "media/91642188/photo_015.jpeg",
+      "listing_id": "91642188",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0006201858632266521,
+      "pred_room": "bedroom",
+      "room_score": 0.018456218764185905
+    },
+    {
+      "path": "media/91642188/photo_016.jpeg",
+      "listing_id": "91642188",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0011555809760466218,
+      "pred_room": "hallway",
+      "room_score": 0.001970116049051285
+    },
+    {
+      "path": "media/91642188/photo_017.jpeg",
+      "listing_id": "91642188",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.00027891239733435214,
+      "pred_room": "living_room",
+      "room_score": 0.01767740398645401
+    },
+    {
+      "path": "media/91642188/photo_018.jpeg",
+      "listing_id": "91642188",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0013983093667775393,
+      "pred_room": "living_room",
+      "room_score": 0.008397461846470833
+    },
+    {
+      "path": "media/91642188/photo_019.jpeg",
+      "listing_id": "91642188",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 8.408940630033612e-05,
+      "pred_room": "hallway",
+      "room_score": 0.0002111391513608396
+    },
+    {
+      "path": "media/91642188/photo_020.jpeg",
+      "listing_id": "91642188",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 2.2842043108539656e-05,
+      "pred_room": "living_room",
+      "room_score": 1.1211678611289244e-05
+    },
+    {
+      "path": "media/91642188/photo_021.jpeg",
+      "listing_id": "91642188",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.00024800346000120044,
+      "pred_room": "hallway",
+      "room_score": 0.004429727792739868
+    },
+    {
+      "path": "media/91642188/photo_022.jpeg",
+      "listing_id": "91642188",
+      "truth_type": "photo",
+      "pred_type": "map",
+      "type_score": 1.5930860172375105e-05,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/91642188/floorplan_023.jpeg",
+      "listing_id": "91642188",
+      "truth_type": "floorplan",
+      "pred_type": "floorplan",
+      "type_score": 0.07930789887905121,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/90594978/photo_000.jpeg",
+      "listing_id": "90594978",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.04827766865491867,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/90594978/photo_001.jpeg",
+      "listing_id": "90594978",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.00023737714218441397,
+      "pred_room": "kitchen",
+      "room_score": 0.033424459397792816
+    },
+    {
+      "path": "media/90594978/photo_002.jpeg",
+      "listing_id": "90594978",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.00031550999847240746,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/90594978/photo_003.jpeg",
+      "listing_id": "90594978",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.010570130310952663,
+      "pred_room": "living_room",
+      "room_score": 0.09754786640405655
+    },
+    {
+      "path": "media/90594978/photo_004.jpeg",
+      "listing_id": "90594978",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0006936153513379395,
+      "pred_room": "dining_room",
+      "room_score": 0.09207486361265182
+    },
+    {
+      "path": "media/90594978/photo_005.jpeg",
+      "listing_id": "90594978",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.008192078210413456,
+      "pred_room": "bedroom",
+      "room_score": 0.028928156942129135
+    },
+    {
+      "path": "media/90594978/photo_006.jpeg",
+      "listing_id": "90594978",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0005562930018641055,
+      "pred_room": "bathroom",
+      "room_score": 0.39979174733161926
+    },
+    {
+      "path": "media/90594978/photo_007.jpeg",
+      "listing_id": "90594978",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.001240196404978633,
+      "pred_room": "bedroom",
+      "room_score": 0.0298454649746418
+    },
+    {
+      "path": "media/90594978/photo_008.jpeg",
+      "listing_id": "90594978",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0008765365346334875,
+      "pred_room": "bathroom",
+      "room_score": 0.2606510818004608
+    },
+    {
+      "path": "media/90594978/photo_009.jpeg",
+      "listing_id": "90594978",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0012437488185241818,
+      "pred_room": "bedroom",
+      "room_score": 0.0946575179696083
+    },
+    {
+      "path": "media/90594978/photo_010.jpeg",
+      "listing_id": "90594978",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.00013047187530901283,
+      "pred_room": "bathroom",
+      "room_score": 0.08784610033035278
+    },
+    {
+      "path": "media/90594978/photo_011.jpeg",
+      "listing_id": "90594978",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.03171626850962639,
+      "pred_room": "bedroom",
+      "room_score": 0.008386224508285522
+    },
+    {
+      "path": "media/90594978/photo_012.jpeg",
+      "listing_id": "90594978",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.0029467956628650427,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/90594978/photo_013.jpeg",
+      "listing_id": "90594978",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.0002564725582487881,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/90594978/floorplan_014.jpeg",
+      "listing_id": "90594978",
+      "truth_type": "floorplan",
+      "pred_type": "floorplan",
+      "type_score": 0.000482164672575891,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/91094415/photo_000.jpeg",
+      "listing_id": "91094415",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.022976534441113472,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/91094415/photo_001.jpeg",
+      "listing_id": "91094415",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.009912504814565182,
+      "pred_room": "living_room",
+      "room_score": 0.028400668874382973
+    },
+    {
+      "path": "media/91094415/photo_002.jpeg",
+      "listing_id": "91094415",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.010129962116479874,
+      "pred_room": "living_room",
+      "room_score": 0.02986236847937107
+    },
+    {
+      "path": "media/91094415/photo_003.jpeg",
+      "listing_id": "91094415",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.002226311480626464,
+      "pred_room": "dining_room",
+      "room_score": 0.0021987808868288994
+    },
+    {
+      "path": "media/91094415/photo_004.jpeg",
+      "listing_id": "91094415",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.014039224945008755,
+      "pred_room": "living_room",
+      "room_score": 0.0805707797408104
+    },
+    {
+      "path": "media/91094415/photo_005.jpeg",
+      "listing_id": "91094415",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0027856442611664534,
+      "pred_room": "living_room",
+      "room_score": 0.010248204693198204
+    },
+    {
+      "path": "media/91094415/photo_006.jpeg",
+      "listing_id": "91094415",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.011345256119966507,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/91094415/photo_007.jpeg",
+      "listing_id": "91094415",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.002811702201142907,
+      "pred_room": "kitchen",
+      "room_score": 0.001750650815665722
+    },
+    {
+      "path": "media/91094415/photo_008.jpeg",
+      "listing_id": "91094415",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0014795665629208088,
+      "pred_room": "kitchen",
+      "room_score": 0.00037433122633956373
+    },
+    {
+      "path": "media/91094415/photo_009.jpeg",
+      "listing_id": "91094415",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.002877840306609869,
+      "pred_room": "other_room",
+      "room_score": 0.022189058363437653
+    },
+    {
+      "path": "media/91094415/photo_010.jpeg",
+      "listing_id": "91094415",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0015728987054899335,
+      "pred_room": "dining_room",
+      "room_score": 0.0015223418595269322
+    },
+    {
+      "path": "media/91094415/photo_011.jpeg",
+      "listing_id": "91094415",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.008062578737735748,
+      "pred_room": "dining_room",
+      "room_score": 0.006680378690361977
+    },
+    {
+      "path": "media/91094415/photo_012.jpeg",
+      "listing_id": "91094415",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.011242439970374107,
+      "pred_room": "dining_room",
+      "room_score": 0.11210135370492935
+    },
+    {
+      "path": "media/91094415/photo_013.jpeg",
+      "listing_id": "91094415",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.003042954718694091,
+      "pred_room": "dining_room",
+      "room_score": 0.010519334115087986
+    },
+    {
+      "path": "media/91094415/photo_014.jpeg",
+      "listing_id": "91094415",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.010174151510000229,
+      "pred_room": "living_room",
+      "room_score": 0.018772076815366745
+    },
+    {
+      "path": "media/91094415/photo_015.jpeg",
+      "listing_id": "91094415",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.011607347056269646,
+      "pred_room": "living_room",
+      "room_score": 0.009647528640925884
+    },
+    {
+      "path": "media/91094415/photo_016.jpeg",
+      "listing_id": "91094415",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.003465300193056464,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/91094415/photo_017.jpeg",
+      "listing_id": "91094415",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.030769946053624153,
+      "pred_room": "living_room",
+      "room_score": 0.00390650425106287
+    },
+    {
+      "path": "media/91094415/photo_018.jpeg",
+      "listing_id": "91094415",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.014979359693825245,
+      "pred_room": "hallway",
+      "room_score": 0.019610784947872162
+    },
+    {
+      "path": "media/91094415/photo_019.jpeg",
+      "listing_id": "91094415",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.022007640451192856,
+      "pred_room": "bedroom",
+      "room_score": 0.06142475828528404
+    },
+    {
+      "path": "media/91094415/photo_020.jpeg",
+      "listing_id": "91094415",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.002667494583874941,
+      "pred_room": "bathroom",
+      "room_score": 0.004453782457858324
+    },
+    {
+      "path": "media/91094415/photo_021.jpeg",
+      "listing_id": "91094415",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.019470898434519768,
+      "pred_room": "hallway",
+      "room_score": 0.009269134141504765
+    },
+    {
+      "path": "media/91094415/photo_022.jpeg",
+      "listing_id": "91094415",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0029701681341975927,
+      "pred_room": "living_room",
+      "room_score": 0.0001759078586474061
+    },
+    {
+      "path": "media/91094415/photo_023.jpeg",
+      "listing_id": "91094415",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.006705708336085081,
+      "pred_room": "bedroom",
+      "room_score": 0.00025086893583647907
+    },
+    {
+      "path": "media/91094415/photo_024.jpeg",
+      "listing_id": "91094415",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.009019170887768269,
+      "pred_room": "bathroom",
+      "room_score": 0.00398053415119648
+    },
+    {
+      "path": "media/91094415/photo_025.jpeg",
+      "listing_id": "91094415",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0010527726262807846,
+      "pred_room": "bathroom",
+      "room_score": 0.008819625712931156
+    },
+    {
+      "path": "media/91094415/photo_026.jpeg",
+      "listing_id": "91094415",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.015352447517216206,
+      "pred_room": "hallway",
+      "room_score": 0.008599466644227505
+    },
+    {
+      "path": "media/91094415/photo_027.jpeg",
+      "listing_id": "91094415",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0023100741673260927,
+      "pred_room": "hallway",
+      "room_score": 0.0005632698885165155
+    },
+    {
+      "path": "media/91094415/photo_028.jpeg",
+      "listing_id": "91094415",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.004948739428073168,
+      "pred_room": "hallway",
+      "room_score": 0.006018796470016241
+    },
+    {
+      "path": "media/91094415/photo_029.jpeg",
+      "listing_id": "91094415",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.03752956539392471,
+      "pred_room": "hallway",
+      "room_score": 0.010928722098469734
+    },
+    {
+      "path": "media/91094415/floorplan_030.jpeg",
+      "listing_id": "91094415",
+      "truth_type": "floorplan",
+      "pred_type": "floorplan",
+      "type_score": 0.014339725486934185,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/91428111/photo_000.jpeg",
+      "listing_id": "91428111",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.07292309403419495,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/91428111/photo_001.jpeg",
+      "listing_id": "91428111",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0346408374607563,
+      "pred_room": "living_room",
+      "room_score": 0.00162107206415385
+    },
+    {
+      "path": "media/91428111/photo_002.jpeg",
+      "listing_id": "91428111",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.042120229452848434,
+      "pred_room": "living_room",
+      "room_score": 0.0032229283824563026
+    },
+    {
+      "path": "media/91428111/photo_003.jpeg",
+      "listing_id": "91428111",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.044275883585214615,
+      "pred_room": "living_room",
+      "room_score": 0.0027823164127767086
+    },
+    {
+      "path": "media/91428111/photo_004.jpeg",
+      "listing_id": "91428111",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.020008401945233345,
+      "pred_room": "bedroom",
+      "room_score": 0.012020186521112919
+    },
+    {
+      "path": "media/91428111/photo_005.jpeg",
+      "listing_id": "91428111",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.013371242210268974,
+      "pred_room": "living_room",
+      "room_score": 0.0038609933108091354
+    },
+    {
+      "path": "media/91428111/photo_006.jpeg",
+      "listing_id": "91428111",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0012752581387758255,
+      "pred_room": "kitchen",
+      "room_score": 0.1050163209438324
+    },
+    {
+      "path": "media/91428111/photo_007.jpeg",
+      "listing_id": "91428111",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.06317535787820816,
+      "pred_room": "bedroom",
+      "room_score": 0.01854642480611801
+    },
+    {
+      "path": "media/91428111/photo_008.jpeg",
+      "listing_id": "91428111",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.00038156408118084073,
+      "pred_room": "bathroom",
+      "room_score": 0.047678377479314804
+    },
+    {
+      "path": "media/91428111/photo_009.jpeg",
+      "listing_id": "91428111",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.047714073210954666,
+      "pred_room": "hallway",
+      "room_score": 0.014054611325263977
+    },
+    {
+      "path": "media/91428111/photo_010.jpeg",
+      "listing_id": "91428111",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0008171549998223782,
+      "pred_room": "bathroom",
+      "room_score": 0.5050550103187561
+    },
+    {
+      "path": "media/91428111/floorplan_011.png",
+      "listing_id": "91428111",
+      "truth_type": "floorplan",
+      "pred_type": "floorplan",
+      "type_score": 0.021157262846827507,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/92121960/photo_000.jpeg",
+      "listing_id": "92121960",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.005541604477912188,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/92121960/photo_001.jpeg",
+      "listing_id": "92121960",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.004642423242330551,
+      "pred_room": "other_room",
+      "room_score": 0.006283181719481945
+    },
+    {
+      "path": "media/92121960/photo_002.jpeg",
+      "listing_id": "92121960",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.026447843760252,
+      "pred_room": "hallway",
+      "room_score": 0.017394758760929108
+    },
+    {
+      "path": "media/92121960/photo_003.jpeg",
+      "listing_id": "92121960",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.009587856009602547,
+      "pred_room": "living_room",
+      "room_score": 0.05501287430524826
+    },
+    {
+      "path": "media/92121960/photo_004.jpeg",
+      "listing_id": "92121960",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.01972978748381138,
+      "pred_room": "living_room",
+      "room_score": 0.24436353147029877
+    },
+    {
+      "path": "media/92121960/photo_005.jpeg",
+      "listing_id": "92121960",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.05135105922818184,
+      "pred_room": "living_room",
+      "room_score": 0.10618691891431808
+    },
+    {
+      "path": "media/92121960/photo_006.jpeg",
+      "listing_id": "92121960",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.013057000935077667,
+      "pred_room": "kitchen",
+      "room_score": 0.24032719433307648
+    },
+    {
+      "path": "media/92121960/photo_007.jpeg",
+      "listing_id": "92121960",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.003739051055163145,
+      "pred_room": "kitchen",
+      "room_score": 0.4518730342388153
+    },
+    {
+      "path": "media/92121960/photo_008.jpeg",
+      "listing_id": "92121960",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.010362667962908745,
+      "pred_room": "kitchen",
+      "room_score": 0.08659396320581436
+    },
+    {
+      "path": "media/92121960/photo_009.jpeg",
+      "listing_id": "92121960",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0835411474108696,
+      "pred_room": "dining_room",
+      "room_score": 0.4252828061580658
+    },
+    {
+      "path": "media/92121960/photo_010.jpeg",
+      "listing_id": "92121960",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.033922113478183746,
+      "pred_room": "dining_room",
+      "room_score": 0.7063823342323303
+    },
+    {
+      "path": "media/92121960/photo_011.jpeg",
+      "listing_id": "92121960",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.07275532186031342,
+      "pred_room": "dining_room",
+      "room_score": 0.6829609870910645
+    },
+    {
+      "path": "media/92121960/photo_012.jpeg",
+      "listing_id": "92121960",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0011737478198483586,
+      "pred_room": "bathroom",
+      "room_score": 0.16920548677444458
+    },
+    {
+      "path": "media/92121960/photo_013.jpeg",
+      "listing_id": "92121960",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.004896673373878002,
+      "pred_room": "bathroom",
+      "room_score": 0.009780347347259521
+    },
+    {
+      "path": "media/92121960/photo_014.jpeg",
+      "listing_id": "92121960",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.039345964789390564,
+      "pred_room": "bedroom",
+      "room_score": 0.354498952627182
+    },
+    {
+      "path": "media/92121960/photo_015.jpeg",
+      "listing_id": "92121960",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.01618785224854946,
+      "pred_room": "bedroom",
+      "room_score": 0.3194824457168579
+    },
+    {
+      "path": "media/92121960/photo_016.jpeg",
+      "listing_id": "92121960",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.016764868050813675,
+      "pred_room": "bedroom",
+      "room_score": 0.27430105209350586
+    },
+    {
+      "path": "media/92121960/photo_017.jpeg",
+      "listing_id": "92121960",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.011434966698288918,
+      "pred_room": "bedroom",
+      "room_score": 0.16861215233802795
+    },
+    {
+      "path": "media/92121960/photo_018.jpeg",
+      "listing_id": "92121960",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0018700921209529042,
+      "pred_room": "bedroom",
+      "room_score": 0.09811544418334961
+    },
+    {
+      "path": "media/92121960/photo_019.jpeg",
+      "listing_id": "92121960",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.006075558252632618,
+      "pred_room": "bathroom",
+      "room_score": 0.0082371411845088
+    },
+    {
+      "path": "media/92121960/photo_020.jpeg",
+      "listing_id": "92121960",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0005885083810426295,
+      "pred_room": "bathroom",
+      "room_score": 0.05636565387248993
+    },
+    {
+      "path": "media/92121960/photo_021.jpeg",
+      "listing_id": "92121960",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 8.878020889824256e-05,
+      "pred_room": "bathroom",
+      "room_score": 0.6731429696083069
+    },
+    {
+      "path": "media/92121960/photo_022.jpeg",
+      "listing_id": "92121960",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.01767882890999317,
+      "pred_room": "bedroom",
+      "room_score": 0.0006110030226409435
+    },
+    {
+      "path": "media/92121960/photo_023.jpeg",
+      "listing_id": "92121960",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.016947755590081215,
+      "pred_room": "hallway",
+      "room_score": 0.003067425452172756
+    },
+    {
+      "path": "media/92121960/photo_024.jpeg",
+      "listing_id": "92121960",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.036427728831768036,
+      "pred_room": "bedroom",
+      "room_score": 0.008532575331628323
+    },
+    {
+      "path": "media/92121960/photo_025.jpeg",
+      "listing_id": "92121960",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0025017845910042524,
+      "pred_room": "bathroom",
+      "room_score": 0.1158740222454071
+    },
+    {
+      "path": "media/92121960/floorplan_026.jpeg",
+      "listing_id": "92121960",
+      "truth_type": "floorplan",
+      "pred_type": "floorplan",
+      "type_score": 0.0044471025466918945,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/91968666/photo_000.jpeg",
+      "listing_id": "91968666",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.008034233003854752,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/91968666/photo_001.jpeg",
+      "listing_id": "91968666",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.011844674125313759,
+      "pred_room": "bedroom",
+      "room_score": 0.008797268383204937
+    },
+    {
+      "path": "media/91968666/photo_002.jpeg",
+      "listing_id": "91968666",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.009914273396134377,
+      "pred_room": "living_room",
+      "room_score": 0.3029371500015259
+    },
+    {
+      "path": "media/91968666/photo_003.jpeg",
+      "listing_id": "91968666",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0031492216512560844,
+      "pred_room": "kitchen",
+      "room_score": 0.11033805459737778
+    },
+    {
+      "path": "media/91968666/photo_004.jpeg",
+      "listing_id": "91968666",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.008290954865515232,
+      "pred_room": "kitchen",
+      "room_score": 0.15668772161006927
+    },
+    {
+      "path": "media/91968666/photo_005.jpeg",
+      "listing_id": "91968666",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0009398077963851392,
+      "pred_room": "garden",
+      "room_score": 0.021624572575092316
+    },
+    {
+      "path": "media/91968666/photo_006.jpeg",
+      "listing_id": "91968666",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.0004200467374175787,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/91968666/photo_007.jpeg",
+      "listing_id": "91968666",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.07931730151176453,
+      "pred_room": "hallway",
+      "room_score": 0.02896844781935215
+    },
+    {
+      "path": "media/91968666/photo_008.jpeg",
+      "listing_id": "91968666",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.010339622385799885,
+      "pred_room": "bedroom",
+      "room_score": 0.021903790533542633
+    },
+    {
+      "path": "media/91968666/photo_009.jpeg",
+      "listing_id": "91968666",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0006817474495619535,
+      "pred_room": "bedroom",
+      "room_score": 0.01173480786383152
+    },
+    {
+      "path": "media/91968666/photo_010.jpeg",
+      "listing_id": "91968666",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.00021527099306695163,
+      "pred_room": "bathroom",
+      "room_score": 0.01187822874635458
+    },
+    {
+      "path": "media/91968666/photo_011.jpeg",
+      "listing_id": "91968666",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.00647405069321394,
+      "pred_room": "bedroom",
+      "room_score": 0.011410112492740154
+    },
+    {
+      "path": "media/91968666/photo_012.jpeg",
+      "listing_id": "91968666",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0020452227909117937,
+      "pred_room": "bedroom",
+      "room_score": 0.02388908341526985
+    },
+    {
+      "path": "media/91968666/photo_013.jpeg",
+      "listing_id": "91968666",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0008729640976525843,
+      "pred_room": "bathroom",
+      "room_score": 0.03197120502591133
+    },
+    {
+      "path": "media/91968666/photo_014.jpeg",
+      "listing_id": "91968666",
+      "truth_type": "photo",
+      "pred_type": "map",
+      "type_score": 3.8664387830067426e-05,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/91968666/photo_015.jpeg",
+      "listing_id": "91968666",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.0002933722862508148,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/91968666/photo_016.jpeg",
+      "listing_id": "91968666",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.007289470639079809,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/91968666/floorplan_017.gif",
+      "listing_id": "91968666",
+      "truth_type": "floorplan",
+      "pred_type": "floorplan",
+      "type_score": 0.04277078062295914,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/161130452/photo_000.jpeg",
+      "listing_id": "161130452",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0011280988110229373,
+      "pred_room": "garden",
+      "room_score": 0.06637424975633621
+    },
+    {
+      "path": "media/161130452/photo_001.jpeg",
+      "listing_id": "161130452",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.007011994253844023,
+      "pred_room": "dining_room",
+      "room_score": 0.015253663063049316
+    },
+    {
+      "path": "media/161130452/photo_002.jpeg",
+      "listing_id": "161130452",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.0006292420439422131,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/161130452/photo_003.jpeg",
+      "listing_id": "161130452",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0031428032089024782,
+      "pred_room": "bedroom",
+      "room_score": 0.029669741168618202
+    },
+    {
+      "path": "media/161130452/photo_004.jpeg",
+      "listing_id": "161130452",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0002791164442896843,
+      "pred_room": "bathroom",
+      "room_score": 0.010905933566391468
+    },
+    {
+      "path": "media/161130452/photo_005.jpeg",
+      "listing_id": "161130452",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.007011994253844023,
+      "pred_room": "dining_room",
+      "room_score": 0.015253663063049316
+    },
+    {
+      "path": "media/161130452/photo_006.jpeg",
+      "listing_id": "161130452",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0012868078192695975,
+      "pred_room": "bathroom",
+      "room_score": 0.04900049790740013
+    },
+    {
+      "path": "media/161130452/photo_007.jpeg",
+      "listing_id": "161130452",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0010541836963966489,
+      "pred_room": "hallway",
+      "room_score": 0.014061550609767437
+    },
+    {
+      "path": "media/161130452/photo_008.jpeg",
+      "listing_id": "161130452",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.004635637626051903,
+      "pred_room": "living_room",
+      "room_score": 0.017480410635471344
+    },
+    {
+      "path": "media/161130452/photo_009.jpeg",
+      "listing_id": "161130452",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0029344563372433186,
+      "pred_room": "living_room",
+      "room_score": 0.005885101389139891
+    },
+    {
+      "path": "media/161130452/photo_010.jpeg",
+      "listing_id": "161130452",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 8.975856326287612e-05,
+      "pred_room": "hallway",
+      "room_score": 0.000214923988096416
+    },
+    {
+      "path": "media/161130452/photo_011.jpeg",
+      "listing_id": "161130452",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.0007020361954346299,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/161130452/photo_012.jpeg",
+      "listing_id": "161130452",
+      "truth_type": "photo",
+      "pred_type": "floorplan",
+      "type_score": 0.0003448273928370327,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/161130452/floorplan_013.jpeg",
+      "listing_id": "161130452",
+      "truth_type": "floorplan",
+      "pred_type": "floorplan",
+      "type_score": 0.31674933433532715,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/91958238/photo_000.jpeg",
+      "listing_id": "91958238",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.009427361190319061,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/91958238/photo_001.jpeg",
+      "listing_id": "91958238",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.12577882409095764,
+      "pred_room": "living_room",
+      "room_score": 0.1504819095134735
+    },
+    {
+      "path": "media/91958238/photo_002.jpeg",
+      "listing_id": "91958238",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.02021745964884758,
+      "pred_room": "living_room",
+      "room_score": 0.04443560540676117
+    },
+    {
+      "path": "media/91958238/photo_003.jpeg",
+      "listing_id": "91958238",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.000589731615036726,
+      "pred_room": "kitchen",
+      "room_score": 0.007340008392930031
+    },
+    {
+      "path": "media/91958238/photo_004.jpeg",
+      "listing_id": "91958238",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.008396580815315247,
+      "pred_room": "other_room",
+      "room_score": 0.10380059480667114
+    },
+    {
+      "path": "media/91958238/photo_005.jpeg",
+      "listing_id": "91958238",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.023898961022496223,
+      "pred_room": "bedroom",
+      "room_score": 0.11488982290029526
+    },
+    {
+      "path": "media/91958238/photo_006.jpeg",
+      "listing_id": "91958238",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.014403839595615864,
+      "pred_room": "bedroom",
+      "room_score": 0.08539353311061859
+    },
+    {
+      "path": "media/91958238/photo_007.jpeg",
+      "listing_id": "91958238",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.005216288845986128,
+      "pred_room": "bathroom",
+      "room_score": 0.1396809220314026
+    },
+    {
+      "path": "media/91958238/photo_008.jpeg",
+      "listing_id": "91958238",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.01196275558322668,
+      "pred_room": "hallway",
+      "room_score": 0.01199937704950571
+    },
+    {
+      "path": "media/91958238/photo_009.jpeg",
+      "listing_id": "91958238",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.0030917252879589796,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/91958238/floorplan_010.png",
+      "listing_id": "91958238",
+      "truth_type": "floorplan",
+      "pred_type": "floorplan",
+      "type_score": 0.1296893209218979,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/89229111/photo_000.jpeg",
+      "listing_id": "89229111",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.0035065377596765757,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/89229111/photo_001.jpeg",
+      "listing_id": "89229111",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.061489831656217575,
+      "pred_room": "living_room",
+      "room_score": 0.0057868049480021
+    },
+    {
+      "path": "media/89229111/photo_002.jpeg",
+      "listing_id": "89229111",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.13111355900764465,
+      "pred_room": "bedroom",
+      "room_score": 0.009838789701461792
+    },
+    {
+      "path": "media/89229111/photo_003.jpeg",
+      "listing_id": "89229111",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.06767173856496811,
+      "pred_room": "living_room",
+      "room_score": 0.009627758525311947
+    },
+    {
+      "path": "media/89229111/photo_004.jpeg",
+      "listing_id": "89229111",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.012539167888462543,
+      "pred_room": "kitchen",
+      "room_score": 0.11023324728012085
+    },
+    {
+      "path": "media/89229111/photo_005.jpeg",
+      "listing_id": "89229111",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.01753718964755535,
+      "pred_room": "kitchen",
+      "room_score": 0.051978107541799545
+    },
+    {
+      "path": "media/89229111/photo_006.jpeg",
+      "listing_id": "89229111",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0017908469308167696,
+      "pred_room": "garden",
+      "room_score": 0.3637402355670929
+    },
+    {
+      "path": "media/89229111/photo_007.jpeg",
+      "listing_id": "89229111",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0036691101267933846,
+      "pred_room": "garden",
+      "room_score": 0.12312068045139313
+    },
+    {
+      "path": "media/89229111/photo_008.jpeg",
+      "listing_id": "89229111",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.04786192253232002,
+      "pred_room": "other_room",
+      "room_score": 0.42163509130477905
+    },
+    {
+      "path": "media/89229111/photo_009.jpeg",
+      "listing_id": "89229111",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.031978823244571686,
+      "pred_room": "bedroom",
+      "room_score": 0.06655947118997574
+    },
+    {
+      "path": "media/89229111/photo_010.jpeg",
+      "listing_id": "89229111",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0744793489575386,
+      "pred_room": "bedroom",
+      "room_score": 0.05279885232448578
+    },
+    {
+      "path": "media/89229111/photo_011.jpeg",
+      "listing_id": "89229111",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.06565331667661667,
+      "pred_room": "bedroom",
+      "room_score": 0.07156648486852646
+    },
+    {
+      "path": "media/89229111/photo_012.jpeg",
+      "listing_id": "89229111",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.03260460123419762,
+      "pred_room": "bedroom",
+      "room_score": 0.021628668531775475
+    },
+    {
+      "path": "media/89229111/photo_013.jpeg",
+      "listing_id": "89229111",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.09779858589172363,
+      "pred_room": "bedroom",
+      "room_score": 0.03608221560716629
+    },
+    {
+      "path": "media/89229111/photo_014.jpeg",
+      "listing_id": "89229111",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0007454910082742572,
+      "pred_room": "bathroom",
+      "room_score": 0.16311606764793396
+    },
+    {
+      "path": "media/89229111/photo_015.jpeg",
+      "listing_id": "89229111",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.00024201584164984524,
+      "pred_room": "bathroom",
+      "room_score": 0.04481882601976395
+    },
+    {
+      "path": "media/89229111/photo_016.jpeg",
+      "listing_id": "89229111",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.036998819559812546,
+      "pred_room": "hallway",
+      "room_score": 0.10001801699399948
+    },
+    {
+      "path": "media/89229111/photo_017.jpeg",
+      "listing_id": "89229111",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.005365270189940929,
+      "pred_room": "hallway",
+      "room_score": 0.0007739183492958546
+    },
+    {
+      "path": "media/89229111/photo_018.jpeg",
+      "listing_id": "89229111",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.0029540632385760546,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/89229111/photo_019.jpeg",
+      "listing_id": "89229111",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 3.8024263631086797e-05,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/89229111/photo_020.jpeg",
+      "listing_id": "89229111",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.0014222405152395368,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/89229111/photo_021.jpeg",
+      "listing_id": "89229111",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.0018828866304829717,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/89229111/photo_022.jpeg",
+      "listing_id": "89229111",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.001465263427235186,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/89229111/photo_023.jpeg",
+      "listing_id": "89229111",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.009319794364273548,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/89229111/photo_024.jpeg",
+      "listing_id": "89229111",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.000826571776997298,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/89229111/photo_025.jpeg",
+      "listing_id": "89229111",
+      "truth_type": "photo",
+      "pred_type": "map",
+      "type_score": 1.8064754840452224e-05,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/89229111/photo_026.jpeg",
+      "listing_id": "89229111",
+      "truth_type": "photo",
+      "pred_type": "map",
+      "type_score": 0.0072168875485658646,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/89229111/photo_027.jpeg",
+      "listing_id": "89229111",
+      "truth_type": "photo",
+      "pred_type": "map",
+      "type_score": 0.00031658264924772084,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/89229111/floorplan_028.png",
+      "listing_id": "89229111",
+      "truth_type": "floorplan",
+      "pred_type": "floorplan",
+      "type_score": 0.002340182662010193,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/92182410/photo_000.jpeg",
+      "listing_id": "92182410",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.053441233932971954,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/92182410/photo_001.jpeg",
+      "listing_id": "92182410",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.020730791613459587,
+      "pred_room": "living_room",
+      "room_score": 0.12761949002742767
+    },
+    {
+      "path": "media/92182410/photo_002.jpeg",
+      "listing_id": "92182410",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.05225116014480591,
+      "pred_room": "bathroom",
+      "room_score": 0.09359285980463028
+    },
+    {
+      "path": "media/92182410/photo_003.jpeg",
+      "listing_id": "92182410",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 7.738814747426659e-05,
+      "pred_room": "hallway",
+      "room_score": 0.000143346784170717
+    },
+    {
+      "path": "media/92182410/photo_004.jpeg",
+      "listing_id": "92182410",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.0012690700823441148,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/92182410/photo_005.jpeg",
+      "listing_id": "92182410",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.019017742946743965,
+      "pred_room": "living_room",
+      "room_score": 0.18467889726161957
+    },
+    {
+      "path": "media/92182410/photo_006.jpeg",
+      "listing_id": "92182410",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.020893266424536705,
+      "pred_room": "living_room",
+      "room_score": 0.061469804495573044
+    },
+    {
+      "path": "media/92182410/photo_007.jpeg",
+      "listing_id": "92182410",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.057567842304706573,
+      "pred_room": "dining_room",
+      "room_score": 0.10534078627824783
+    },
+    {
+      "path": "media/92182410/photo_008.jpeg",
+      "listing_id": "92182410",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0013763195602223277,
+      "pred_room": "hallway",
+      "room_score": 0.00031324411975219846
+    },
+    {
+      "path": "media/92182410/photo_009.jpeg",
+      "listing_id": "92182410",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.019772808998823166,
+      "pred_room": "living_room",
+      "room_score": 0.036859720945358276
+    },
+    {
+      "path": "media/92182410/photo_010.jpeg",
+      "listing_id": "92182410",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0008984280866570771,
+      "pred_room": "kitchen",
+      "room_score": 0.06186308711767197
+    },
+    {
+      "path": "media/92182410/photo_011.jpeg",
+      "listing_id": "92182410",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0008834561449475586,
+      "pred_room": "kitchen",
+      "room_score": 0.12400670349597931
+    },
+    {
+      "path": "media/92182410/photo_012.jpeg",
+      "listing_id": "92182410",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.13329970836639404,
+      "pred_room": "bedroom",
+      "room_score": 0.14698342978954315
+    },
+    {
+      "path": "media/92182410/photo_013.jpeg",
+      "listing_id": "92182410",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0008065315778367221,
+      "pred_room": "bathroom",
+      "room_score": 0.06522592157125473
+    },
+    {
+      "path": "media/92182410/photo_014.png",
+      "listing_id": "92182410",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.05183224752545357,
+      "pred_room": "bathroom",
+      "room_score": 0.31152766942977905
+    },
+    {
+      "path": "media/92182410/photo_015.jpeg",
+      "listing_id": "92182410",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.05295957624912262,
+      "pred_room": "bedroom",
+      "room_score": 0.23529469966888428
+    },
+    {
+      "path": "media/92182410/photo_016.png",
+      "listing_id": "92182410",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.021410269662737846,
+      "pred_room": "bathroom",
+      "room_score": 0.3963177502155304
+    },
+    {
+      "path": "media/92182410/photo_017.jpeg",
+      "listing_id": "92182410",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.004704983904957771,
+      "pred_room": "bathroom",
+      "room_score": 0.007997355423867702
+    },
+    {
+      "path": "media/92182410/photo_018.jpeg",
+      "listing_id": "92182410",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.09779918193817139,
+      "pred_room": "bedroom",
+      "room_score": 0.3325967788696289
+    },
+    {
+      "path": "media/92182410/photo_019.jpeg",
+      "listing_id": "92182410",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.01653848960995674,
+      "pred_room": "bedroom",
+      "room_score": 0.04509476199746132
+    },
+    {
+      "path": "media/92182410/photo_020.jpeg",
+      "listing_id": "92182410",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.16540569067001343,
+      "pred_room": "bedroom",
+      "room_score": 0.11506052315235138
+    },
+    {
+      "path": "media/92182410/photo_021.jpeg",
+      "listing_id": "92182410",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.328940212726593,
+      "pred_room": "other_room",
+      "room_score": 0.05431020259857178
+    },
+    {
+      "path": "media/92182410/photo_022.jpeg",
+      "listing_id": "92182410",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.19999802112579346,
+      "pred_room": "living_room",
+      "room_score": 0.0005816233460791409
+    },
+    {
+      "path": "media/92182410/photo_023.jpeg",
+      "listing_id": "92182410",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.38130393624305725,
+      "pred_room": "bedroom",
+      "room_score": 0.00042197597213089466
+    },
+    {
+      "path": "media/92182410/photo_024.jpeg",
+      "listing_id": "92182410",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.17724677920341492,
+      "pred_room": "hallway",
+      "room_score": 0.00983168464154005
+    },
+    {
+      "path": "media/92182410/photo_025.jpeg",
+      "listing_id": "92182410",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0002948618202935904,
+      "pred_room": "bathroom",
+      "room_score": 0.060564376413822174
+    },
+    {
+      "path": "media/92182410/photo_026.jpeg",
+      "listing_id": "92182410",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.00019744184101000428,
+      "pred_room": "bathroom",
+      "room_score": 0.006485261023044586
+    },
+    {
+      "path": "media/92182410/photo_027.jpeg",
+      "listing_id": "92182410",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0006143416394479573,
+      "pred_room": "bathroom",
+      "room_score": 0.005051411222666502
+    },
+    {
+      "path": "media/92182410/photo_028.jpeg",
+      "listing_id": "92182410",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0016971913864836097,
+      "pred_room": "bathroom",
+      "room_score": 0.02377418428659439
+    },
+    {
+      "path": "media/92182410/photo_029.jpeg",
+      "listing_id": "92182410",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.06111752241849899,
+      "pred_room": "hallway",
+      "room_score": 0.21339988708496094
+    },
+    {
+      "path": "media/92182410/photo_030.jpeg",
+      "listing_id": "92182410",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.054920781403779984,
+      "pred_room": "hallway",
+      "room_score": 0.13689209520816803
+    },
+    {
+      "path": "media/92182410/photo_031.jpeg",
+      "listing_id": "92182410",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.01941462606191635,
+      "pred_room": "other_room",
+      "room_score": 0.9446020126342773
+    },
+    {
+      "path": "media/92182410/photo_032.jpeg",
+      "listing_id": "92182410",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.00012712058378383517,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/92182410/photo_033.jpeg",
+      "listing_id": "92182410",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.0007298217969946563,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/92182410/photo_034.jpeg",
+      "listing_id": "92182410",
+      "truth_type": "photo",
+      "pred_type": "floorplan",
+      "type_score": 0.06838641315698624,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/92182410/floorplan_035.jpeg",
+      "listing_id": "92182410",
+      "truth_type": "floorplan",
+      "pred_type": "floorplan",
+      "type_score": 0.0104706771671772,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/92181366/photo_000.jpeg",
+      "listing_id": "92181366",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.018716420978307724,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/92181366/photo_001.jpeg",
+      "listing_id": "92181366",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.052347589284181595,
+      "pred_room": "hallway",
+      "room_score": 0.1221800446510315
+    },
+    {
+      "path": "media/92181366/photo_002.jpeg",
+      "listing_id": "92181366",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0052983625791966915,
+      "pred_room": "dining_room",
+      "room_score": 0.18642954528331757
+    },
+    {
+      "path": "media/92181366/photo_003.jpeg",
+      "listing_id": "92181366",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.002502139424905181,
+      "pred_room": "living_room",
+      "room_score": 0.029578011482954025
+    },
+    {
+      "path": "media/92181366/photo_004.jpeg",
+      "listing_id": "92181366",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.002590774791315198,
+      "pred_room": "dining_room",
+      "room_score": 0.10264529287815094
+    },
+    {
+      "path": "media/92181366/photo_005.jpeg",
+      "listing_id": "92181366",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0005606573540717363,
+      "pred_room": "kitchen",
+      "room_score": 0.022165069356560707
+    },
+    {
+      "path": "media/92181366/photo_006.jpeg",
+      "listing_id": "92181366",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0030045914463698864,
+      "pred_room": "bedroom",
+      "room_score": 0.00017673199181444943
+    },
+    {
+      "path": "media/92181366/photo_007.jpeg",
+      "listing_id": "92181366",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.07457861304283142,
+      "pred_room": "dining_room",
+      "room_score": 0.29452717304229736
+    },
+    {
+      "path": "media/92181366/photo_008.jpeg",
+      "listing_id": "92181366",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.005471830256283283,
+      "pred_room": "living_room",
+      "room_score": 0.050345174968242645
+    },
+    {
+      "path": "media/92181366/photo_009.jpeg",
+      "listing_id": "92181366",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.006646034307777882,
+      "pred_room": "living_room",
+      "room_score": 0.08334458619356155
+    },
+    {
+      "path": "media/92181366/photo_010.jpeg",
+      "listing_id": "92181366",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.010571985505521297,
+      "pred_room": "other_room",
+      "room_score": 0.014524982310831547
+    },
+    {
+      "path": "media/92181366/photo_011.jpeg",
+      "listing_id": "92181366",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0005188348586671054,
+      "pred_room": "other_room",
+      "room_score": 6.177619070513174e-05
+    },
+    {
+      "path": "media/92181366/photo_012.jpeg",
+      "listing_id": "92181366",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.019076401367783546,
+      "pred_room": "hallway",
+      "room_score": 0.0068407864309847355
+    },
+    {
+      "path": "media/92181366/photo_013.jpeg",
+      "listing_id": "92181366",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.00010526632831897587,
+      "pred_room": "hallway",
+      "room_score": 0.00041006423998624086
+    },
+    {
+      "path": "media/92181366/photo_014.jpeg",
+      "listing_id": "92181366",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.011174089275300503,
+      "pred_room": "bedroom",
+      "room_score": 0.04798654466867447
+    },
+    {
+      "path": "media/92181366/photo_015.jpeg",
+      "listing_id": "92181366",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.01323428750038147,
+      "pred_room": "bedroom",
+      "room_score": 0.0811987891793251
+    },
+    {
+      "path": "media/92181366/photo_016.jpeg",
+      "listing_id": "92181366",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0446910485625267,
+      "pred_room": "bedroom",
+      "room_score": 0.02445043995976448
+    },
+    {
+      "path": "media/92181366/photo_017.jpeg",
+      "listing_id": "92181366",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.013407084159553051,
+      "pred_room": "hallway",
+      "room_score": 0.07305756956338882
+    },
+    {
+      "path": "media/92181366/photo_018.jpeg",
+      "listing_id": "92181366",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.00048791110748425126,
+      "pred_room": "hallway",
+      "room_score": 0.0021217968314886093
+    },
+    {
+      "path": "media/92181366/photo_019.jpeg",
+      "listing_id": "92181366",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0005105892196297646,
+      "pred_room": "bathroom",
+      "room_score": 0.05826970189809799
+    },
+    {
+      "path": "media/92181366/photo_020.jpeg",
+      "listing_id": "92181366",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.0007118351641111076,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/92181366/photo_021.jpeg",
+      "listing_id": "92181366",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0011301968479529023,
+      "pred_room": "garden",
+      "room_score": 0.1337066888809204
+    },
+    {
+      "path": "media/92181366/photo_022.jpeg",
+      "listing_id": "92181366",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.005229265429079533,
+      "pred_room": "hallway",
+      "room_score": 0.11739998310804367
+    },
+    {
+      "path": "media/92181366/photo_023.jpeg",
+      "listing_id": "92181366",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.003358033485710621,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/92181366/photo_024.jpeg",
+      "listing_id": "92181366",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.00019130195141769946,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/92181366/floorplan_025.png",
+      "listing_id": "92181366",
+      "truth_type": "floorplan",
+      "pred_type": "floorplan",
+      "type_score": 0.0007934002205729485,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/91798662/photo_000.jpeg",
+      "listing_id": "91798662",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.044495001435279846,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/91798662/photo_001.jpeg",
+      "listing_id": "91798662",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.05198469012975693,
+      "pred_room": "kitchen",
+      "room_score": 0.04484410583972931
+    },
+    {
+      "path": "media/91798662/photo_002.jpeg",
+      "listing_id": "91798662",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.15573714673519135,
+      "pred_room": "living_room",
+      "room_score": 0.05858780816197395
+    },
+    {
+      "path": "media/91798662/photo_003.jpeg",
+      "listing_id": "91798662",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.030354902148246765,
+      "pred_room": "kitchen",
+      "room_score": 0.03610102832317352
+    },
+    {
+      "path": "media/91798662/photo_004.jpeg",
+      "listing_id": "91798662",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.08817677944898605,
+      "pred_room": "living_room",
+      "room_score": 0.06515031307935715
+    },
+    {
+      "path": "media/91798662/photo_005.jpeg",
+      "listing_id": "91798662",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.01935996301472187,
+      "pred_room": "garden",
+      "room_score": 0.0028857188299298286
+    },
+    {
+      "path": "media/91798662/photo_006.jpeg",
+      "listing_id": "91798662",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.05935762822628021,
+      "pred_room": "living_room",
+      "room_score": 0.033766910433769226
+    },
+    {
+      "path": "media/91798662/photo_007.jpeg",
+      "listing_id": "91798662",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.08588431030511856,
+      "pred_room": "living_room",
+      "room_score": 0.05972166359424591
+    },
+    {
+      "path": "media/91798662/photo_008.jpeg",
+      "listing_id": "91798662",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.04563351720571518,
+      "pred_room": "living_room",
+      "room_score": 0.016669509932398796
+    },
+    {
+      "path": "media/91798662/photo_009.jpeg",
+      "listing_id": "91798662",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.006162400357425213,
+      "pred_room": "kitchen",
+      "room_score": 0.21142764389514923
+    },
+    {
+      "path": "media/91798662/photo_010.jpeg",
+      "listing_id": "91798662",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0278057511895895,
+      "pred_room": "bedroom",
+      "room_score": 0.17776764929294586
+    },
+    {
+      "path": "media/91798662/photo_011.jpeg",
+      "listing_id": "91798662",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.016570255160331726,
+      "pred_room": "bedroom",
+      "room_score": 0.054712019860744476
+    },
+    {
+      "path": "media/91798662/photo_012.jpeg",
+      "listing_id": "91798662",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.014070399105548859,
+      "pred_room": "other_room",
+      "room_score": 0.017101621255278587
+    },
+    {
+      "path": "media/91798662/photo_013.jpeg",
+      "listing_id": "91798662",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.024200040847063065,
+      "pred_room": "bedroom",
+      "room_score": 0.09382206201553345
+    },
+    {
+      "path": "media/91798662/photo_014.jpeg",
+      "listing_id": "91798662",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.049241576343774796,
+      "pred_room": "bedroom",
+      "room_score": 0.09786517173051834
+    },
+    {
+      "path": "media/91798662/photo_015.jpeg",
+      "listing_id": "91798662",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0004192454507574439,
+      "pred_room": "bathroom",
+      "room_score": 0.004565845243632793
+    },
+    {
+      "path": "media/91798662/photo_016.jpeg",
+      "listing_id": "91798662",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0011090460466220975,
+      "pred_room": "bathroom",
+      "room_score": 0.016376081854104996
+    },
+    {
+      "path": "media/91798662/photo_017.jpeg",
+      "listing_id": "91798662",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0006760970572941005,
+      "pred_room": "bathroom",
+      "room_score": 0.0030078173149377108
+    },
+    {
+      "path": "media/91798662/photo_018.jpeg",
+      "listing_id": "91798662",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.003551602829247713,
+      "pred_room": "hallway",
+      "room_score": 0.2536042332649231
+    },
+    {
+      "path": "media/91798662/photo_019.jpeg",
+      "listing_id": "91798662",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0008319977787323296,
+      "pred_room": "garden",
+      "room_score": 0.009967314079403877
+    },
+    {
+      "path": "media/91798662/floorplan_020.jpeg",
+      "listing_id": "91798662",
+      "truth_type": "floorplan",
+      "pred_type": "floorplan",
+      "type_score": 0.0011993381194770336,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/170816573/photo_000.jpeg",
+      "listing_id": "170816573",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.03234785422682762,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/170816573/photo_001.jpeg",
+      "listing_id": "170816573",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.03520025312900543,
+      "pred_room": "living_room",
+      "room_score": 0.02649753913283348
+    },
+    {
+      "path": "media/170816573/photo_002.jpeg",
+      "listing_id": "170816573",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0011082460405305028,
+      "pred_room": "kitchen",
+      "room_score": 0.11468342691659927
+    },
+    {
+      "path": "media/170816573/photo_003.jpeg",
+      "listing_id": "170816573",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.022333510220050812,
+      "pred_room": "bedroom",
+      "room_score": 0.2918558120727539
+    },
+    {
+      "path": "media/170816573/photo_004.jpeg",
+      "listing_id": "170816573",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.009552241303026676,
+      "pred_room": "bedroom",
+      "room_score": 0.12862034142017365
+    },
+    {
+      "path": "media/170816573/photo_005.jpeg",
+      "listing_id": "170816573",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.00030417044763453305,
+      "pred_room": "bathroom",
+      "room_score": 0.4217774271965027
+    },
+    {
+      "path": "media/170816573/photo_006.jpeg",
+      "listing_id": "170816573",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.0037199214566498995,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/170816573/photo_007.jpeg",
+      "listing_id": "170816573",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.018089672550559044,
+      "pred_room": "hallway",
+      "room_score": 0.2776561677455902
+    },
+    {
+      "path": "media/170816573/photo_008.jpeg",
+      "listing_id": "170816573",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.01532256230711937,
+      "pred_room": "hallway",
+      "room_score": 0.039826299995183945
+    },
+    {
+      "path": "media/170816573/photo_009.jpeg",
+      "listing_id": "170816573",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.05803293734788895,
+      "pred_room": "hallway",
+      "room_score": 0.05880510061979294
+    },
+    {
+      "path": "media/170816573/photo_010.jpeg",
+      "listing_id": "170816573",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0029567524325102568,
+      "pred_room": "living_room",
+      "room_score": 0.28267011046409607
+    },
+    {
+      "path": "media/170816573/photo_011.jpeg",
+      "listing_id": "170816573",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.008729388937354088,
+      "pred_room": "living_room",
+      "room_score": 0.061587922275066376
+    },
+    {
+      "path": "media/170816573/photo_012.jpeg",
+      "listing_id": "170816573",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0011717159068211913,
+      "pred_room": "kitchen",
+      "room_score": 0.1656869500875473
+    },
+    {
+      "path": "media/170816573/photo_013.jpeg",
+      "listing_id": "170816573",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.027565643191337585,
+      "pred_room": "dining_room",
+      "room_score": 0.06770814210176468
+    },
+    {
+      "path": "media/170816573/floorplan_014.jpeg",
+      "listing_id": "170816573",
+      "truth_type": "floorplan",
+      "pred_type": "floorplan",
+      "type_score": 0.010736480355262756,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/91511466/photo_000.jpeg",
+      "listing_id": "91511466",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0006881022709421813,
+      "pred_room": "garden",
+      "room_score": 0.15453380346298218
+    },
+    {
+      "path": "media/91511466/photo_001.jpeg",
+      "listing_id": "91511466",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.09937526285648346,
+      "pred_room": "living_room",
+      "room_score": 0.41318047046661377
+    },
+    {
+      "path": "media/91511466/photo_002.jpeg",
+      "listing_id": "91511466",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.02538001351058483,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/91511466/photo_003.jpeg",
+      "listing_id": "91511466",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.01294421125203371,
+      "pred_room": "kitchen",
+      "room_score": 0.1627403050661087
+    },
+    {
+      "path": "media/91511466/photo_004.jpeg",
+      "listing_id": "91511466",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.012900748290121555,
+      "pred_room": "dining_room",
+      "room_score": 0.10162261873483658
+    },
+    {
+      "path": "media/91511466/photo_005.jpeg",
+      "listing_id": "91511466",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.013110075145959854,
+      "pred_room": "bedroom",
+      "room_score": 0.12322686612606049
+    },
+    {
+      "path": "media/91511466/photo_006.jpeg",
+      "listing_id": "91511466",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.02744162268936634,
+      "pred_room": "bedroom",
+      "room_score": 0.38539430499076843
+    },
+    {
+      "path": "media/91511466/photo_007.jpeg",
+      "listing_id": "91511466",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.12271486967802048,
+      "pred_room": "bedroom",
+      "room_score": 0.3701980710029602
+    },
+    {
+      "path": "media/91511466/photo_008.jpeg",
+      "listing_id": "91511466",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.010761893354356289,
+      "pred_room": "hallway",
+      "room_score": 0.06152451038360596
+    },
+    {
+      "path": "media/91511466/photo_009.jpeg",
+      "listing_id": "91511466",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0006937528378330171,
+      "pred_room": "bathroom",
+      "room_score": 0.03492242097854614
+    },
+    {
+      "path": "media/91511466/photo_010.jpeg",
+      "listing_id": "91511466",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0007227161549963057,
+      "pred_room": "bathroom",
+      "room_score": 0.7519174218177795
+    },
+    {
+      "path": "media/91511466/photo_011.jpeg",
+      "listing_id": "91511466",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0002603837347123772,
+      "pred_room": "garden",
+      "room_score": 0.3220570981502533
+    },
+    {
+      "path": "media/91511466/photo_012.jpeg",
+      "listing_id": "91511466",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0002723072248045355,
+      "pred_room": "garden",
+      "room_score": 0.18239721655845642
+    },
+    {
+      "path": "media/91511466/photo_013.jpeg",
+      "listing_id": "91511466",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 8.92087773536332e-05,
+      "pred_room": "garden",
+      "room_score": 0.008562503382563591
+    },
+    {
+      "path": "media/91511466/photo_014.jpeg",
+      "listing_id": "91511466",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.0005412973696365952,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/91511466/photo_015.jpeg",
+      "listing_id": "91511466",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.00016290359781123698,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/91511466/photo_016.jpeg",
+      "listing_id": "91511466",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 4.2098286940017715e-05,
+      "pred_room": "garden",
+      "room_score": 0.13738559186458588
+    },
+    {
+      "path": "media/91511466/floorplan_017.jpeg",
+      "listing_id": "91511466",
+      "truth_type": "floorplan",
+      "pred_type": "floorplan",
+      "type_score": 0.001470084534958005,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/90211176/photo_000.jpeg",
+      "listing_id": "90211176",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.009218903258442879,
+      "pred_room": "dining_room",
+      "room_score": 0.10724575817584991
+    },
+    {
+      "path": "media/90211176/photo_001.jpeg",
+      "listing_id": "90211176",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.009174731560051441,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/90211176/photo_002.jpeg",
+      "listing_id": "90211176",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.004818607587367296,
+      "pred_room": "bedroom",
+      "room_score": 0.207605242729187
+    },
+    {
+      "path": "media/90211176/photo_003.jpeg",
+      "listing_id": "90211176",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0397210419178009,
+      "pred_room": "dining_room",
+      "room_score": 0.3881259858608246
+    },
+    {
+      "path": "media/90211176/photo_004.jpeg",
+      "listing_id": "90211176",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0011952939676120877,
+      "pred_room": "bathroom",
+      "room_score": 0.034713685512542725
+    },
+    {
+      "path": "media/90211176/photo_005.jpeg",
+      "listing_id": "90211176",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.005737227387726307,
+      "pred_room": "bedroom",
+      "room_score": 0.22519604861736298
+    },
+    {
+      "path": "media/90211176/photo_006.jpeg",
+      "listing_id": "90211176",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.03287811204791069,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/90211176/photo_007.jpeg",
+      "listing_id": "90211176",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.01099318265914917,
+      "pred_room": "bedroom",
+      "room_score": 0.10492806881666183
+    },
+    {
+      "path": "media/90211176/photo_008.jpeg",
+      "listing_id": "90211176",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0004906394169665873,
+      "pred_room": "bathroom",
+      "room_score": 0.06278792023658752
+    },
+    {
+      "path": "media/90211176/floorplan_009.jpeg",
+      "listing_id": "90211176",
+      "truth_type": "floorplan",
+      "pred_type": "floorplan",
+      "type_score": 0.1681108921766281,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/91558374/photo_000.jpeg",
+      "listing_id": "91558374",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0031208228319883347,
+      "pred_room": "living_room",
+      "room_score": 0.038656484335660934
+    },
+    {
+      "path": "media/91558374/photo_001.jpeg",
+      "listing_id": "91558374",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0012386144371703267,
+      "pred_room": "kitchen",
+      "room_score": 0.019406568259000778
+    },
+    {
+      "path": "media/91558374/photo_002.jpeg",
+      "listing_id": "91558374",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.00505420658737421,
+      "pred_room": "bedroom",
+      "room_score": 0.03288724273443222
+    },
+    {
+      "path": "media/91558374/photo_003.jpeg",
+      "listing_id": "91558374",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.007332229986786842,
+      "pred_room": "kitchen",
+      "room_score": 0.02394556999206543
+    },
+    {
+      "path": "media/91558374/photo_004.jpeg",
+      "listing_id": "91558374",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.002156270435079932,
+      "pred_room": "living_room",
+      "room_score": 0.019160350784659386
+    },
+    {
+      "path": "media/91558374/photo_005.jpeg",
+      "listing_id": "91558374",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0003075219283346087,
+      "pred_room": "bathroom",
+      "room_score": 0.0024938106071203947
+    },
+    {
+      "path": "media/91558374/photo_006.jpeg",
+      "listing_id": "91558374",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.00936439260840416,
+      "pred_room": "bedroom",
+      "room_score": 0.1257728487253189
+    },
+    {
+      "path": "media/91558374/photo_007.jpeg",
+      "listing_id": "91558374",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0013541887747123837,
+      "pred_room": "bathroom",
+      "room_score": 0.12080379575490952
+    },
+    {
+      "path": "media/91558374/photo_008.jpeg",
+      "listing_id": "91558374",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0043477765284478664,
+      "pred_room": "bedroom",
+      "room_score": 0.04640508070588112
+    },
+    {
+      "path": "media/91558374/photo_009.jpeg",
+      "listing_id": "91558374",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0012382682180032134,
+      "pred_room": "bathroom",
+      "room_score": 0.15230883657932281
+    },
+    {
+      "path": "media/91558374/photo_010.jpeg",
+      "listing_id": "91558374",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.001208623987622559,
+      "pred_room": "bedroom",
+      "room_score": 0.08721230179071426
+    },
+    {
+      "path": "media/91558374/photo_011.jpeg",
+      "listing_id": "91558374",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0024631712585687637,
+      "pred_room": "hallway",
+      "room_score": 0.014787464402616024
+    },
+    {
+      "path": "media/91558374/photo_012.jpeg",
+      "listing_id": "91558374",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0016984514659270644,
+      "pred_room": "living_room",
+      "room_score": 0.01746387593448162
+    },
+    {
+      "path": "media/91558374/photo_013.jpeg",
+      "listing_id": "91558374",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0027616943698376417,
+      "pred_room": "hallway",
+      "room_score": 0.0861990675330162
+    },
+    {
+      "path": "media/91558374/photo_014.jpeg",
+      "listing_id": "91558374",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.005026910919696093,
+      "pred_room": "living_room",
+      "room_score": 0.008868111297488213
+    },
+    {
+      "path": "media/91558374/photo_015.jpeg",
+      "listing_id": "91558374",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.00042404720443300903,
+      "pred_room": "kitchen",
+      "room_score": 0.00035120215034112334
+    },
+    {
+      "path": "media/91558374/photo_016.jpeg",
+      "listing_id": "91558374",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0009750219760462642,
+      "pred_room": "living_room",
+      "room_score": 0.0053648934699594975
+    },
+    {
+      "path": "media/91558374/photo_017.jpeg",
+      "listing_id": "91558374",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0010098476195707917,
+      "pred_room": "dining_room",
+      "room_score": 0.006672773044556379
+    },
+    {
+      "path": "media/91558374/photo_018.jpeg",
+      "listing_id": "91558374",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0007960154907777905,
+      "pred_room": "dining_room",
+      "room_score": 0.007663052994757891
+    },
+    {
+      "path": "media/91558374/photo_019.jpeg",
+      "listing_id": "91558374",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.00012000263086520135,
+      "pred_room": "hallway",
+      "room_score": 2.045932342298329e-05
+    },
+    {
+      "path": "media/91558374/photo_020.jpeg",
+      "listing_id": "91558374",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 4.150294989813119e-05,
+      "pred_room": "living_room",
+      "room_score": 1.1472618098196108e-05
+    },
+    {
+      "path": "media/174055022/photo_000.jpeg",
+      "listing_id": "174055022",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.0003269484150223434,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/174055022/photo_001.jpeg",
+      "listing_id": "174055022",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.013040960766375065,
+      "pred_room": "living_room",
+      "room_score": 0.015351683832705021
+    },
+    {
+      "path": "media/174055022/photo_002.jpeg",
+      "listing_id": "174055022",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0013964169193059206,
+      "pred_room": "bedroom",
+      "room_score": 0.031897883862257004
+    },
+    {
+      "path": "media/174055022/photo_003.jpeg",
+      "listing_id": "174055022",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0003610260027926415,
+      "pred_room": "bathroom",
+      "room_score": 0.018103720620274544
+    },
+    {
+      "path": "media/174055022/photo_004.jpeg",
+      "listing_id": "174055022",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0009749347227625549,
+      "pred_room": "garden",
+      "room_score": 0.018246298655867577
+    },
+    {
+      "path": "media/174055022/photo_005.jpeg",
+      "listing_id": "174055022",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.005134666338562965,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/174055022/photo_006.jpeg",
+      "listing_id": "174055022",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.003737097606062889,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/174055022/photo_007.jpeg",
+      "listing_id": "174055022",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.013453382067382336,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/90150621/photo_000.jpeg",
+      "listing_id": "90150621",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.01819433458149433,
+      "pred_room": "living_room",
+      "room_score": 0.014084853231906891
+    },
+    {
+      "path": "media/90150621/photo_001.jpeg",
+      "listing_id": "90150621",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.017385192215442657,
+      "pred_room": "bedroom",
+      "room_score": 0.08054973185062408
+    },
+    {
+      "path": "media/90150621/photo_002.jpeg",
+      "listing_id": "90150621",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.016144001856446266,
+      "pred_room": "living_room",
+      "room_score": 0.041228748857975006
+    },
+    {
+      "path": "media/90150621/photo_003.jpeg",
+      "listing_id": "90150621",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.004815694876015186,
+      "pred_room": "living_room",
+      "room_score": 0.0014476224314421415
+    },
+    {
+      "path": "media/90150621/photo_004.jpeg",
+      "listing_id": "90150621",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.01463411282747984,
+      "pred_room": "living_room",
+      "room_score": 0.03851652517914772
+    },
+    {
+      "path": "media/90150621/photo_005.jpeg",
+      "listing_id": "90150621",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.010397328063845634,
+      "pred_room": "bedroom",
+      "room_score": 0.13910363614559174
+    },
+    {
+      "path": "media/90150621/photo_006.jpeg",
+      "listing_id": "90150621",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.01972191222012043,
+      "pred_room": "bedroom",
+      "room_score": 0.11475654691457748
+    },
+    {
+      "path": "media/90150621/photo_007.jpeg",
+      "listing_id": "90150621",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.008294892497360706,
+      "pred_room": "living_room",
+      "room_score": 0.0017911811592057347
+    },
+    {
+      "path": "media/90150621/photo_008.jpeg",
+      "listing_id": "90150621",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0070746592245996,
+      "pred_room": "bathroom",
+      "room_score": 0.08006414026021957
+    },
+    {
+      "path": "media/90150621/photo_009.jpeg",
+      "listing_id": "90150621",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0016518223565071821,
+      "pred_room": "bathroom",
+      "room_score": 0.5684605240821838
+    },
+    {
+      "path": "media/90150621/photo_010.jpeg",
+      "listing_id": "90150621",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.03443610295653343,
+      "pred_room": "bedroom",
+      "room_score": 0.45273131132125854
+    },
+    {
+      "path": "media/90150621/photo_011.jpeg",
+      "listing_id": "90150621",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.004499223083257675,
+      "pred_room": "bedroom",
+      "room_score": 0.023930305615067482
+    },
+    {
+      "path": "media/90150621/photo_012.jpeg",
+      "listing_id": "90150621",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.008249460719525814,
+      "pred_room": "bedroom",
+      "room_score": 0.2723888158798218
+    },
+    {
+      "path": "media/90150621/photo_013.jpeg",
+      "listing_id": "90150621",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.020264705643057823,
+      "pred_room": "living_room",
+      "room_score": 0.0027344899717718363
+    },
+    {
+      "path": "media/90150621/photo_014.jpeg",
+      "listing_id": "90150621",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.009527784772217274,
+      "pred_room": "kitchen",
+      "room_score": 0.05642056465148926
+    },
+    {
+      "path": "media/90150621/photo_015.jpeg",
+      "listing_id": "90150621",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.008076632395386696,
+      "pred_room": "kitchen",
+      "room_score": 0.028507469221949577
+    },
+    {
+      "path": "media/90150621/photo_016.jpeg",
+      "listing_id": "90150621",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.016504429280757904,
+      "pred_room": "dining_room",
+      "room_score": 0.005143059883266687
+    },
+    {
+      "path": "media/90150621/photo_017.jpeg",
+      "listing_id": "90150621",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.035726290196180344,
+      "pred_room": "kitchen",
+      "room_score": 0.019949190318584442
+    },
+    {
+      "path": "media/90150621/photo_018.jpeg",
+      "listing_id": "90150621",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.019947567954659462,
+      "pred_room": "living_room",
+      "room_score": 0.0025900688488036394
+    },
+    {
+      "path": "media/90150621/photo_019.jpeg",
+      "listing_id": "90150621",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.011384849436581135,
+      "pred_room": "dining_room",
+      "room_score": 0.3396560549736023
+    },
+    {
+      "path": "media/90150621/photo_020.jpeg",
+      "listing_id": "90150621",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.053322684019804,
+      "pred_room": "living_room",
+      "room_score": 0.061272189021110535
+    },
+    {
+      "path": "media/90150621/photo_021.jpeg",
+      "listing_id": "90150621",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0066253021359443665,
+      "pred_room": "dining_room",
+      "room_score": 0.3083612620830536
+    },
+    {
+      "path": "media/90150621/photo_022.jpeg",
+      "listing_id": "90150621",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.03890426084399223,
+      "pred_room": "bedroom",
+      "room_score": 0.33624741435050964
+    },
+    {
+      "path": "media/166489172/photo_000.png",
+      "listing_id": "166489172",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0007011242560110986,
+      "pred_room": "dining_room",
+      "room_score": 0.005667848978191614
+    },
+    {
+      "path": "media/166489172/photo_001.png",
+      "listing_id": "166489172",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.005194340832531452,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/166489172/photo_002.png",
+      "listing_id": "166489172",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0024795024655759335,
+      "pred_room": "living_room",
+      "room_score": 0.007959969341754913
+    },
+    {
+      "path": "media/166489172/photo_003.png",
+      "listing_id": "166489172",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0019933641888201237,
+      "pred_room": "dining_room",
+      "room_score": 0.1014207974076271
+    },
+    {
+      "path": "media/166489172/photo_004.png",
+      "listing_id": "166489172",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0029689129441976547,
+      "pred_room": "dining_room",
+      "room_score": 0.022764818742871284
+    },
+    {
+      "path": "media/166489172/photo_005.png",
+      "listing_id": "166489172",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0016642031259834766,
+      "pred_room": "living_room",
+      "room_score": 0.004675820469856262
+    },
+    {
+      "path": "media/166489172/photo_006.png",
+      "listing_id": "166489172",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0010841813636943698,
+      "pred_room": "bedroom",
+      "room_score": 0.0002526201424188912
+    },
+    {
+      "path": "media/166489172/photo_007.png",
+      "listing_id": "166489172",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.008950306102633476,
+      "pred_room": "dining_room",
+      "room_score": 0.1218501627445221
+    },
+    {
+      "path": "media/166489172/photo_008.png",
+      "listing_id": "166489172",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0049108718521893024,
+      "pred_room": "dining_room",
+      "room_score": 0.010594303719699383
+    },
+    {
+      "path": "media/166489172/photo_009.png",
+      "listing_id": "166489172",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.008737422525882721,
+      "pred_room": "dining_room",
+      "room_score": 0.010335455648601055
+    },
+    {
+      "path": "media/166489172/photo_010.png",
+      "listing_id": "166489172",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.010741201229393482,
+      "pred_room": "kitchen",
+      "room_score": 0.0030662142671644688
+    },
+    {
+      "path": "media/166489172/photo_011.png",
+      "listing_id": "166489172",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.003461509943008423,
+      "pred_room": "kitchen",
+      "room_score": 0.0166470929980278
+    },
+    {
+      "path": "media/166489172/photo_012.png",
+      "listing_id": "166489172",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0007594911148771644,
+      "pred_room": "kitchen",
+      "room_score": 0.01048517320305109
+    },
+    {
+      "path": "media/166489172/photo_013.png",
+      "listing_id": "166489172",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.002066095359623432,
+      "pred_room": "hallway",
+      "room_score": 0.0007387825753539801
+    },
+    {
+      "path": "media/166489172/photo_014.png",
+      "listing_id": "166489172",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0036506718024611473,
+      "pred_room": "hallway",
+      "room_score": 0.043326057493686676
+    },
+    {
+      "path": "media/166489172/photo_015.png",
+      "listing_id": "166489172",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.005369883496314287,
+      "pred_room": "bedroom",
+      "room_score": 0.09316011518239975
+    },
+    {
+      "path": "media/166489172/photo_016.png",
+      "listing_id": "166489172",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0045979758724570274,
+      "pred_room": "bedroom",
+      "room_score": 0.04386236146092415
+    },
+    {
+      "path": "media/166489172/photo_017.png",
+      "listing_id": "166489172",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0033088966738432646,
+      "pred_room": "bathroom",
+      "room_score": 0.3334729075431824
+    },
+    {
+      "path": "media/166489172/photo_018.png",
+      "listing_id": "166489172",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.001190231996588409,
+      "pred_room": "bathroom",
+      "room_score": 0.16241376101970673
+    },
+    {
+      "path": "media/166489172/photo_019.png",
+      "listing_id": "166489172",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.000853854464367032,
+      "pred_room": "bedroom",
+      "room_score": 0.04255394637584686
+    },
+    {
+      "path": "media/166489172/photo_020.png",
+      "listing_id": "166489172",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0003830708155874163,
+      "pred_room": "bathroom",
+      "room_score": 0.07574459910392761
+    },
+    {
+      "path": "media/166489172/photo_021.jpeg",
+      "listing_id": "166489172",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.003020732430741191,
+      "pred_room": "bedroom",
+      "room_score": 0.20440392196178436
+    },
+    {
+      "path": "media/166489172/photo_022.jpeg",
+      "listing_id": "166489172",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0018635516753420234,
+      "pred_room": "bedroom",
+      "room_score": 0.2391747385263443
+    },
+    {
+      "path": "media/166489172/photo_023.png",
+      "listing_id": "166489172",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 5.803689782624133e-05,
+      "pred_room": "hallway",
+      "room_score": 0.0002531035279389471
+    },
+    {
+      "path": "media/166489172/photo_024.jpeg",
+      "listing_id": "166489172",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.001949173049069941,
+      "pred_room": "living_room",
+      "room_score": 0.3828307092189789
+    },
+    {
+      "path": "media/166489172/photo_025.jpeg",
+      "listing_id": "166489172",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.009767756797373295,
+      "pred_room": "living_room",
+      "room_score": 0.0767955631017685
+    },
+    {
+      "path": "media/166489172/photo_026.jpeg",
+      "listing_id": "166489172",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0015463083982467651,
+      "pred_room": "living_room",
+      "room_score": 0.034198250621557236
+    },
+    {
+      "path": "media/166489172/photo_027.jpeg",
+      "listing_id": "166489172",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0010842970805242658,
+      "pred_room": "living_room",
+      "room_score": 0.060072969645261765
+    },
+    {
+      "path": "media/166489172/photo_028.jpeg",
+      "listing_id": "166489172",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0007716958061791956,
+      "pred_room": "living_room",
+      "room_score": 0.003001739038154483
+    },
+    {
+      "path": "media/166489172/photo_029.jpeg",
+      "listing_id": "166489172",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 9.608885738998652e-05,
+      "pred_room": "living_room",
+      "room_score": 2.812958337017335e-05
+    },
+    {
+      "path": "media/166489172/photo_030.jpeg",
+      "listing_id": "166489172",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0003688212891574949,
+      "pred_room": "bathroom",
+      "room_score": 0.0016318440902978182
+    },
+    {
+      "path": "media/166489172/photo_031.jpeg",
+      "listing_id": "166489172",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0005336992326192558,
+      "pred_room": "dining_room",
+      "room_score": 0.0004196699010208249
+    },
+    {
+      "path": "media/166489172/photo_032.jpeg",
+      "listing_id": "166489172",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 6.0156431572977453e-05,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/166489172/photo_033.png",
+      "listing_id": "166489172",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.04469609633088112,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/172441955/photo_000.jpeg",
+      "listing_id": "172441955",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.0030636703595519066,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/172441955/photo_001.jpeg",
+      "listing_id": "172441955",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0003545641084201634,
+      "pred_room": "garden",
+      "room_score": 0.05103297159075737
+    },
+    {
+      "path": "media/172441955/photo_002.jpeg",
+      "listing_id": "172441955",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.005412631202489138,
+      "pred_room": "living_room",
+      "room_score": 0.064503014087677
+    },
+    {
+      "path": "media/172441955/photo_003.jpeg",
+      "listing_id": "172441955",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.004162708297371864,
+      "pred_room": "bedroom",
+      "room_score": 0.02399342693388462
+    },
+    {
+      "path": "media/172441955/photo_004.jpeg",
+      "listing_id": "172441955",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.0052945492789149284,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/172441955/photo_005.jpeg",
+      "listing_id": "172441955",
+      "truth_type": "photo",
+      "pred_type": "floorplan",
+      "type_score": 0.06432277709245682,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/172441955/photo_006.jpeg",
+      "listing_id": "172441955",
+      "truth_type": "photo",
+      "pred_type": "floorplan",
+      "type_score": 0.0056649474427104,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/172441955/photo_007.jpeg",
+      "listing_id": "172441955",
+      "truth_type": "photo",
+      "pred_type": "floorplan",
+      "type_score": 6.018637941451743e-05,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/175050533/photo_000.png",
+      "listing_id": "175050533",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.0026390610728412867,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/175050533/photo_001.png",
+      "listing_id": "175050533",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.00019375000556465238,
+      "pred_room": "living_room",
+      "room_score": 0.0002785002870950848
+    },
+    {
+      "path": "media/175050533/photo_002.png",
+      "listing_id": "175050533",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.00013884039071854204,
+      "pred_room": "living_room",
+      "room_score": 0.0005403655814006925
+    },
+    {
+      "path": "media/175050533/photo_003.png",
+      "listing_id": "175050533",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.0001570910681039095,
+      "pred_room": "living_room",
+      "room_score": 0.00011970856576226652
+    },
+    {
+      "path": "media/175050533/photo_004.png",
+      "listing_id": "175050533",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 3.6758952774107456e-05,
+      "pred_room": "hallway",
+      "room_score": 1.533720387669746e-05
+    },
+    {
+      "path": "media/175050533/photo_005.png",
+      "listing_id": "175050533",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.00685254717245698,
+      "pred_room": "living_room",
+      "room_score": 0.023547489196062088
+    },
+    {
+      "path": "media/175050533/photo_006.png",
+      "listing_id": "175050533",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.010321331210434437,
+      "pred_room": "living_room",
+      "room_score": 0.01250769104808569
+    },
+    {
+      "path": "media/175050533/photo_007.png",
+      "listing_id": "175050533",
+      "truth_type": "photo",
+      "pred_type": "interior",
+      "type_score": 0.00305588124319911,
+      "pred_room": "bedroom",
+      "room_score": 0.03217165917158127
+    },
+    {
+      "path": "media/175050533/photo_008.png",
+      "listing_id": "175050533",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.011666336096823215,
+      "pred_room": null,
+      "room_score": null
+    },
+    {
+      "path": "media/175050533/photo_009.png",
+      "listing_id": "175050533",
+      "truth_type": "photo",
+      "pred_type": "exterior",
+      "type_score": 0.005129758268594742,
+      "pred_room": null,
+      "room_score": null
+    }
+  ],
+  "floorplan_detection_adjudicated": {
+    "tp": 26,
+    "fp": 2,
+    "fn": 0,
+    "tn": 525,
+    "precision": 0.9286,
+    "recall": 1.0,
+    "f1": 0.963,
+    "accuracy": 0.9964,
+    "basis": "manual visual adjudication of the 6 disagreements (eval/results/stage0_adjudication.json)"
+  },
+  "portal_metadata_errors": {
+    "plans_misfiled_as_photos": 3,
+    "blank_assets_labelled_as_plans": 1,
+    "true_plan_count": 26,
+    "portal_plan_count": 24,
+    "comment": "Portal floor-plan metadata is not reliable ground truth."
+  }
+}
