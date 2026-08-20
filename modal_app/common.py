@@ -31,7 +31,11 @@ gpu_image = (
         "huggingface_hub", "safetensors", "transformers", "einops",
         "utils3d", "plyfile", "tqdm",
     )
-    .env({"TORCH_CUDA_ARCH_LIST": "8.0;8.6;8.9;9.0+PTX"})
+    # Include the older architectures: T4 (7.5) and V100 (7.0) are what the
+    # free tiers hand out, and gsplat compiles its CUDA kernels against this
+    # list - omitting 7.5 makes it fail to run on exactly the GPUs we may end
+    # up using. P100 (6.0) is included for Kaggle.
+    .env({"TORCH_CUDA_ARCH_LIST": "6.0;7.0;7.5;8.0;8.6;8.9;9.0+PTX"})
 )
 
 # gsplat and MapAnything are layered separately so a failure in one does not
@@ -55,5 +59,10 @@ DATA_DIR = "/data"
 # Model weights cached so repeat runs do not re-download several GB.
 model_cache = modal.Volume.from_name("visit-it-models", create_if_missing=True)
 CACHE_DIR = "/cache"
+
+# Cheapest first. The deploying account may not have every tier enabled -
+# Modal gates GPUs behind a payment method - so this is ordered so a fallback
+# is a one-word change rather than a redesign.
+GPU_CHOICES = ("T4", "L4", "A10G", "L40S", "A100-40GB", "A100-80GB", "H100")
 
 app = modal.App(APP_NAME)
