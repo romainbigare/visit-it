@@ -1,0 +1,50 @@
+{
+  "stage": "8-gsplat",
+  "gpu": "Tesla T4",
+  "n_scenes": 4,
+  "n_ok": 4,
+  "median_psnr_db": 12.22,
+  "median_train_seconds": 145.4,
+  "results": [
+    {
+      "group_id": "91094415_living_room",
+      "room_type": "living_room",
+      "n_gaussians": 120000,
+      "n_views": 3,
+      "iters": 1500,
+      "train_seconds": 998.4,
+      "heldout_psnr_db": 12.98,
+      "resolution": "518x336"
+    },
+    {
+      "group_id": "90150621_living_room",
+      "room_type": "living_room",
+      "n_gaussians": 120000,
+      "n_views": 3,
+      "iters": 1500,
+      "train_seconds": 143.1,
+      "heldout_psnr_db": 11.67,
+      "resolution": "518x336"
+    },
+    {
+      "group_id": "166489172_dining_room",
+      "room_type": "dining_room",
+      "n_gaussians": 120000,
+      "n_views": 3,
+      "iters": 1500,
+      "train_seconds": 147.7,
+      "heldout_psnr_db": 12.77,
+      "resolution": "518x336"
+    },
+    {
+      "group_id": "159886049_living_room",
+      "room_type": "living_room",
+      "n_gaussians": 120000,
+      "n_views": 3,
+      "iters": 1500,
+      "train_seconds": 71.7,
+      "heldout_psnr_db": 11.43,
+      "resolution": "518x392"
+    }
+  ]
+}

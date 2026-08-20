@@ -1,0 +1,110 @@
+{
+  "stage": "3-moge-gpu",
+  "gpu": "Tesla T4",
+  "n_images": 20,
+  "seconds_per_image": 0.368,
+  "seconds_first_call": 1.666,
+  "fov_median_deg": 98.5,
+  "results": [
+    {
+      "path": "media/91094415/photo_004.jpeg",
+      "seconds": 1.666,
+      "fov_x_deg": 99.2
+    },
+    {
+      "path": "media/91094415/photo_002.jpeg",
+      "seconds": 0.365,
+      "fov_x_deg": 101.1
+    },
+    {
+      "path": "media/91094415/photo_001.jpeg",
+      "seconds": 0.364,
+      "fov_x_deg": 97.9
+    },
+    {
+      "path": "media/91094415/photo_014.jpeg",
+      "seconds": 0.365,
+      "fov_x_deg": 102.9
+    },
+    {
+      "path": "media/91094415/photo_005.jpeg",
+      "seconds": 0.369,
+      "fov_x_deg": 103.0
+    },
+    {
+      "path": "media/91094415/photo_015.jpeg",
+      "seconds": 0.37,
+      "fov_x_deg": 101.2
+    },
+    {
+      "path": "media/91094415/photo_017.jpeg",
+      "seconds": 0.367,
+      "fov_x_deg": 99.1
+    },
+    {
+      "path": "media/91094415/photo_022.jpeg",
+      "seconds": 0.365,
+      "fov_x_deg": 99.8
+    },
+    {
+      "path": "media/90150621/photo_020.jpeg",
+      "seconds": 0.369,
+      "fov_x_deg": 95.0
+    },
+    {
+      "path": "media/90150621/photo_002.jpeg",
+      "seconds": 0.368,
+      "fov_x_deg": 92.7
+    },
+    {
+      "path": "media/90150621/photo_004.jpeg",
+      "seconds": 0.369,
+      "fov_x_deg": 92.8
+    },
+    {
+      "path": "media/90150621/photo_000.jpeg",
+      "seconds": 0.369,
+      "fov_x_deg": 91.9
+    },
+    {
+      "path": "media/90150621/photo_013.jpeg",
+      "seconds": 0.376,
+      "fov_x_deg": 91.6
+    },
+    {
+      "path": "media/90150621/photo_018.jpeg",
+      "seconds": 0.364,
+      "fov_x_deg": 88.5
+    },
+    {
+      "path": "media/90150621/photo_007.jpeg",
+      "seconds": 0.369,
+      "fov_x_deg": 91.5
+    },
+    {
+      "path": "media/90150621/photo_003.jpeg",
+      "seconds": 0.369,
+      "fov_x_deg": 91.4
+    },
+    {
+      "path": "media/166489172/photo_007.png",
+      "seconds": 0.366,
+      "fov_x_deg": 101.9
+    },
+    {
+      "path": "media/166489172/photo_003.png",
+      "seconds": 0.368,
+      "fov_x_deg": 87.7
+    },
+    {
+      "path": "media/166489172/photo_004.png",
+      "seconds": 0.367,
+      "fov_x_deg": 101.2
+    },
+    {
+      "path": "media/166489172/photo_008.png",
+      "seconds": 0.366,
+      "fov_x_deg": 100.8
+    }
+  ]
+}

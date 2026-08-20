@@ -252,6 +252,47 @@ def stage_mapanything(groups, media_parent: Path, out: Path, max_groups: int,
     return res
 
 
+def _init_colors_from_views(paths, shapes, media_parent: Path):
+    """Recover the per-Gaussian colour from the source pixels.
+
+    The point cloud is the per-view pointmaps concatenated in view order, so
+    point i of view v corresponds exactly to pixel i of view v's image resized
+    to that view's pointmap grid. Rebuilding the same concatenation gives an
+    exact colour per point.
+
+    This is the fix for the flat-grey renders: the previous version initialised
+    every Gaussian to mid-grey and expected 1500 iterations at a low learning
+    rate to discover the colours. They never moved, so the model converged to
+    the mean image - which is exactly what ~12 dB PSNR and a uniform grey
+    render look like.
+    """
+    import numpy as np
+    from PIL import Image
+    cols = []
+    for v, rel in enumerate(paths[:len(shapes)]):
+        h, w = int(shapes[v][0]), int(shapes[v][1])
+        im = Image.open(media_parent / rel).convert("RGB").resize((w, h), Image.LANCZOS)
+        cols.append((np.asarray(im, dtype=np.float32) / 255.0).reshape(-1, 3))
+    return np.concatenate(cols, axis=0)
+
+
+def _nn_scale(points, sample: int = 20000) -> float:
+    """Median nearest-neighbour spacing - the right size for an initial Gaussian.
+
+    The previous version used the 5th percentile of distance from the scene
+    centroid, which is a scene-radius measure, not a spacing one: on a 10 m
+    room it produced ~0.5 m blobs that overlapped into grey mush.
+    """
+    import numpy as np
+    try:
+        from scipy.spatial import cKDTree
+    except ImportError:
+        return float(np.linalg.norm(points.max(0) - points.min(0))) / (len(points) ** (1 / 3)) / 2
+    idx = np.random.choice(len(points), min(sample, len(points)), replace=False)
+    d, _ = cKDTree(points).query(points[idx], k=2)
+    return float(np.median(d[:, 1]))
+
+
 def stage_gsplat(groups, media_parent: Path, out: Path, max_groups: int, iters: int) -> dict:
     import numpy as np
     import torch
@@ -266,34 +307,44 @@ def stage_gsplat(groups, media_parent: Path, out: Path, max_groups: int, iters: 
         if not npz.exists():
             continue
         d = np.load(npz)
-        poses, Ks, pts, conf = d["poses"], d["Ks"], d["points"], d["conf"]
-        H, W = int(d["shapes"][0][0]), int(d["shapes"][0][1])
+        poses, Ks, pts, conf, shapes = d["poses"], d["Ks"], d["points"], d["conf"], d["shapes"]
+        H, W = int(shapes[0][0]), int(shapes[0][1])
+        n = min(len(poses), len(g["paths"]))
         imgs = [torch.tensor(np.array(Image.open(media_parent / p).convert("RGB")
                                       .resize((W, H), Image.LANCZOS)) / 255.0,
-                             dtype=torch.float32) for p in g["paths"]]
+                             dtype=torch.float32) for p in g["paths"][:n]]
         gt = torch.stack(imgs).to(dev)
-        n = min(len(imgs), len(poses))
         Ks_t = torch.tensor(Ks[:n], dtype=torch.float32, device=dev)
         viewmats = torch.inverse(torch.tensor(poses[:n], dtype=torch.float32, device=dev))
 
+        rgb_all = _init_colors_from_views(g["paths"], shapes, media_parent)
+        if len(rgb_all) != len(pts):
+            rows.append({"group_id": g["group_id"],
+                         "error": f"colour/point mismatch {len(rgb_all)} vs {len(pts)}"})
+            continue
+
         keep = np.isfinite(pts).all(1) & (conf > np.percentile(conf, 50))
-        init = pts[keep]
-        if len(init) > 120_000:
-            init = init[np.random.choice(len(init), 120_000, replace=False)]
-        if len(init) < 1000:
+        idx = np.flatnonzero(keep)
+        if len(idx) > 120_000:
+            idx = np.random.choice(idx, 120_000, replace=False)
+        if len(idx) < 1000:
             rows.append({"group_id": g["group_id"], "error": "too few init points"}); continue
+        init, init_rgb = pts[idx], rgb_all[idx]
         N = len(init)
+
+        s0 = max(_nn_scale(init), 1e-4)
         means = torch.nn.Parameter(torch.tensor(init, dtype=torch.float32, device=dev))
-        s0 = float(np.percentile(np.linalg.norm(init - init.mean(0), axis=1), 5)) or 0.02
-        scales = torch.nn.Parameter(torch.full((N, 3), float(np.log(s0 * 0.5)), device=dev))
+        scales = torch.nn.Parameter(torch.full((N, 3), float(np.log(s0)), device=dev))
         quats = torch.nn.Parameter(torch.tensor([[1.0, 0, 0, 0]], device=dev).repeat(N, 1))
-        opac = torch.nn.Parameter(torch.full((N,), 0.1, device=dev).logit())
-        colors = torch.nn.Parameter(torch.full((N, 3), 0.5, device=dev))
+        # Opaque-ish init: 0.1 plus oversized blobs washed the image out.
+        opac = torch.nn.Parameter(torch.full((N,), 0.5, device=dev).logit())
+        colors = torch.nn.Parameter(torch.tensor(init_rgb, dtype=torch.float32, device=dev))
+
         opt = torch.optim.Adam([{"params": [means], "lr": 1.6e-4},
                                 {"params": [scales], "lr": 5e-3},
                                 {"params": [quats], "lr": 1e-3},
                                 {"params": [opac], "lr": 5e-2},
-                                {"params": [colors], "lr": 2.5e-3}])
+                                {"params": [colors], "lr": 1e-2}])
         train = list(range(n))[:-1] or [0]
         held = n - 1
         torch.cuda.synchronize(); t0 = time.time()
@@ -301,39 +352,49 @@ def stage_gsplat(groups, media_parent: Path, out: Path, max_groups: int, iters: 
             i = train[it % len(train)]
             rc, _, _ = rasterization(means=means, quats=F.normalize(quats, dim=-1),
                                      scales=scales.exp(), opacities=opac.sigmoid(),
-                                     colors=colors.clamp(0, 1), viewmats=viewmats[i:i+1],
+                                     colors=colors, viewmats=viewmats[i:i+1],
                                      Ks=Ks_t[i:i+1], width=W, height=H,
                                      sh_degree=None, render_mode="RGB")
             loss = F.l1_loss(rc[0], gt[i])
             opt.zero_grad(); loss.backward(); opt.step()
+            with torch.no_grad():
+                colors.clamp_(0, 1)
         torch.cuda.synchronize(); train_s = time.time() - t0
+
         with torch.no_grad():
-            rc, _, _ = rasterization(means=means, quats=F.normalize(quats, dim=-1),
-                                     scales=scales.exp(), opacities=opac.sigmoid(),
-                                     colors=colors.clamp(0, 1), viewmats=viewmats[held:held+1],
-                                     Ks=Ks_t[held:held+1], width=W, height=H,
-                                     sh_degree=None, render_mode="RGB")
-            psnr = float(-10 * np.log10(max(F.mse_loss(rc[0], gt[held]).item(), 1e-10)))
-            Image.fromarray((rc[0].clamp(0, 1).cpu().numpy()*255).astype(np.uint8)).save(
-                out / f"splat_{g['group_id']}_render.png")
-            Image.fromarray((gt[held].cpu().numpy()*255).astype(np.uint8)).save(
-                out / f"splat_{g['group_id']}_gt.png")
+            def render(v):
+                r, _, _ = rasterization(means=means, quats=F.normalize(quats, dim=-1),
+                                        scales=scales.exp(), opacities=opac.sigmoid(),
+                                        colors=colors, viewmats=viewmats[v:v+1],
+                                        Ks=Ks_t[v:v+1], width=W, height=H,
+                                        sh_degree=None, render_mode="RGB")
+                return r[0].clamp(0, 1)
+            r_held, r_train = render(held), render(train[0])
+            psnr = float(-10 * np.log10(max(F.mse_loss(r_held, gt[held]).item(), 1e-10)))
+            psnr_tr = float(-10 * np.log10(max(F.mse_loss(r_train, gt[train[0]]).item(), 1e-10)))
+            # A flat render scores ~12 dB and looks plausible in a table, so
+            # measure contrast explicitly rather than trusting PSNR alone.
+            std_render = float(r_held.std().item())
+            std_gt = float(gt[held].std().item())
+            for tag, im in (("render", r_held), ("gt", gt[held]),
+                            ("trainfit", r_train)):
+                Image.fromarray((im.cpu().numpy() * 255).astype(np.uint8)).save(
+                    out / f"splat_{g['group_id']}_{tag}.png")
+
         rows.append({"group_id": g["group_id"], "room_type": g["room_type"],
                      "n_gaussians": N, "n_views": n, "iters": iters,
-                     "train_seconds": round(train_s, 1), "heldout_psnr_db": round(psnr, 2),
+                     "init_scale_m": round(s0, 4),
+                     "train_seconds": round(train_s, 1),
+                     "heldout_psnr_db": round(psnr, 2),
+                     "trainview_psnr_db": round(psnr_tr, 2),
+                     "render_contrast_std": round(std_render, 4),
+                     "gt_contrast_std": round(std_gt, 4),
+                     "looks_flat": bool(std_render < 0.25 * std_gt),
                      "resolution": f"{W}x{H}"})
-        print(f"  {g['group_id']:26} {N:6} gaussians {train_s:5.1f}s PSNR {psnr:.2f} dB",
-              flush=True)
-
-    ok = [r for r in rows if "error" not in r]
-    res = {"stage": "8-gsplat", "gpu": _gpu_name(), "n_scenes": len(rows), "n_ok": len(ok),
-           "median_psnr_db": (round(float(np.median([r["heldout_psnr_db"] for r in ok])), 2)
-                              if ok else None),
-           "median_train_seconds": (round(float(np.median([r["train_seconds"] for r in ok])), 1)
-                                    if ok else None), "results": rows}
-    (out / "results_gsplat.json").write_text(json.dumps(res, indent=2))
-    return res
-
+        print(f"  {g['group_id']:26} {N:6}g scale {s0:.3f}m {train_s:5.1f}s "
+              f"train {psnr_tr:5.2f} / held {psnr:5.2f} dB  "
+              f"contrast {std_render:.3f} vs {std_gt:.3f}"
+              f"{'  <-- FLAT' if std_render < 0.25 * std_gt else ''}", flush=True)
 
 def stage_moge(groups, media_parent: Path, out: Path, n_images: int) -> dict:
     import numpy as np

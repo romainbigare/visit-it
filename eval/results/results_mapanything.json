@@ -1,0 +1,182 @@
+{
+  "stage": "3-mapanything",
+  "gpu": "Tesla T4",
+  "vram_gb": 15.6,
+  "max_views": 3,
+  "max_side_px": 384,
+  "amp_dtype": "fp16",
+  "n_groups": 12,
+  "n_ok": 12,
+  "n_failed": 0,
+  "seconds_per_group_median": 1.23,
+  "results": [
+    {
+      "group_id": "91094415_living_room",
+      "room_type": "living_room",
+      "n_views": 3,
+      "seconds": 1.39,
+      "n_points": 522144,
+      "max_camera_baseline_m": 8.215,
+      "scene_extent_m": [
+        10.26,
+        2.73,
+        9.37
+      ],
+      "mean_confidence": 6.011
+    },
+    {
+      "group_id": "90150621_living_room",
+      "room_type": "living_room",
+      "n_views": 3,
+      "seconds": 1.21,
+      "n_points": 522144,
+      "max_camera_baseline_m": 6.43,
+      "scene_extent_m": [
+        9.95,
+        5.41,
+        11.12
+      ],
+      "mean_confidence": 2.557
+    },
+    {
+      "group_id": "166489172_dining_room",
+      "room_type": "dining_room",
+      "n_views": 3,
+      "seconds": 1.18,
+      "n_points": 522144,
+      "max_camera_baseline_m": 6.045,
+      "scene_extent_m": [
+        9.3,
+        4.46,
+        8.73
+      ],
+      "mean_confidence": 3.424
+    },
+    {
+      "group_id": "159886049_living_room",
+      "room_type": "living_room",
+      "n_views": 3,
+      "seconds": 1.7,
+      "n_points": 609168,
+      "max_camera_baseline_m": 9.623,
+      "scene_extent_m": [
+        9.29,
+        3.23,
+        5.89
+      ],
+      "mean_confidence": 1.0
+    },
+    {
+      "group_id": "91642188_living_room",
+      "room_type": "living_room",
+      "n_views": 3,
+      "seconds": 1.29,
+      "n_points": 522144,
+      "max_camera_baseline_m": 10.917,
+      "scene_extent_m": [
+        16.34,
+        2.77,
+        14.13
+      ],
+      "mean_confidence": 1.0
+    },
+    {
+      "group_id": "91558374_living_room",
+      "room_type": "living_room",
+      "n_views": 3,
+      "seconds": 1.2,
+      "n_points": 522144,
+      "max_camera_baseline_m": 5.586,
+      "scene_extent_m": [
+        11.76,
+        4.4,
+        14.72
+      ],
+      "mean_confidence": 1.0
+    },
+    {
+      "group_id": "91094415_dining_room",
+      "room_type": "dining_room",
+      "n_views": 3,
+      "seconds": 1.21,
+      "n_points": 522144,
+      "max_camera_baseline_m": 8.242,
+      "scene_extent_m": [
+        10.56,
+        2.77,
+        14.53
+      ],
+      "mean_confidence": 2.851
+    },
+    {
+      "group_id": "91798662_living_room",
+      "room_type": "living_room",
+      "n_views": 3,
+      "seconds": 1.2,
+      "n_points": 522144,
+      "max_camera_baseline_m": 3.171,
+      "scene_extent_m": [
+        4.23,
+        2.72,
+        3.25
+      ],
+      "mean_confidence": 2.416
+    },
+    {
+      "group_id": "175050533_living_room",
+      "room_type": "living_room",
+      "n_views": 3,
+      "seconds": 1.42,
+      "n_points": 609168,
+      "max_camera_baseline_m": 12.672,
+      "scene_extent_m": [
+        10.35,
+        3.05,
+        10.86
+      ],
+      "mean_confidence": 1.0
+    },
+    {
+      "group_id": "91428111_living_room",
+      "room_type": "living_room",
+      "n_views": 3,
+      "seconds": 1.7,
+      "n_points": 609168,
+      "max_camera_baseline_m": 5.309,
+      "scene_extent_m": [
+        7.58,
+        2.54,
+        7.3
+      ],
+      "mean_confidence": 7.213
+    },
+    {
+      "group_id": "172018976_living_room",
+      "room_type": "living_room",
+      "n_views": 3,
+      "seconds": 1.26,
+      "n_points": 522144,
+      "max_camera_baseline_m": 4.318,
+      "scene_extent_m": [
+        5.39,
+        2.43,
+        5.15
+      ],
+      "mean_confidence": 3.961
+    },
+    {
+      "group_id": "169576625_living_room",
+      "room_type": "living_room",
+      "n_views": 3,
+      "seconds": 1.2,
+      "n_points": 522144,
+      "max_camera_baseline_m": 8.74,
+      "scene_extent_m": [
+        10.01,
+        4.61,
+        9.37
+      ],
+      "mean_confidence": 1.0
+    }
+  ]
+}

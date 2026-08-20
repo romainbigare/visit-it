@@ -126,3 +126,90 @@ PYTHONPATH=vendor/moge python -m eval.figures       # figures
 ```
 
 Raw per-image outputs are in `eval/results/*.json`; the adjudication of every triage disagreement is in `stage0_adjudication.json`.
+
+
+---
+
+# GPU results — 20 August 2026 (Tesla T4, Google Colab free tier)
+
+Modal turned out to require a payment method for all compute, so this ran on a
+free Colab T4. Raw output in `results_moge_gpu.json`, `results_mapanything.json`,
+`results_gsplat.json`.
+
+## MoGe-2 on GPU — the cost model clears
+
+| | CPU (4 cores) | **T4 GPU** | factor |
+|---|---|---|---|
+| seconds/image | 14.4 | **0.368** | **39× faster** |
+| median predicted FOV | 98.6° | **98.5°** | — |
+
+Two things fall out. First, **0.37 s/image on a five-year-old entry-level GPU**
+puts the `instant` profile's latency budget (`docs/VARIANTS.md`) comfortably in
+reach; a current card would be faster again. Second, the FOV agreeing to within
+0.1° across completely different hardware and precision (fp32 CPU vs fp16 GPU)
+is a real cross-check that the ultra-wide finding is a property of the
+photographs, not an artefact.
+
+## MapAnything — works, and the scale looks right
+
+**12 of 12 groups succeeded, 1.23 s per group** (3 views at 384px, fp16).
+
+The diagnostic that mattered was camera baseline, because a collapsed
+reconstruction scores well and is worthless. **No group collapsed** — baselines
+run 3.2–12.7 m, median 7.3 m, none below 0.5 m.
+
+More convincing is that the reconstructions track the actual properties:
+
+| Listing | Beds | Reconstructed extent (m) | Reading |
+|---|---|---|---|
+| Knowle Road, Totterdown | 1 | 4.2 × 2.72 × 3.3 | a small Bristol living room, correctly small |
+| Concordia Wharf, E14 | 1 | 5.4 × 2.43 × 5.2 | plausible 1-bed reception |
+| East Timber Yard, B'ham | 2 | 16.3 × 2.77 × 14.1 | too wide — see below |
+
+**Vertical extent median 2.91 m, range 2.43–3.2 m on 7 of 12** — independently
+consistent with MoGe's 2.71 m median ceiling from single images. Two models,
+two methods, same answer.
+
+The horizontal extents on the big new-builds (10–16 m) are almost certainly
+**content seen through windows** rather than room walls: these are floor-to-
+ceiling-glazed city apartments, and the point cloud has no notion of where the
+room stops. That is a stage-4 problem (clip the point cloud to the layout
+polygon) and it is exactly what the architecture already specifies. It is not
+evidence the reconstruction is wrong.
+
+**One unknown:** 5 of 12 groups returned no confidence field at all, so the
+fallback filled it with ones. The key is present for the other 7. Worth
+resolving before confidence is used to weight anything downstream.
+
+## gsplat — ran, but the first attempt was my bug
+
+PSNR 11.4–13.0 dB and **uniformly grey renders**. That is not a model failure,
+it is three initialisation errors on my side:
+
+1. **Colours were never initialised from the photographs.** Every Gaussian
+   started mid-grey and was expected to discover its colour through 1500 steps
+   at a low learning rate. They barely moved, so the scene converged to the
+   mean image — grey, at about 12 dB.
+2. **Gaussian size was computed from the wrong quantity** — the 5th percentile
+   of distance from the scene centroid, which is a scene-radius measure. On a
+   10 m room that seeds half-metre blobs that overlap into mush. It should be
+   nearest-neighbour spacing, which is centimetres.
+3. **Opacity initialised at 0.1**, washing out whatever was left.
+
+All three are fixed: colours now come from the source pixels (the point cloud
+is per-view pointmaps concatenated in order, so point *i* of view *v* maps
+exactly to pixel *i* of that view), scale uses median nearest-neighbour
+distance, opacity starts at 0.5.
+
+**The lesson is worth keeping:** a flat grey render scored ~12 dB, which looks
+like a plausible bad-but-not-broken number in a results table. Only opening the
+image revealed it. The stage now reports render contrast against ground-truth
+contrast and flags `looks_flat`, so this cannot pass silently again.
+
+## Where this leaves the three open questions
+
+| Question | Answer |
+|---|---|
+| Is the GPU fast enough for the cost model? | **Yes** — 39× speedup, 0.37 s/image on the weakest current GPU |
+| Does multi-view reconstruction work on real agent photos (AD-4)? | **Yes** — 12/12, no collapses, scale corroborated by an independent model |
+| Does the stage 3 → 8 chain hold with no COLMAP (AD-6)? | **Not yet demonstrated** — first attempt was invalidated by my initialisation bugs; re-run pending |
