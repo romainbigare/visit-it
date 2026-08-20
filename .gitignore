@@ -1,0 +1,20 @@
+# Scraped listing imagery is NOT committed. Two reasons, both binding:
+#  1. Copyright: the photographs belong to the photographer (docs/DATA-SOURCES.md
+#     §3.7). Pushing them to a public repo would be republishing them.
+#  2. Size: ~87 MB for 30 listings; it does not belong in git history.
+# Regenerate with:  python -m pipeline.ingest.fetch_media
+data/golden/media/
+data/**/media/
+
+# Downloaded third-party datasets (see pipeline/datasets)
+.cache/
+*.tar.gz
+*.tgz
+*.zip
+
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.DS_Store

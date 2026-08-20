@@ -151,6 +151,20 @@ Together with **CoStar v. Zillow** (53,000+ images claimed, active in 2026), thi
 
 **Owner:** founder decision; counsel should still be briefed before any customer-facing output derives from scraped imagery.
 
+#### Measured reality, 20 Aug 2026 (first scraper run)
+
+Built and run against both portals. Findings, all from live requests:
+
+| | Result |
+|---|---|
+| **Rightmove** | **Works.** `robots.txt` permits `/property-for-sale/find.html` and `/properties/<id>` for a generic user-agent (named crawlers — GPTBot, CCbot, SpriftCrawler, TrovitBot — are `Disallow: /`, and we must not impersonate them). Search results embed `__NEXT_DATA__`; detail pages embed a devalue-flattened `window.__PAGE_MODEL`. Both parse cleanly. No rate limiting or blocking encountered at ~1 req/sec. |
+| **Zoopla** | **Blocked.** Cloudflare returns HTTP 403 with a "Just a moment…" interstitial to *every* request from a datacentre IP — including `robots.txt` itself. No header combination gets through. It needs a real browser plus a residential IP. The adapter is written but its field mapping is **unverified**, since we have never seen a real response. |
+| **Floor-plan coverage** | **92.5%** of listings seen carried at least one floor plan (98 of 106; 8 missing). Better than assumed — the UK plan channel is well supplied. |
+| **Stated floor area** | ~53% of search results, and 63% of fetched listings, carried a usable area figure — from Rightmove's `sizings` field or parsed out of the description. Confirms §5: usable but inconsistent, and never a measured legal figure. |
+| **Photos per listing** | median 16.5, range 5–54. Comfortably above the 6–12 views per room where splatting becomes viable, *if* they are spread across rooms rather than concentrated in the reception. |
+
+Two engineering notes worth carrying forward: Python's stdlib `urllib.robotparser` **silently ignores `*` wildcards**, so it would have permitted paths Rightmove disallows — we wrote our own matcher (`pipeline/ingest/robots.py`). And listing search results need a non-dwelling filter: blocks, portfolios and off-plan "6% rental yield" listings (typically illustrated with CGI renders, not photographs) pollute a golden set badly.
+
 ## 4. Recommendation
 
 **Headline: no dataset or API removes the need for a data partner — but the partner just got much easier to land, and the training-data blocker has largely dissolved.**
