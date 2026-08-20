@@ -6,12 +6,62 @@ HTTPS to `api.modal.com` returns 200; the gRPC channel cannot be established, an
 the proxy documentation lists gRPC as unsupported). Everything below is written
 and structure-checked; it just needs to be fired from a normal network.
 
-## One-time setup
+## The split: one gRPC step for you, everything else over HTTP
+
+Modal has **no REST control plane** — `modal deploy` can only be done with the
+gRPC SDK, so that step must run on a normal machine. But once the app is
+deployed, its web endpoint is ordinary HTTPS, and `*.modal.run` *is* reachable
+from the agent sandbox (verified: it returns proper HTTP responses). So the
+division of labour is:
+
+| Step | Who | Why |
+|---|---|---|
+| Deploy + upload data | **you**, once | gRPC only |
+| Trigger runs, poll, fetch results and images, iterate on failures | **the agent** | plain HTTPS |
+
+That matters because the first GPU run usually needs a fix or two, and the
+agent can do those rounds itself instead of relaying every one through you.
+
+## One-time setup (on your machine)
 
 ```bash
 pip install modal
 modal token set --token-id ak-... --token-secret as-...
+
+# A shared secret protecting the public endpoint. Any long random string.
+python -c "import secrets; print(secrets.token_urlsafe(32))"
+modal secret create visit-it-gpu-token GPU_API_TOKEN=<that string>
+
+cd visit-it
+python -m eval.models.grouping                        # CPU, instant
+modal run modal_app/gpu_validate.py::upload           # push the golden set
+modal deploy modal_app/web.py                         # prints the public URL
 ```
+
+Then send the agent the URL and the token. It sets:
+
+```bash
+export VISITIT_GPU_URL=https://<workspace>--visit-it-gpu-api.modal.run
+export VISITIT_GPU_TOKEN=<the string>
+```
+
+and drives everything with `tools/gpu_client.py`:
+
+```bash
+python tools/gpu_client.py health
+python tools/gpu_client.py start mapanything --max-groups 12
+python tools/gpu_client.py wait <call_id>
+python tools/gpu_client.py start gsplat_train --max-groups 4 --iters 1500
+python tools/gpu_client.py results --save
+python tools/gpu_client.py images
+```
+
+### Endpoint safety
+
+The URL is public, so: every route needs the bearer token, and only a fixed
+allowlist of stage names with typed, range-checked parameters can be started.
+There is deliberately no route that executes arbitrary code — a public endpoint
+that could run anything on your GPU account would be a standing liability.
 
 ## Run everything
 
