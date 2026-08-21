@@ -95,6 +95,25 @@ def aperture_cost(n_a: int, n_b: int) -> float:
     return float(min(1.0, abs(n_a - n_b) / 3.0))
 
 
+def normalise_areas(rooms: list[dict], plan_rooms: list[dict]) -> None:
+    """Put both sides on a common scale by dividing through by their own totals.
+
+    Needed for the plans that print no dimensions: their polygons are in pixels,
+    the reconstructed rooms are in metres, and an absolute area comparison between
+    the two is meaningless. Room *proportions* survive the change of units, and the
+    matcher only ever needed proportions — a kitchen is a third of this flat whether
+    you measure the flat in metres or in pixels.
+    """
+    for side in (rooms, plan_rooms):
+        total = sum(r.get("area_m2") or 0.0 for r in side)
+        if total <= 0:
+            continue
+        ref = 60.0            # a typical flat, so the log-ratio costs keep their scale
+        for r in side:
+            if r.get("area_m2"):
+                r["area_m2"] = r["area_m2"] / total * ref
+
+
 def build_cost_matrix(rooms: list[dict], plan_rooms: list[dict]
                       ) -> tuple[np.ndarray, list[list[dict]]]:
     """``(cost, breakdown)`` for every reconstructed room against every polygon."""

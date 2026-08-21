@@ -16,7 +16,7 @@ import numpy as np
 from ..core import geom
 from ..core.stages import StageContext, StageResult, register_stage
 from . import pose as pose_mod
-from .matching import assign
+from .matching import assign, normalise_areas
 
 log = logging.getLogger("assembly.stage")
 
@@ -42,16 +42,28 @@ def _room_features(layouts: dict) -> list[dict]:
 
 
 def _plan_features(plan: dict) -> list[dict]:
+    """Plan rooms as match candidates.
+
+    Falls back to the *pixel* polygon when the plan prints no dimensions. Shape and
+    proportion are what the matcher uses, and both survive the change of units —
+    which is what lets a perfectly-vectorised plan with no printed sizes still be
+    matched, instead of being thrown away for want of a number.
+    """
     out = []
+    metric = plan.get("px_per_metre") is not None
     for p in plan["rooms"]:
-        if not p.get("polygon_m"):
+        # Prefer metres, fall back to pixels, and never drop a room just because one
+        # of the two representations is missing.
+        poly = (p.get("polygon_m") or p.get("polygon_px")) if metric \
+            else (p.get("polygon_px") or p.get("polygon_m"))
+        if not poly or len(poly) < 3:
             continue
         out.append({
             "room_id": p["room_id"],
             "label": p.get("label"),
-            "area_m2": p.get("area_m2"),
-            "aspect": geom.aspect_ratio(p["polygon_m"]),
-            "polygon_m": p["polygon_m"],
+            "area_m2": p.get("area_m2") if metric else geom.area(poly),
+            "aspect": geom.aspect_ratio(poly),
+            "polygon_m": poly,
             "aperture_ids": p.get("aperture_ids", []),
             "confidence": p.get("confidence", 0.5),
         })
@@ -64,7 +76,11 @@ def assemble(layouts: dict, plan: dict, override: dict | None = None) -> dict:
     plan_rooms = _plan_features(plan)
     qa: list[str] = []
     if not plan_rooms:
-        qa.append("plan_has_no_metric_polygons")
+        qa.append("plan_has_no_rooms")
+    scale_free = plan.get("px_per_metre") is None
+    if scale_free:
+        qa.append("matched_without_a_plan_scale")
+        normalise_areas(rooms, plan_rooms)
 
     # A reviewer's pin is not a hint — it is the answer. Pinned rooms and their
     # polygons come out of the assignment problem entirely, so the solver spends
@@ -102,8 +118,14 @@ def assemble(layouts: dict, plan: dict, override: dict | None = None) -> dict:
     for m in matches:
         rp = by_id[m.room_id]["polygon_m"]
         pp = plan_by_id[m.plan_room_id]["polygon_m"]
-        before = geom.iou(geom.place_at(rp, geom.centroid(pp), 0.0), pp)
-        p, iou = pose_mod.refine(rp, pp)
+        if scale_free:
+            # Comparing a metre polygon against a pixel one has no meaning; the pose
+            # is not needed either, since the shell is extruded from the plan.
+            before, p, iou = 0.0, {"tx_m": 0.0, "ty_m": 0.0, "theta_deg": 0.0,
+                                   "flip": False}, None
+        else:
+            before = geom.iou(geom.place_at(rp, geom.centroid(pp), 0.0), pp)
+            p, iou = pose_mod.refine(rp, pp)
         ious_before.append(before)
         ious_after.append(iou)
         out.append({
@@ -121,6 +143,8 @@ def assemble(layouts: dict, plan: dict, override: dict | None = None) -> dict:
         qa.append("unmatched_reconstructed_rooms")
     if unmatched_plans:
         qa.append("unmatched_plan_polygons")
+    ious_after = [i for i in ious_after if i is not None]
+    ious_before = [i for i in ious_before if i is not None]
     if ious_after and float(np.median(ious_after)) < 0.4:
         qa.append("poor_polygon_fit")
 
@@ -155,9 +179,5 @@ def assemble(layouts: dict, plan: dict, override: dict | None = None) -> dict:
 def run(ctx: StageContext) -> StageResult:
     layouts = ctx.require("4-layout")
     plan = ctx.require("5-plan")
-    if plan.get("px_per_metre") is None:
-        return StageResult(payload={}, skipped=True,
-                           skip_reason="plan has no metric scale, so its polygons "
-                                       "cannot be matched against metric rooms")
     ov = (ctx.options.get("overrides") or {}).get("assembly")
     return StageResult(payload=assemble(layouts, plan, ov), engine="hungarian_se2")

@@ -54,22 +54,51 @@ def load_rgb(path: Path) -> np.ndarray:
 
 
 def ink_mask(rgb: np.ndarray, threshold: float = 60.0) -> tuple[np.ndarray, np.ndarray]:
-    """Ink = far from the page colour. Returns ``(mask, background_rgb)``.
+    """Structural ink — the drawn lines — as a mask. Returns ``(mask, page_colour)``.
 
-    The page colour is the modal colour over a coarse grid, not the corner pixel:
-    plans arrive with coloured borders, watermarks and letterboxing.
+    **Walls are the darkest thing on the page, not merely the non-white thing.**
+    That distinction is the whole function, and getting it wrong cost Phase 1 a
+    whole class of plan. Many agency plans fill each room with a pastel colour;
+    measuring "how far is this pixel from the page background" then flags every
+    room fill as ink, and 41-50% of the sheet comes back as structure instead of
+    the 4-13% a plan actually contains. There is no free space left to segment and
+    the plan returns one polygon, or none.
+
+    So: take everything meaningfully darker than the page, then split *that* into
+    dark lines and mid-tone fills with Otsu. On a black-on-white plan there is only
+    one population and the split is skipped, so those plans are unaffected.
     """
-    small = rgb[::4, ::4].reshape(-1, 3)
-    q = (small // 16).astype(np.int32)
-    keys, counts = np.unique(q[:, 0] * 256 + q[:, 1] * 16 + q[:, 2], return_counts=True)
-    k = int(keys[counts.argmax()])
-    bg = np.array([(k // 256) * 16 + 8, ((k // 16) % 16) * 16 + 8, (k % 16) * 16 + 8],
-                  dtype=np.float32)
-    mask = (np.linalg.norm(rgb.astype(np.float32) - bg, axis=2) > threshold).astype(np.uint8)
-    if mask.mean() > 0.55:
-        # Light ink on a dark page. Rare but real, and silently unrecoverable if missed.
-        mask = 1 - mask
-    return mask, bg
+    lum = cv2.cvtColor(rgb, cv2.COLOR_RGB2GRAY)
+    hist = np.bincount(lum.ravel(), minlength=256)
+    page = int(np.argmax(hist))
+
+    if page < 110:
+        # Light ink on a dark page. Rare, but silently unrecoverable if missed:
+        # every threshold below would select the page instead of the drawing.
+        lum = 255 - lum
+        page = 255 - page
+
+    cand = lum < max(30, page - 40)
+    vals = lum[cand]
+    if vals.size < 100:
+        return cand.astype(np.uint8), np.full(3, float(page))
+
+    if int(vals.max()) - int(vals.min()) >= 60:
+        t, _ = cv2.threshold(vals, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+        mask = (lum <= t)
+        # Guard against a pathological split that keeps almost nothing: a plan
+        # drawn entirely in mid grey has one population that Otsu will still cut.
+        if mask.mean() < 0.004:
+            mask = cand
+    else:
+        mask = cand
+
+    return mask.astype(np.uint8), np.full(3, float(page))
+
+
+def ink_fraction(mask: np.ndarray) -> float:
+    """Share of the sheet that is structural ink. A healthy plan sits near 4-15%."""
+    return float(mask.mean())
 
 
 def estimate_skew(walls: np.ndarray, max_deg: float = 8.0) -> float:

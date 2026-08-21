@@ -56,11 +56,19 @@ def build_scene(shell: dict, plan: dict, assembly: dict, scale: dict,
     t0 = time.perf_counter()
     rooms_out, waypoints, edges = [], [], []
     by_room_wp: dict[str, str] = {}
+    # Which photographs belong in which room, so the viewer can offer them later.
+    # Routed through the assembly rather than the label, because two bedrooms share
+    # a label and only the assembly knows which is which.
     photo_by_room: dict[str, list[str]] = {}
+    label_photos: dict[str, list[str]] = {}
     if manifest:
         for im in manifest["images"]:
             if im.get("room_label"):
-                photo_by_room.setdefault(im["room_label"], []).append(im["image_id"])
+                label_photos.setdefault(im["room_label"], []).append(im["image_id"])
+    for r in shell["rooms"]:
+        lab = r.get("label")
+        if r.get("photo_room_id") and lab:
+            photo_by_room[r["room_id"]] = label_photos.get(lab, [])
 
     for r in shell["rooms"]:
         centre = geom.representative_point(r["polygon_m"])
@@ -74,7 +82,7 @@ def build_scene(shell: dict, plan: dict, assembly: dict, scale: dict,
             "area_m2": r["area_m2"],
             "provenance": r["provenance"],
             "confidence": r["confidence"],
-            "photo_ids": photo_by_room.get(r.get("label") or "", []),
+            "photo_ids": photo_by_room.get(r["room_id"], []),
             "splats": None,                     # Phase 2 fills this
         })
         wid = f"w_{r['room_id']}"
@@ -87,12 +95,13 @@ def build_scene(shell: dict, plan: dict, assembly: dict, scale: dict,
         })
 
     # Doorway waypoints, so a walkthrough goes *through* doors rather than teleporting
-    # between room centres through walls.
-    plan_to_room = {m["plan_room_id"]: m["room_id"] for m in assembly.get("matches", [])}
+    # between room centres through walls. Since the shell is built from the plan, a
+    # room's id IS its plan polygon's id, and the apertures already speak that language.
+    built = {r["room_id"] for r in rooms_out}
     for ap in plan.get("apertures", []):
         if ap["type"] not in ("door", "opening") or not ap.get("position_m"):
             continue
-        linked = [plan_to_room[p] for p in ap.get("rooms", []) if p in plan_to_room]
+        linked = [p for p in ap.get("rooms", []) if p in built]
         if len(linked) != 2:
             continue
         wid = f"w_{ap['aperture_id']}"

@@ -1,68 +1,195 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://visit-it.internal/schemas/scale.json",
-  "title": "Stage 7 — global scale",
+  "title": "Stage 7 \u2014 global scale",
   "description": "AD-7: ONE scalar, weighted least squares in log space (so a 10% error costs the same whether it is 10% too big or 10% too small). Residuals are the listing's quality score.",
   "type": "object",
-  "required": ["schema", "listing_id", "scale", "constraints", "quality", "qa_flags"],
+  "required": [
+    "schema",
+    "listing_id",
+    "scale",
+    "constraints",
+    "quality",
+    "qa_flags"
+  ],
   "properties": {
-    "schema": {"const": "scale/v1"},
-    "listing_id": {"type": "string"},
-    "scale": {"type": "number", "exclusiveMinimum": 0, "description": "Multiply stage-4 metres by this."},
-    "log_scale": {"type": "number"},
-    "sigma_log": {"type": "number", "description": "Standard error of log_scale from the weighted fit."},
+    "schema": {
+      "const": "scale/v1"
+    },
+    "listing_id": {
+      "type": "string"
+    },
+    "scale": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "description": "Multiply stage-4 metres by this."
+    },
+    "log_scale": {
+      "type": "number"
+    },
+    "sigma_log": {
+      "type": "number",
+      "description": "Standard error of log_scale from the weighted fit."
+    },
     "constraints": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["kind", "target", "observed", "weight"],
+        "required": [
+          "kind",
+          "target",
+          "observed",
+          "weight"
+        ],
         "properties": {
-          "kind": {"enum": ["stated_area", "plan_room_area", "plan_total_area", "door_height", "ceiling_height", "fixture", "metric_depth"]},
-          "detail": {"type": "string"},
-          "target": {"type": "number", "description": "What the constraint says the quantity should be."},
-          "observed": {"type": "number", "description": "What the unscaled reconstruction says it is."},
-          "power": {"type": "number", "description": "1 for a length, 2 for an area. Decides how log-scale enters."},
-          "weight": {"type": "number", "minimum": 0},
-          "residual_log": {"type": "number"},
-          "residual_pct": {"type": "number"},
-          "source": {"type": "string"},
-          "used": {"type": "boolean", "default": true}
+          "kind": {
+            "enum": [
+              "stated_area",
+              "plan_room_area",
+              "plan_total_area",
+              "door_height",
+              "ceiling_height",
+              "fixture",
+              "metric_depth"
+            ]
+          },
+          "detail": {
+            "type": "string"
+          },
+          "target": {
+            "type": "number",
+            "description": "What the constraint says the quantity should be."
+          },
+          "observed": {
+            "type": "number",
+            "description": "What the unscaled reconstruction says it is."
+          },
+          "power": {
+            "type": "number",
+            "description": "1 for a length, 2 for an area. Decides how log-scale enters."
+          },
+          "weight": {
+            "type": "number",
+            "minimum": 0
+          },
+          "residual_log": {
+            "type": "number"
+          },
+          "residual_pct": {
+            "type": "number"
+          },
+          "source": {
+            "type": "string"
+          },
+          "used": {
+            "type": "boolean",
+            "default": true
+          }
         }
       }
     },
-    "residual_rms_pct": {"type": "number"},
-    "quality": {"$ref": "common.json#/$defs/confidence"},
+    "residual_rms_pct": {
+      "type": "number"
+    },
+    "quality": {
+      "$ref": "common.json#/$defs/confidence"
+    },
     "self_consistency": {
       "type": "object",
-      "description": "ROADMAP §0b check 2. Where the plan prints room dimensions, the reconstruction must agree with the plan's own numbers — the listing supplies both sides.",
+      "description": "ROADMAP \u00a70b check 2. Where the plan prints room dimensions, the reconstruction must agree with the plan's own numbers \u2014 the listing supplies both sides.",
       "properties": {
-        "n_rooms_checked": {"type": "integer"},
-        "median_abs_pct": {"type": ["number", "null"]},
-        "within_10pct_frac": {"type": ["number", "null"]},
-        "per_room": {"type": "array", "items": {"type": "object"}}
+        "n_rooms_checked": {
+          "type": "integer"
+        },
+        "median_abs_pct": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "within_10pct_frac": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "per_room": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
       }
     },
     "cross_check": {
       "type": "object",
-      "description": "ROADMAP §0b check 3. Two independent estimates of the same scalar.",
+      "description": "ROADMAP \u00a70b check 3. Two independent estimates of the same scalar.",
       "properties": {
-        "estimates": {"type": "object", "additionalProperties": {"type": "number"}},
-        "max_disagreement_pct": {"type": ["number", "null"]},
-        "within_15pct": {"type": ["boolean", "null"]}
+        "estimates": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "number"
+          }
+        },
+        "max_disagreement_pct": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "within_15pct": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        }
       }
     },
     "plausibility": {
       "type": "object",
-      "description": "ROADMAP §0b check 1. Ceilings 2.3-3.2 m, no room over 12 m across.",
+      "description": "ROADMAP \u00a70b check 1. Ceilings 2.3-3.2 m, no room over 12 m across.",
       "properties": {
-        "n_rooms": {"type": "integer"},
-        "ceiling_plausible_frac": {"type": ["number", "null"]},
-        "max_extent_m": {"type": ["number", "null"]},
-        "any_room_over_12m": {"type": "boolean"}
+        "n_rooms": {
+          "type": "integer"
+        },
+        "ceiling_plausible_frac": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "max_extent_m": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "any_room_over_12m": {
+          "type": "boolean"
+        }
       }
     },
-    "confidence": {"$ref": "common.json#/$defs/confidence"},
-    "qa_flags": {"$ref": "common.json#/$defs/qa_flags"},
-    "timing_s": {"$ref": "common.json#/$defs/timing_s"}
+    "confidence": {
+      "$ref": "common.json#/$defs/confidence"
+    },
+    "qa_flags": {
+      "$ref": "common.json#/$defs/qa_flags"
+    },
+    "timing_s": {
+      "$ref": "common.json#/$defs/timing_s"
+    },
+    "derived_plan_px_per_metre": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "description": "Set when the plan printed no dimensions and no area was stated: the pixels-per-metre implied by matching the plan's rooms to the metric photo reconstruction. Without it such a listing cannot be built at all."
+    },
+    "derived_plan_scale_note": {
+      "type": [
+        "object",
+        "null"
+      ]
+    }
   }
 }

@@ -112,7 +112,14 @@ async function load(): Promise<void> {
   const [[minx, miny], [maxx, maxy]] = scene.minimap.bounds_m;
   const span = Math.max(maxx - minx, maxy - miny, 4);
   ceilingCut.constant = Math.max(...scene.rooms.map((r) => r.height_m)) - 0.35;
-  dollCamera.position.set((minx + maxx) / 2, span * 1.5, -(miny + maxy) / 2 + span * 1.15);
+  // Frame the flat, not the void around it. The camera distance is derived from the
+  // footprint and the vertical field of view so a one-bed and a five-bed both fill
+  // the frame, rather than a fixed multiple that suits whichever flat was open when
+  // it was chosen.
+  const fovRad = THREE.MathUtils.degToRad(dollCamera.fov);
+  const dist = (span * 0.62) / Math.tan(fovRad / 2);
+  dollCamera.position.set((minx + maxx) / 2, dist * 0.82,
+                          -(miny + maxy) / 2 + dist * 0.62);
   orbit = new OrbitControls(dollCamera, renderer.domElement);
   orbit.target.set((minx + maxx) / 2, 1.2, -(miny + maxy) / 2);
   orbit.enableDamping = true;

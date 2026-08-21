@@ -168,6 +168,42 @@ def checks(layouts: dict, plan: dict | None, sol: Solution, scale: float) -> dic
     return {"plausibility": plaus, "self_consistency": self_consistency, "cross_check": cross}
 
 
+def derive_plan_scale(layouts: dict, plan: dict | None, assembly: dict | None,
+                      scale: float) -> tuple[float | None, dict]:
+    """Give a dimensionless plan its px-per-metre, from the rooms we reconstructed.
+
+    Phase 1 measured that a plan can be vectorised perfectly and still be unusable,
+    because it prints no dimensions and the listing states no area — so there is no
+    number anywhere to turn pixels into metres. But the photographs *are* metric.
+    Matching a room drawn 480 px across to a reconstruction 4.1 m across gives the
+    plan its scale, and the flat becomes buildable.
+
+    Solved over all matched pairs at once (total area against total area) rather
+    than per room, so one bad match cannot set the scale for the whole flat.
+    """
+    if not plan or plan.get("px_per_metre") or not assembly:
+        return None, {}
+    lay = {r["room_id"]: r for r in layouts["rooms"]}
+    pby = {p["room_id"]: p for p in plan.get("rooms", [])}
+    px_area = m2_area = 0.0
+    n = 0
+    for m in assembly.get("matches", []):
+        r, p = lay.get(m["room_id"]), pby.get(m["plan_room_id"])
+        if not r or not p or not r.get("area_m2") or not p.get("area_px"):
+            continue
+        px_area += float(p["area_px"])
+        m2_area += float(r["area_m2"]) * scale ** 2
+        n += 1
+    if n < 2 or m2_area <= 0:
+        return None, {"n_pairs": n, "reason": "need at least two matched rooms"}
+    ppm = float(np.sqrt(px_area / m2_area))
+    if not (1.0 < ppm < 5000.0):
+        return None, {"n_pairs": n, "px_per_metre": round(ppm, 3),
+                      "reason": "implausible"}
+    return ppm, {"n_pairs": n, "px_per_metre": round(ppm, 3),
+                 "source": "matched rooms against the photo reconstruction"}
+
+
 def build_scale(layouts: dict, plan: dict | None, manifest: dict | None,
                 assembly: dict | None) -> dict:
     t0 = time.perf_counter()
@@ -199,10 +235,16 @@ def build_scale(layouts: dict, plan: dict | None, manifest: dict | None,
         # of the two sides is wrong, not that the flat is unusual.
         qa.append("large_scale_correction")
 
+    derived_ppm, derived_note = derive_plan_scale(layouts, plan, assembly, sol.scale)
+    if derived_ppm:
+        qa.append("plan_scale_derived_from_photos")
+
     return {
         "schema": "scale/v1",
         "listing_id": layouts["listing_id"],
         "scale": round(sol.scale, 6),
+        "derived_plan_px_per_metre": round(derived_ppm, 4) if derived_ppm else None,
+        "derived_plan_scale_note": derived_note or None,
         "log_scale": round(sol.log_scale, 6),
         "sigma_log": round(sol.sigma_log, 6),
         "constraints": [c.to_dict() for c in sol.constraints],
