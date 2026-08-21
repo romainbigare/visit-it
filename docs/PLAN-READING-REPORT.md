@@ -277,6 +277,75 @@ a plausible-looking way is somewhere an annotator is less likely to correct. Tha
 acceptable for closing a known gap like door swings, and it is not a substitute for tracing
 a handful of plans from scratch if we ever want a clean measurement.
 
+## 6c. Raster2Seq: what it is good at, and the one thing holding it back
+
+Run on our plans (`notebooks/raster2seq_eval_colab.ipynb`) it does what the wall model
+cannot: it predicts **which rooms exist, what type each is, and how they fit together**,
+directly, with no captions read. Open-plan spaces stay whole. Unlabelled WCs, cupboards and
+hallways are found. That is the half of the problem our watershed has always guessed at.
+
+**What holds it back is coordinate resolution, and it is measurable.** The published
+CubiCasa5K checkpoint works on a 256-pixel copy and tokenises coordinates into 32 bins per
+axis, so every vertex snaps to a grid 1/32 of the plan wide — around 30 cm on a typical
+flat, whatever the source resolution.
+
+To size that on its own, take our own outlines — which do sit on the walls — and snap them
+to the same grid, changing nothing else:
+
+| outlines | median outline-on-wall |
+|---|---|
+| ours, as shipped | **0.822** |
+| the same, snapped to a 64-bin grid | 0.643 |
+| the same, snapped to Raster2Seq's 32-bin grid | **0.514** |
+
+*n = 25 plans.* So a third of this metric is spent on the coordinate grid before the model
+is judged on the thing it is good at. **0.514 is the ceiling any 32-bin prediction can
+reach**, not 1.0, and any comparison that ignores that under-rates it. The notebook's
+head-to-head prints all three columns for exactly this reason.
+
+**`--num_bins` and `--seq_len` are not knobs.** The coordinate vocabulary is baked into the
+trained tokeniser — this checkpoint was trained at 32 bins, and passing 64 changes the
+vocabulary size out from under the weights. The quantisation cannot be tuned away at
+inference; it can only be worked around.
+
+### The two models are complementary, not competing
+
+| | Raster2Seq | the wall model |
+|---|---|---|
+| which rooms exist | **yes**, directly | guessed from captions and distance peaks |
+| room types | **yes**, no text read | from OCR, so only where a caption exists |
+| open-plan spaces | **kept whole** | split when one caption holds two room words |
+| unlabelled WCs, cupboards, halls | **found** | often missed |
+| where the wall is | ~1/32 of the plan width | **pixel-accurate** |
+| runs on | a GPU | four CPU cores |
+
+**So use Raster2Seq for the room graph and the wall model for the geometry** — and we
+already own the piece that joins them. Stage 5's watershed had exactly two weaknesses: it
+was *seeded* from OCR captions, so it only found rooms somebody had labelled, and its
+*barrier* was an ink threshold, so cabinets and door swings became walls. The wall model
+fixed the barrier. Raster2Seq's room polygons are a far better seed than a caption ever
+was — one per real room, already typed, already whole. Feed them in as markers, keep the
+wall map as the barrier, and each room grows out to the wall behind it.
+
+That is an integration of three things we have, not new research.
+
+### Ranked
+
+| | what | effort | what it buys |
+|---|---|---|---|
+| 1 | **Seed the watershed with Raster2Seq rooms** over the wall-model barrier | small — all three pieces exist | the room graph *and* pixel-accurate outlines |
+| 2 | Try the **`Raster2Graph-512`** checkpoint the authors also publish | one string | double the coordinate resolution, no training |
+| 3 | **Tile** the plan and run at native wall thickness, merge | medium | the small rooms the 256-pixel downscale erases |
+| 4 | **Ensemble** the three preprocessing variants plus small rotations | small | recall, and a confidence signal for free |
+| 5 | The authors' **VLM refinement** (`vlm_refinement/`, drives the Gemini CLI over the predicted JSON) | small, per-plan API cost | artefacts from noisy CubiCasa5K ground truth |
+| 6 | **Fine-tune Raster2Seq** | large | the domain gap — but see below |
+
+**Fine-tuning Raster2Seq needs different labels from the ones we collect.**
+`tools/annotate_walls.py` produces wall *masks*, which is what the wall model learns from;
+Raster2Seq learns from room *polygons* with types. Same plans, a slower annotation job, and
+25 plans is far too few either way. Worth doing after 1–3, not before — and if 1 works,
+the wall model is the only thing left that needs our labels at all.
+
 ## 7. What to do next
 
 **Now, no cost:** `python -m tools.fetch_wallnet` puts the weights in place; without
@@ -288,13 +357,11 @@ the pipeline changed, and no artifact contract moved (AD-4).
 1. **Find the area regression.** Four hypotheses are already eliminated above.
    The next step is a per-room before/after diff in pixels on one listing, which
    will say immediately whether rooms are being clipped, split or dropped.
-2. **Run [`notebooks/raster2seq_eval_colab.ipynb`](../notebooks/raster2seq_eval_colab.ipynb).**
-   It installs Raster2Seq with its two CUDA extensions, pulls the CubiCasa5K
-   checkpoint, runs our 25 plans through it in three preprocessing variants, maps
-   the polygons back into our own pixel coordinates and scores them with the same
-   outline-on-wall metric. If it holds up it replaces the watershed, the caption
-   seeding *and* the open-plan problem in one move, and the wall model leaves the
-   critical path entirely.
+2. **Seed the watershed with Raster2Seq's rooms** over the wall-model barrier —
+   §6c. Raster2Seq has been run on all 25 plans and it finds the rooms; what it
+   cannot do is put their corners on the walls, and that is precisely what the
+   wall model and the watershed already do. This is the highest-value change on
+   the list and it needs no training.
 3. **Or close the gap on the model we have** with
    [`tools/annotate_walls.py`](../tools/annotate_walls.py) and
    [`notebooks/finetune_wallnet_colab.ipynb`](../notebooks/finetune_wallnet_colab.ipynb).
