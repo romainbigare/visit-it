@@ -28,7 +28,7 @@ can fix a wall in ten seconds instead of the model being right every time.
 from __future__ import annotations
 
 import logging
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 
 import cv2
 import numpy as np
@@ -37,6 +37,7 @@ from skimage.feature import peak_local_max
 from skimage.segmentation import watershed
 
 from ..core import geom
+from . import wallnet
 from .ocr import PlanText, TextBlock
 from .preprocess import PlanImage, count_outlines
 
@@ -209,11 +210,110 @@ def segment_learned(pi: PlanImage, text: PlanText) -> Vectorisation | None:
 
 
 def segment(pi: PlanImage, text: PlanText) -> Vectorisation:
-    """Rooms from the trained reader if one is installed, else classically."""
+    """Read the plan with whichever engine reads *this* plan better.
+
+    Three engines, in order of preference:
+
+    1. A full trained plan reader, if one is installed (``learned``). It predicts
+       room polygons directly and needs no help.
+    2. The classical watershed over the ink mask.
+    3. The same watershed over a *wall map from a pretrained net* (``wallnet``)
+       instead of the ink mask.
+
+    2 and 3 differ in one thing only -- what counts as a wall -- and they fail on
+    opposite kinds of plan. Across the golden set, on the twelve plans the ink
+    mask was failing the net wins eleven (median outline-on-wall 0.40 to 0.79);
+    on the twelve the ink mask was handling, the ink mask wins eleven (0.89 to
+    0.84). Picking one engine for all plans throws half of that away, so run both
+    and keep the reading that puts more of its outline on real drawn lines --
+    a judgement made from the plan alone, with no ground truth.
+    """
     v = segment_learned(pi, text)
     if v is not None and v.rooms:
         return v
-    return segment_classical(pi, text)
+
+    classical = segment_classical(pi, text)
+    barrier = (wallnet.barrier(pi.rgb, pi.ink, text.words, pi.wall_half_px)
+               if wallnet.available() else None)
+    net = segment_with_wallnet(pi, text, barrier)
+    if net is None or not net.rooms:
+        return classical
+    if not classical.rooms:
+        return net
+
+    # Score against the *wall* map, not the ink. Scoring against ink cannot
+    # adjudicate this at all: a cabinet run is ink, a door swing is ink, a bed is
+    # ink, so an outline that traces the furniture scores as well as one that
+    # traces the wall. On the golden set the two references differ by 8 points of
+    # median outline fit, and that gap is precisely the furniture error.
+    def fit(v: Vectorisation) -> float:
+        scores = wallnet.outline_on_wall([r.polygon_px for r in v.rooms], barrier)
+        return float(np.median(scores)) if scores else 0.0
+
+    c_fit, n_fit = fit(classical), fit(net)
+    # Floor accounted for, in the same pixels for both, so the two are comparable.
+    # Each reading's own footprint is not a denominator: a reading that loses the
+    # flat loses its footprint with it and still scores full coverage.
+    c_px = float(sum(r.area_px for r in classical.rooms))
+    n_px = float(sum(r.area_px for r in net.rooms))
+
+    # Outline fit alone is not safe to choose on, and one plan showed exactly why:
+    # a leak in the wall map let the exterior basin flood the flat, leaving a
+    # ring-shaped polygon traced along the outer wall and a few pockets. That ring
+    # scores near 1.0 -- it *is* the wall -- while covering a fifth of the floor.
+    # A reading that loses most of the building is not the better reading however
+    # neatly its outlines sit, so coverage gates the comparison and fit decides
+    # inside it.
+    most = max(c_px, n_px) or 1.0
+    c_cov, n_cov = c_px / most, n_px / most
+    c_ok = c_cov >= COVERAGE_TOLERANCE
+    n_ok = n_cov >= COVERAGE_TOLERANCE
+    if c_ok and not n_ok:
+        pick_net = False
+    elif n_ok and not c_ok:
+        pick_net = True
+    else:
+        pick_net = n_fit > c_fit
+
+    winner, tag = (net, "wallnet") if pick_net else (classical, "ink")
+    winner.qa_flags = list(winner.qa_flags) + [
+        f"wall_source_{tag}",
+        f"wall_source_fit_{c_fit:.2f}ink_vs_{n_fit:.2f}net",
+        f"wall_source_coverage_{c_cov:.2f}ink_vs_{n_cov:.2f}net",
+    ]
+    if c_ok and n_ok and abs(c_fit - n_fit) < 0.05:
+        winner.qa_flags.append("wall_source_close_call")
+    if c_ok != n_ok:
+        winner.qa_flags.append("wall_source_decided_on_coverage")
+    return winner
+
+
+#: A reading may be preferred on outline fit only while it still accounts for
+#: this much of the floor the other reading found. Below it, it has lost rooms.
+COVERAGE_TOLERANCE = 0.8
+
+
+def segment_with_wallnet(pi: PlanImage, text: PlanText,
+                         mask: np.ndarray | None = None) -> Vectorisation | None:
+    """The classical watershed, but told what a wall is by the pretrained net.
+
+    Everything downstream of the wall map is identical -- this is a swap of one
+    input, not a second pipeline.
+    """
+    if mask is None:
+        if not wallnet.available():
+            return None
+        mask = wallnet.barrier(pi.rgb, pi.ink, text.words, pi.wall_half_px)
+    if mask is None or not mask.any():
+        return None
+    swapped = replace(pi, ink=mask, walls=mask)
+    try:
+        v = segment_classical(swapped, text)
+    except Exception as e:                                       # noqa: BLE001
+        log.warning("wallnet vectorisation failed, keeping the ink reading: %s", e)
+        return None
+    v.qa_flags = list(v.qa_flags) + ["walls_from_pretrained_net"]
+    return v
 
 
 def segment_classical(pi: PlanImage, text: PlanText) -> Vectorisation:

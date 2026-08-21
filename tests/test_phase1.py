@@ -19,6 +19,7 @@ import math
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 import numpy as np
 
@@ -490,6 +491,77 @@ class TestMetrics(unittest.TestCase):
         m = m5_assignment({"matches": [{"room_id": "a", "plan_room_id": "p0"}]}, None)
         self.assertIsNone(m.value, "M5 must not invent a reference")
 
+
+
+
+class WallNetTest(unittest.TestCase):
+    """The pretrained wall reader, and the choice between it and the ink reading."""
+
+    def test_whiten_levels_a_tinted_page(self):
+        from pipeline.floorplan import wallnet
+        # grey rooms on a lavender page, the case that made the net call 62% of a
+        # flat "window"
+        rgb = np.full((80, 80, 3), (210, 205, 220), np.uint8)
+        rgb[20:60, 20:60] = (170, 170, 175)
+        rgb[38:42, 20:60] = (40, 44, 56)
+        out = wallnet.whiten(rgb)
+        page = int(np.bincount(out[..., 0].ravel(), minlength=256).argmax())
+        self.assertGreater(page, 230, "the page should end up white")
+        self.assertLess(int(out[39, 40, 0]), 40, "the wall should end up black")
+
+    def test_whiten_flips_light_ink_on_a_dark_page(self):
+        from pipeline.floorplan import wallnet
+        rgb = np.full((60, 60, 3), 20, np.uint8)
+        rgb[28:32, 10:50] = 230
+        out = wallnet.whiten(rgb)
+        self.assertGreater(int(out[5, 5, 0]), 200, "the dark page becomes white")
+        self.assertLess(int(out[30, 30, 0]), 60, "the light wall becomes dark")
+
+    def test_blank_text_clears_word_boxes(self):
+        from pipeline.floorplan import wallnet
+        from pipeline.floorplan.ocr import Word
+        rgb = np.zeros((40, 40, 3), np.uint8)
+        out = wallnet.blank_text(rgb, [Word(text="KITCHEN", conf=0.9,
+                                            x=5, y=5, w=10, h=6)])
+        self.assertTrue((out[6:10, 6:14] == 255).all())
+        self.assertTrue((out[30:, 30:] == 0).all(), "only the box is cleared")
+
+    def test_crop_keeps_a_plan_split_into_several_components(self):
+        """The bug that cropped half a flat away: two blobs, not one."""
+        from pipeline.floorplan import wallnet
+        rgb = np.full((200, 200, 3), 255, np.uint8)
+        ink = np.zeros((200, 200), np.uint8)
+        ink[20:60, 20:60] = 1          # one wing
+        ink[140:180, 140:180] = 1      # the other, not touching
+        rgb[ink > 0] = 0
+        crop, (ox, oy) = wallnet.crop_to_drawing(rgb, ink)
+        self.assertLessEqual(ox, 20)
+        self.assertLessEqual(oy, 20)
+        self.assertGreaterEqual(ox + crop.shape[1], 180)
+        self.assertGreaterEqual(oy + crop.shape[0], 180)
+
+    def test_outline_on_wall_separates_a_traced_room_from_a_floating_one(self):
+        from pipeline.floorplan import wallnet
+        ink = np.zeros((200, 200), np.uint8)
+        ink[40, 40:160] = ink[160, 40:160] = 1
+        ink[40:160, 40] = ink[40:160, 160] = 1
+        traced = [[40, 40], [160, 40], [160, 160], [40, 160]]
+        floating = [[70, 70], [130, 70], [130, 130], [70, 130]]
+        on_wall, off_wall = wallnet.outline_on_wall([traced, floating], ink, tol=3)
+        self.assertGreater(on_wall, 0.95)
+        self.assertLess(off_wall, 0.05)
+
+    def test_outline_on_wall_ignores_degenerate_polygons(self):
+        from pipeline.floorplan import wallnet
+        ink = np.zeros((50, 50), np.uint8)
+        self.assertEqual(wallnet.outline_on_wall([[[1, 1], [2, 2]]], ink), [])
+
+    def test_unavailable_without_weights(self):
+        from pipeline.floorplan import wallnet
+        with mock.patch.object(wallnet, "MODEL_PATH", Path("/nonexistent/weights")):
+            self.assertFalse(wallnet.available())
+            self.assertIsNone(wallnet.barrier(np.zeros((8, 8, 3), np.uint8),
+                                              np.zeros((8, 8), np.uint8), []))
 
 if __name__ == "__main__":
     unittest.main()

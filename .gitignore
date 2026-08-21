@@ -35,3 +35,6 @@ models/*.pt
 
 # Review artifacts embed the agents' plan imagery (see above) and are large.
 out/
+
+# Model weights are fetched, not committed: python -m tools.fetch_wallnet
+models/*.safetensors

@@ -15,6 +15,14 @@ shell is built from the wrong source.** Neither is a research problem.
 
 ---
 
+> **Update, 21 August 2026.** F1 is partly delivered, and not by training anything.
+> A pretrained CubiCasa5K wall segmenter (MIT, 98 MB, CPU) now supplies stage 5's
+> wall map, which removes the furniture-as-wall class of error the classical engine
+> could never fix. Full findings, survey of the alternatives, and the regression it
+> introduced: [PLAN-READING-REPORT.md](PLAN-READING-REPORT.md). Fine-tuning is now
+> the *third* step, behind evaluating [Raster2Seq](https://github.com/Cornell-VAILab/Raster2Seq),
+> which predicts labelled room polygons directly and needs no training either.
+
 ## F1 — Train the plan vectoriser · **large · unblocks everything**
 
 **Evidence.** Every failing G1 criterion traces to a listing where the vectoriser

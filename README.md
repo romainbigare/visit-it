@@ -14,6 +14,7 @@ Automatic 3D reconstruction of flat listings: an unlabelled bag of estate-agent 
 | [`docs/DATA-SOURCES.md`](docs/DATA-SOURCES.md) | Where listings, photos and floor plans come from: portal APIs (mostly closed), public datasets, the in-house scraping decision, and what the first scraper run actually measured. |
 | [`docs/PHASE-1-REPORT.md`](docs/PHASE-1-REPORT.md) | **Start here for status** — what Phase 1 built, what it measures, the honest G1 assessment, and what to do next. |
 | [`docs/PHASE-0-REPORT.md`](docs/PHASE-0-REPORT.md) | Phase 0: the de-risking spikes, the model validation numbers, and the G0 assessment. |
+| [`docs/PLAN-READING-REPORT.md`](docs/PLAN-READING-REPORT.md) | Why the plan reading was bad, what already exists to fix it (survey of downloadable models), what we tested, and the pretrained wall segmenter now shipped in stage 5 — including the regression it introduced. |
 | [`docs/PHASE-1-FIXES.md`](docs/PHASE-1-FIXES.md) | The prioritised fix list coming out of Phase 1 — what to change, why, and what each costs. Scheduled as ROADMAP Sprint 6b. |
 | [`docs/FAILURE-TAXONOMY.md`](docs/FAILURE-TAXONOMY.md) | Every failure mode seen twice, the QA flag that detects it, and whether it is fixed. The top of this list is what the next sprint burns down. |
 | [`docs/runbooks/phase1-pipeline.md`](docs/runbooks/phase1-pipeline.md) | How to run the pipeline, score it, and debug a listing that came out wrong. |

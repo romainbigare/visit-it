@@ -50,6 +50,8 @@ from PIL import Image, ImageDraw, ImageFont
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from pipeline.core.artifacts import ArtifactStore      # noqa: E402
+from pipeline.floorplan import ocr as ocr_mod          # noqa: E402
+from pipeline.floorplan import preprocess, wallnet     # noqa: E402
 from pipeline.floorplan.preprocess import load_rgb     # noqa: E402
 
 REPO = Path(__file__).resolve().parents[1]
@@ -58,6 +60,12 @@ VIEWER_DIST = REPO / "viewer" / "dist"
 #: Which ceiling heights a surveyor would not query. Wider than the shell stage's
 #: own acceptance band because this is a reader's sanity check, not a gate.
 CEILING_BELIEVABLE_M = (2.25, 3.3)
+#: How much of a room's outline has to lie on a predicted wall before the reading
+#: counts as good. This is the check a person makes by eye, and the one an earlier
+#: version of this page did not make -- it scored room counts and area totals,
+#: which agree perfectly while every outline is drawn in the wrong place.
+OUTLINE_FIT_GOOD = 0.85
+OUTLINE_FIT_POOR = 0.70
 #: How far the measured floor area may sit from the advertised area and still
 #: count as agreement. Advertised areas are themselves rounded and inconsistent
 #: about whether they count wall thickness, so this cannot be tight.
@@ -91,7 +99,16 @@ def overlay(listing_id: str, out_dir: Path) -> Path | None:
     if not src.exists():
         return None
 
+    # Polygons are stored in the *geometry* image's pixels -- the deskewed,
+    # size-capped image stage 5 actually worked on, which for most plans is a
+    # couple of percent smaller than the file on disk. Drawing them over the raw
+    # file offsets every outline by up to a wall thickness at the far edge and
+    # makes correct rooms look like they float clear of their walls. Rescale the
+    # drawing to the space the numbers are in.
     base = Image.fromarray(load_rgb(src))
+    gw, gh = plan.get("image_size_px") or base.size
+    if (gw, gh) != base.size:
+        base = base.resize((int(gw), int(gh)), Image.LANCZOS)
     w, h = base.size
     # Fade the drawing so the shading reads, but never so far that a wall line
     # or a printed dimension stops being legible — the reader is checking the
@@ -248,6 +265,7 @@ def collect(listing_ids: list[str]) -> list[dict]:
         shell = store.read("8-shell") or {}
         package = store.read("9-package") or {}
         triage = store.read("0-triage") or {}
+        fit = _outline_fit(lid, plan)
         heights = [r["height_m"] for r in shell.get("rooms", []) if r.get("height_m")]
         coverage = shell.get("coverage") or {}
         area = (plan.get("totals", {}).get("area_m2")
@@ -262,29 +280,68 @@ def collect(listing_ids: list[str]) -> list[dict]:
             "stated": triage.get("area_m2") or package.get("advertised_area_m2"),
             "scale_source": plan.get("scale_source", "none"),
             "ceiling": float(np.median(heights)) if heights else None,
+            "outline_fit": fit,
             "flags": plan.get("qa_flags", []),
         })
     return rows
 
 
+def _outline_fit(listing_id: str, plan: dict) -> float | None:
+    """Median fraction of each room outline that lies on a predicted wall.
+
+    Scored against walls rather than against any drawn line, because a cabinet run
+    is a drawn line, a door swing is a drawn line, and a bed is a drawn line -- so
+    "outline sits on ink" cannot tell a room that traces its walls from one that
+    traces the furniture. On the golden set the two references differ by 8 points
+    of median fit, and that gap *is* the furniture error.
+    """
+    if not wallnet.available() or not plan.get("source_image"):
+        return None
+    src = REPO / plan["source_image"]
+    if not src.exists():
+        return None
+    try:
+        pi = preprocess.prepare(src)
+        if list(pi.ink.shape[::-1]) != list(plan["image_size_px"]):
+            return None
+        barrier = wallnet.barrier(pi.rgb, pi.ink, ocr_mod.read(pi.rgb).words)
+        if barrier is None or not barrier.any():
+            return None
+        polys = [r["polygon_px"] for r in plan["rooms"] if len(r["polygon_px"]) >= 3]
+        scores = wallnet.outline_on_wall(polys, barrier)
+    except Exception as exc:                                   # noqa: BLE001
+        print(f"  fit {listing_id}: {exc!r}", file=sys.stderr)
+        return None
+    return float(np.median(scores)) if scores else None
+
+
 def verdict(row: dict) -> tuple[str, str]:
-    """Four checks a person would run by eye, so the page can be sorted by them."""
+    """How well the plan was *read*, which is what a person judges by eye.
+
+    Outline fit leads, because a reading whose outlines follow the furniture is
+    wrong however well its room count and floor area happen to agree. The other
+    three checks can only demote a good reading, never promote a bad one.
+    """
+    fit = row.get("outline_fit")
+    if fit is None:                       # no wall map available to judge against
+        return "unknown", "Not judged"
+    if fit < OUTLINE_FIT_POOR:
+        return "poor", "Outlines wrong"
+
     ratio = ((row["area"] / row["stated"])
              if (row.get("area") and row.get("stated")) else None)
     ceiling = row.get("ceiling")
     lo, hi = CEILING_BELIEVABLE_M
     alo, ahi = AREA_AGREEMENT
-    passed = sum([
+    supporting = sum([
         row["n_shell"] == row["n_plan"] and row["n_plan"] >= 3,
         ratio is None or alo - 0.02 <= ratio <= ahi + 0.02,
         row["scale_source"] != "none",
         bool(ceiling and lo <= ceiling <= hi),
     ])
-    if passed == 4:
+    if fit >= OUTLINE_FIT_GOOD and supporting == 4:
         return "clean", "Reads clean"
-    if passed == 3:
-        return "check", "Worth a look"
-    return "poor", "Needs work"
+    return "check", "Worth a look"
 
 
 def _sheet(row: dict, overlays: Path, shots: Path) -> str:
@@ -299,7 +356,11 @@ def _sheet(row: dict, overlays: Path, shots: Path) -> str:
     def fig(label: str, value: object, tone: str = "") -> str:
         return f'<div class="fig"><dt>{label}</dt><dd class="{tone}">{value}</dd></div>'
 
+    fit = row.get("outline_fit")
     figures = "".join([
+        fig("outline on walls", f"{fit:.0%}" if fit is not None else "&mdash;",
+            "ok" if (fit or 0) >= OUTLINE_FIT_GOOD
+            else "mid" if (fit or 0) >= OUTLINE_FIT_POOR else "bad"),
         fig("rooms on plan", row["n_plan"]),
         fig("rooms modelled", row["n_shell"],
             "ok" if row["n_shell"] == row["n_plan"] else "mid"),
@@ -514,12 +575,14 @@ def build_page(rows: list[dict], overlays: Path, shots: Path, out: Path) -> Path
     rows = [r for r in rows
             if (overlays / f'{r["listing_id"]}.png').exists()
             and (shots / f'{r["listing_id"]}.png').exists()]
-    rank = {"clean": 0, "check": 1, "poor": 2}
-    rows.sort(key=lambda r: (rank[verdict(r)[0]], -(r["n_shell"] or 0)))
+    rank = {"clean": 0, "check": 1, "poor": 2, "unknown": 3}
+    rows.sort(key=lambda r: (rank[verdict(r)[0]], -(r.get("outline_fit") or 0)))
 
     n = len(rows)
     kinds = [verdict(r)[0] for r in rows]
     clean, check, poor = (kinds.count("clean"), kinds.count("check"), kinds.count("poor"))
+    fits = [r["outline_fit"] for r in rows if r.get("outline_fit") is not None]
+    median_fit = float(np.median(fits)) if fits else 0.0
     built = sum(1 for r in rows if r["n_shell"] == r["n_plan"])
     ratios = [r["area"] / r["stated"] for r in rows if r.get("area") and r.get("stated")]
     alo, ahi = AREA_AGREEMENT
@@ -552,13 +615,16 @@ def build_page(rows: list[dict], overlays: Path, shots: Path, out: Path) -> Path
     <div><span class="n poor">{poor}</span><span class="l">need work</span></div>
     <div><span class="n">{built}/{n}</span><span class="l">every room built</span></div>
     <div><span class="n">{within}/{len(ratios)}</span><span class="l">area within 10%</span></div>
+    <div><span class="n">{median_fit:.0%}</span><span class="l">median outline on walls</span></div>
     <div><span class="n">{median_rooms}</span><span class="l">median rooms per flat</span></div>
   </div>
-  <p class="lede rubric">A flat <b>reads clean</b> when all four checks hold: every room on
-    the plan made it into the model, the measured floor area lands within 10% of the
-    advertised area, the plan gave up a real-world scale, and the ceiling height sits in a
-    believable {clo}–{chi}&nbsp;m range. Three of four is <b>worth a look</b>; two or fewer
-    <b>needs work</b>.</p>
+  <p class="lede rubric">The number that matters is <b>outline on walls</b>: walk each
+    room's outline and ask how much of it lies on something a trained model calls a
+    wall. A room that stops at the kitchen cabinets or follows a door swing cuts across
+    open floor and scores low. Under {OUTLINE_FIT_POOR:.0%} the reading is wrong and the sheet says
+    <b>outlines wrong</b>; at {OUTLINE_FIT_GOOD:.0%} or better, with the room count, floor area, scale
+    and ceiling height all agreeing too, it <b>reads clean</b>; anything else is
+    <b>worth a look</b>.</p>
 
   <div class="filters">
     <span class="label">Show</span>

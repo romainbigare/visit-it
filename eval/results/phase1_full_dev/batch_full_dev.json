@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-21T11:03:23+00:00",
+  "generated_at": "2026-08-21T13:21:17+00:00",
   "split": "dev",
   "channel": "full",
   "n_requested": 10,
@@ -14,9 +14,9 @@
         "reference": "stated",
         "listings_with_value": 7,
         "coverage": 0.875,
-        "median": 24.505,
-        "mean": 27.236,
-        "p90": 54.873,
+        "median": 21.65,
+        "mean": 27.949,
+        "p90": 57.213,
         "observations": 7
       },
       "M2": {
@@ -25,10 +25,10 @@
         "reference": "printed",
         "listings_with_value": 6,
         "coverage": 0.75,
-        "median": 16.223,
-        "mean": 19.938,
-        "p90": 37.742,
-        "observations": 18
+        "median": 32.02,
+        "mean": 68.382,
+        "p90": 167.447,
+        "observations": 15
       },
       "M3": {
         "name": "adjacency accuracy",
@@ -50,7 +50,7 @@
         "median": 1.0,
         "mean": 1.0,
         "p90": 1.0,
-        "observations": 77
+        "observations": 74
       },
       "M5": {
         "name": "assignment accuracy",
@@ -69,7 +69,7 @@
         "listings_judged": 6,
         "listings_unjudged": 2,
         "pass_rate": 0.333,
-        "median_value": 16.224,
+        "median_value": 32.023,
         "threshold": 10.0,
         "unit": "% median room-area error"
       },
@@ -93,7 +93,7 @@
         "listings_judged": 8,
         "listings_unjudged": 0,
         "pass_rate": 0.75,
-        "median_value": 9.49,
+        "median_value": 10.63,
         "threshold": 15.0,
         "unit": "% disagreement between independent scale estimates"
       },
@@ -109,28 +109,45 @@
     "qa_flags": {
       "low_assignment_margin": 8,
       "unmatched_plan_polygons": 6,
+      "wall_source_wallnet": 6,
+      "walls_from_pretrained_net": 6,
       "not_to_scale_disclaimer": 5,
       "room_area_disagrees_with_printed": 4,
-      "self_consistency_outside_10pct": 4,
       "scale_constraint_rejected": 3,
+      "wall_source_close_call": 3,
+      "wall_source_coverage_0.99ink_vs_1.00net": 3,
       "scale_constraints_disagree": 3,
+      "self_consistency_outside_10pct": 3,
       "unmatched_reconstructed_rooms": 3,
       "under_80pct_plausible_ceilings": 3,
       "majority_of_rooms_unphotographed": 2,
       "no_room_labels": 2,
+      "wall_source_ink": 2,
       "cross_model_scale_disagreement": 2,
       "scale_candidates_disagree": 2,
+      "wall_source_coverage_1.00ink_vs_1.00net": 2,
+      "dropped_1_implausible_regions": 2,
       "no_room_captions": 1,
-      "dropped_2_implausible_regions": 1,
+      "wall_source_fit_0.77ink_vs_0.81net": 1,
+      "wall_source_coverage_1.00ink_vs_0.99net": 1,
+      "wall_source_fit_0.73ink_vs_0.73net": 1,
+      "wall_source_fit_0.76ink_vs_0.83net": 1,
       "poor_polygon_fit": 1,
-      "no_doors_detected": 1,
-      "plan_area_disagrees_with_stated": 1
+      "wall_source_coverage_0.87ink_vs_1.00net": 1,
+      "wall_source_fit_0.63ink_vs_0.88net": 1,
+      "wall_source_fit_0.84ink_vs_0.89net": 1,
+      "dropped_2_implausible_regions": 1,
+      "wall_source_coverage_0.81ink_vs_1.00net": 1,
+      "wall_source_fit_0.76ink_vs_0.91net": 1,
+      "wall_source_fit_0.65ink_vs_0.74net": 1,
+      "plan_area_disagrees_with_stated": 1,
+      "wall_source_fit_0.84ink_vs_0.78net": 1
     }
   },
   "latency": {
     "metric": "M12",
     "profile": "all",
-    "n_runs": 232,
+    "n_runs": 408,
     "caveat": null,
     "end_to_end_full_runs": {
       "n": 33,
@@ -139,9 +156,9 @@
       "mean": 108.13
     },
     "end_to_end_all_runs": {
-      "n": 232,
-      "p50": 4.54,
-      "p95": 90.93,
+      "n": 408,
+      "p50": 7.116,
+      "p95": 85.689,
       "note": "includes partial re-runs, which is why it is lower"
     },
     "stages": {
@@ -176,32 +193,32 @@
         "max": 5.082
       },
       "5-plan": {
-        "n": 141,
-        "p50": 4.382,
-        "p95": 8.754,
+        "n": 292,
+        "p50": 7.59,
+        "p95": 15.015,
         "max": 237.997
       },
       "6-assembly": {
-        "n": 174,
-        "p50": 0.052,
-        "p95": 0.126,
-        "max": 0.151
+        "n": 325,
+        "p50": 0.083,
+        "p95": 0.134,
+        "max": 0.16
       },
       "7-scale": {
-        "n": 175,
-        "p50": 0.001,
-        "p95": 0.002,
+        "n": 326,
+        "p50": 0.002,
+        "p95": 0.003,
         "max": 0.004
       },
       "8-shell": {
-        "n": 175,
-        "p50": 0.005,
-        "p95": 0.076,
-        "max": 0.167
+        "n": 326,
+        "p50": 0.032,
+        "p95": 0.108,
+        "max": 0.201
       },
       "9-package": {
-        "n": 175,
-        "p50": 0.001,
+        "n": 326,
+        "p50": 0.003,
         "p95": 0.005,
         "max": 0.009
       }
@@ -227,12 +244,12 @@
         "M1": {
           "id": "M1",
           "name": "total area error",
-          "value": 8.9441,
+          "value": 8.7565,
           "unit": "%",
           "reference": "stated",
           "n": 1,
           "detail": {
-            "model_m2": 66.49,
+            "model_m2": 66.63,
             "reference_m2": 73.02,
             "scale_constraints_used": [
               "ceiling_height",
@@ -277,10 +294,10 @@
         "M4": {
           "id": "M4",
           "name": "layout IoU",
-          "value": 0.9994,
+          "value": 0.9996,
           "unit": "IoU",
           "reference": "printed",
-          "n": 15,
+          "n": 13,
           "detail": {
             "per_room": [],
             "median_room_iou": null
@@ -315,10 +332,10 @@
         },
         "arrangement": {
           "passed": null,
-          "value": 0.9993911674639995,
+          "value": 0.9995717127914713,
           "threshold": 0.7,
           "unit": "layout IoU (supporting evidence only)",
-          "n": 15,
+          "n": 13,
           "reference": "printed",
           "note": "no arrangement annotation for this listing; IoU shown as evidence, criterion not judged"
         },
@@ -332,24 +349,29 @@
         },
         "shell_budget": {
           "passed": true,
-          "value": 55216,
+          "value": 50892,
           "threshold": 1048576,
           "unit": "bytes",
           "n": 1,
           "note": "shell \u2264 1 MB so it loads inside the G1 time budget"
         }
       },
-      "confidence": 0.432,
+      "confidence": 0.444,
       "qa_flags": [
         "low_assignment_margin",
         "majority_of_rooms_unphotographed",
         "no_room_captions",
         "no_room_labels",
         "scale_constraint_rejected",
-        "unmatched_plan_polygons"
+        "unmatched_plan_polygons",
+        "wall_source_close_call",
+        "wall_source_coverage_0.99ink_vs_1.00net",
+        "wall_source_fit_0.77ink_vs_0.81net",
+        "wall_source_wallnet",
+        "walls_from_pretrained_net"
       ],
-      "rooms": 15,
-      "shell_bytes": 55216,
+      "rooms": 13,
+      "shell_bytes": 50892,
       "scale": 1.050653
     },
     {
@@ -511,7 +533,11 @@
         "low_assignment_margin",
         "not_to_scale_disclaimer",
         "room_area_disagrees_with_printed",
-        "unmatched_plan_polygons"
+        "unmatched_plan_polygons",
+        "wall_source_close_call",
+        "wall_source_coverage_1.00ink_vs_0.99net",
+        "wall_source_fit_0.73ink_vs_0.73net",
+        "wall_source_ink"
       ],
       "rooms": 8,
       "shell_bytes": 29048,
@@ -525,12 +551,12 @@
         "M1": {
           "id": "M1",
           "name": "total area error",
-          "value": 39.6396,
+          "value": 43.999,
           "unit": "%",
           "reference": "printed",
           "n": 1,
           "detail": {
-            "model_m2": 290.17,
+            "model_m2": 299.23,
             "reference_m2": 207.8,
             "scale_constraints_used": [
               "ceiling_height",
@@ -544,26 +570,26 @@
         "M2": {
           "id": "M2",
           "name": "per-room area error",
-          "value": 34.66,
+          "value": 34.785,
           "unit": "%",
           "reference": "printed",
           "n": 2,
           "detail": {
             "within_10pct_frac": 0.0,
-            "p90_pct": 42.25,
+            "p90_pct": 42.7,
             "per_room": [
               {
                 "detail": "p4<-bathroom_1",
                 "printed_m2": 13.53,
-                "reconstructed_m2": 10.124,
-                "error_pct": -25.17,
+                "reconstructed_m2": 10.162,
+                "error_pct": -24.89,
                 "used": true
               },
               {
                 "detail": "p1<-bedroom_2",
                 "printed_m2": 47.25,
-                "reconstructed_m2": 68.111,
-                "error_pct": 44.15,
+                "reconstructed_m2": 68.363,
+                "error_pct": 44.68,
                 "used": true
               }
             ]
@@ -592,7 +618,7 @@
         "M4": {
           "id": "M4",
           "name": "layout IoU",
-          "value": 0.9998,
+          "value": 0.9999,
           "unit": "IoU",
           "reference": "printed",
           "n": 8,
@@ -614,7 +640,7 @@
       "g1": {
         "self_consistency": {
           "passed": false,
-          "value": 34.661,
+          "value": 34.789,
           "threshold": 10.0,
           "unit": "% median room-area error",
           "n": 2,
@@ -631,7 +657,7 @@
         },
         "arrangement": {
           "passed": null,
-          "value": 0.9998004362046712,
+          "value": 0.9999039246769467,
           "threshold": 0.7,
           "unit": "layout IoU (supporting evidence only)",
           "n": 8,
@@ -640,7 +666,7 @@
         },
         "cross_model_scale": {
           "passed": false,
-          "value": 22.91,
+          "value": 23.06,
           "threshold": 15.0,
           "unit": "% disagreement between independent scale estimates",
           "n": 2,
@@ -648,14 +674,14 @@
         },
         "shell_budget": {
           "passed": true,
-          "value": 25376,
+          "value": 26768,
           "threshold": 1048576,
           "unit": "bytes",
           "n": 1,
           "note": "shell \u2264 1 MB so it loads inside the G1 time budget"
         }
       },
-      "confidence": 0.639,
+      "confidence": 0.633,
       "qa_flags": [
         "cross_model_scale_disagreement",
         "low_assignment_margin",
@@ -664,11 +690,15 @@
         "scale_constraints_disagree",
         "self_consistency_outside_10pct",
         "unmatched_plan_polygons",
-        "unmatched_reconstructed_rooms"
+        "unmatched_reconstructed_rooms",
+        "wall_source_coverage_1.00ink_vs_1.00net",
+        "wall_source_fit_0.76ink_vs_0.83net",
+        "wall_source_wallnet",
+        "walls_from_pretrained_net"
       ],
       "rooms": 8,
-      "shell_bytes": 25376,
-      "scale": 1.262454
+      "shell_bytes": 26768,
+      "scale": 1.264792
     },
     {
       "listing_id": "91428111",
@@ -678,12 +708,12 @@
         "M1": {
           "id": "M1",
           "name": "total area error",
-          "value": 77.7242,
+          "value": 77.0333,
           "unit": "%",
           "reference": "stated",
           "n": 1,
           "detail": {
-            "model_m2": 14.7,
+            "model_m2": 15.16,
             "reference_m2": 66.0,
             "scale_constraints_used": [
               "ceiling_height",
@@ -708,21 +738,23 @@
           "value": 0.0,
           "unit": "fraction",
           "reference": "printed",
-          "n": 2,
+          "n": 4,
           "detail": {
-            "reference_edges": 2,
+            "reference_edges": 4,
             "built_edges": 0,
             "correct": 0,
             "missing": [
-              "p1|p5",
-              "p4|p5"
+              "p1|p3",
+              "p2|p4",
+              "p2|p5",
+              "p3|p4"
             ]
           }
         },
         "M4": {
           "id": "M4",
           "name": "layout IoU",
-          "value": 0.9993,
+          "value": 0.9996,
           "unit": "IoU",
           "reference": "printed",
           "n": 5,
@@ -760,7 +792,7 @@
         },
         "arrangement": {
           "passed": null,
-          "value": 0.999303707721784,
+          "value": 0.9995745083275155,
           "threshold": 0.7,
           "unit": "layout IoU (supporting evidence only)",
           "n": 5,
@@ -777,24 +809,28 @@
         },
         "shell_budget": {
           "passed": true,
-          "value": 15020,
+          "value": 13772,
           "threshold": 1048576,
           "unit": "bytes",
           "n": 1,
           "note": "shell \u2264 1 MB so it loads inside the G1 time budget"
         }
       },
-      "confidence": 0.469,
+      "confidence": 0.459,
       "qa_flags": [
-        "dropped_2_implausible_regions",
+        "dropped_1_implausible_regions",
         "low_assignment_margin",
         "no_room_labels",
         "poor_polygon_fit",
         "under_80pct_plausible_ceilings",
-        "unmatched_reconstructed_rooms"
+        "unmatched_reconstructed_rooms",
+        "wall_source_coverage_0.87ink_vs_1.00net",
+        "wall_source_fit_0.63ink_vs_0.88net",
+        "wall_source_wallnet",
+        "walls_from_pretrained_net"
       ],
       "rooms": 5,
-      "shell_bytes": 15020,
+      "shell_bytes": 13772,
       "scale": 0.922989
     },
     {
@@ -805,12 +841,12 @@
         "M1": {
           "id": "M1",
           "name": "total area error",
-          "value": 25.8888,
+          "value": 21.6499,
           "unit": "%",
           "reference": "printed",
           "n": 1,
           "detail": {
-            "model_m2": 85.3,
+            "model_m2": 90.18,
             "reference_m2": 115.1,
             "scale_constraints_used": [
               "ceiling_height",
@@ -824,40 +860,40 @@
         "M2": {
           "id": "M2",
           "name": "per-room area error",
-          "value": 20.5,
+          "value": 29.255,
           "unit": "%",
           "reference": "printed",
           "n": 4,
           "detail": {
             "within_10pct_frac": 0.25,
-            "p90_pct": 29.6,
+            "p90_pct": 35.59,
             "per_room": [
               {
                 "detail": "p2<-bedroom_0",
                 "printed_m2": 12.557,
-                "reconstructed_m2": 11.612,
-                "error_pct": -7.53,
+                "reconstructed_m2": 12.148,
+                "error_pct": -3.25,
                 "used": true
               },
               {
                 "detail": "p4<-bedroom_1",
                 "printed_m2": 5.542,
-                "reconstructed_m2": 7.319,
-                "error_pct": 32.07,
+                "reconstructed_m2": 7.657,
+                "error_pct": 38.17,
                 "used": true
               },
               {
                 "detail": "p8<-bedroom_2",
                 "printed_m2": 12.174,
-                "reconstructed_m2": 15.075,
-                "error_pct": 23.83,
+                "reconstructed_m2": 15.772,
+                "error_pct": 29.56,
                 "used": true
               },
               {
-                "detail": "p5<-dining_room",
-                "printed_m2": 18.952,
-                "reconstructed_m2": 15.698,
-                "error_pct": -17.17,
+                "detail": "p7<-dining_room",
+                "printed_m2": 23.117,
+                "reconstructed_m2": 16.424,
+                "error_pct": -28.95,
                 "used": true
               }
             ]
@@ -869,22 +905,22 @@
           "value": 0.0,
           "unit": "fraction",
           "reference": "printed",
-          "n": 13,
+          "n": 11,
           "detail": {
-            "reference_edges": 13,
+            "reference_edges": 11,
             "built_edges": 0,
             "correct": 0,
             "missing": [
-              "p0|p10",
               "p0|p9",
-              "p10|p9",
+              "p10|p5",
               "p1|p2",
               "p2|p6",
-              "p3|p5",
               "p3|p7",
               "p3|p9",
               "p4|p6",
-              "p5|p6"
+              "p5|p6",
+              "p5|p7",
+              "p5|p9"
             ]
           }
         },
@@ -913,7 +949,7 @@
       "g1": {
         "self_consistency": {
           "passed": false,
-          "value": 20.501,
+          "value": 29.256,
           "threshold": 10.0,
           "unit": "% median room-area error",
           "n": 4,
@@ -930,7 +966,7 @@
         },
         "arrangement": {
           "passed": null,
-          "value": 0.9997579129695839,
+          "value": 0.9997940351875054,
           "threshold": 0.7,
           "unit": "layout IoU (supporting evidence only)",
           "n": 11,
@@ -939,7 +975,7 @@
         },
         "cross_model_scale": {
           "passed": true,
-          "value": 6.36,
+          "value": 8.64,
           "threshold": 15.0,
           "unit": "% disagreement between independent scale estimates",
           "n": 2,
@@ -947,14 +983,14 @@
         },
         "shell_budget": {
           "passed": true,
-          "value": 34764,
+          "value": 35292,
           "threshold": 1048576,
           "unit": "bytes",
           "n": 1,
           "note": "shell \u2264 1 MB so it loads inside the G1 time budget"
         }
       },
-      "confidence": 0.614,
+      "confidence": 0.627,
       "qa_flags": [
         "low_assignment_margin",
         "not_to_scale_disclaimer",
@@ -962,11 +998,16 @@
         "scale_constraints_disagree",
         "self_consistency_outside_10pct",
         "under_80pct_plausible_ceilings",
-        "unmatched_plan_polygons"
+        "unmatched_plan_polygons",
+        "wall_source_close_call",
+        "wall_source_coverage_0.99ink_vs_1.00net",
+        "wall_source_fit_0.84ink_vs_0.89net",
+        "wall_source_wallnet",
+        "walls_from_pretrained_net"
       ],
       "rooms": 11,
-      "shell_bytes": 34764,
-      "scale": 1.149098
+      "shell_bytes": 35292,
+      "scale": 1.175353
     },
     {
       "listing_id": "91558374",
@@ -996,13 +1037,13 @@
         "M2": {
           "id": "M2",
           "name": "per-room area error",
-          "value": 7.22,
+          "value": 6.875,
           "unit": "%",
           "reference": "printed",
-          "n": 3,
+          "n": 2,
           "detail": {
-            "within_10pct_frac": 0.667,
-            "p90_pct": 188.8,
+            "within_10pct_frac": 1.0,
+            "p90_pct": 7.15,
             "per_room": [
               {
                 "detail": "p0<-bedroom_0",
@@ -1010,13 +1051,6 @@
                 "reconstructed_m2": 9.045,
                 "error_pct": -6.53,
                 "used": true
-              },
-              {
-                "detail": "p2<-hallway",
-                "printed_m2": 2.835,
-                "reconstructed_m2": 9.474,
-                "error_pct": 234.19,
-                "used": false
               },
               {
                 "detail": "p1<-living_room",
@@ -1047,10 +1081,10 @@
         "M4": {
           "id": "M4",
           "name": "layout IoU",
-          "value": 0.9998,
+          "value": 0.9997,
           "unit": "IoU",
           "reference": "printed",
-          "n": 4,
+          "n": 5,
           "detail": {
             "per_room": [],
             "median_room_iou": null
@@ -1069,10 +1103,10 @@
       "g1": {
         "self_consistency": {
           "passed": true,
-          "value": 7.223,
+          "value": 6.877,
           "threshold": 10.0,
           "unit": "% median room-area error",
-          "n": 3,
+          "n": 2,
           "note": "where the plan prints room dimensions, reconstructed areas agree within \u00b110%"
         },
         "plausibility": {
@@ -1086,16 +1120,16 @@
         },
         "arrangement": {
           "passed": null,
-          "value": 0.9997682570791125,
+          "value": 0.9997091340132543,
           "threshold": 0.7,
           "unit": "layout IoU (supporting evidence only)",
-          "n": 4,
+          "n": 5,
           "reference": "printed",
           "note": "no arrangement annotation for this listing; IoU shown as evidence, criterion not judged"
         },
         "cross_model_scale": {
           "passed": true,
-          "value": 3.72,
+          "value": 3.51,
           "threshold": 15.0,
           "unit": "% disagreement between independent scale estimates",
           "n": 2,
@@ -1103,24 +1137,27 @@
         },
         "shell_budget": {
           "passed": true,
-          "value": 9692,
+          "value": 18072,
           "threshold": 1048576,
           "unit": "bytes",
           "n": 1,
           "note": "shell \u2264 1 MB so it loads inside the G1 time budget"
         }
       },
-      "confidence": 0.748,
+      "confidence": 0.642,
       "qa_flags": [
+        "dropped_2_implausible_regions",
         "low_assignment_margin",
-        "no_doors_detected",
         "not_to_scale_disclaimer",
-        "room_area_disagrees_with_printed",
         "scale_constraint_rejected",
-        "unmatched_reconstructed_rooms"
+        "unmatched_reconstructed_rooms",
+        "wall_source_coverage_0.81ink_vs_1.00net",
+        "wall_source_fit_0.76ink_vs_0.91net",
+        "wall_source_wallnet",
+        "walls_from_pretrained_net"
       ],
-      "rooms": 4,
-      "shell_bytes": 9692,
+      "rooms": 5,
+      "shell_bytes": 18072,
       "scale": 1.031046
     },
     {
@@ -1131,15 +1168,14 @@
         "M1": {
           "id": "M1",
           "name": "total area error",
-          "value": 4.1421,
+          "value": 9.8857,
           "unit": "%",
           "reference": "printed",
           "n": 1,
           "detail": {
-            "model_m2": 196.32,
+            "model_m2": 184.55,
             "reference_m2": 204.8,
             "scale_constraints_used": [
-              "ceiling_height",
               "plan_room_area",
               "plan_total_area",
               "stated_area"
@@ -1150,40 +1186,26 @@
         "M2": {
           "id": "M2",
           "name": "per-room area error",
-          "value": 11.945,
+          "value": 294.07,
           "unit": "%",
           "reference": "printed",
-          "n": 4,
+          "n": 2,
           "detail": {
-            "within_10pct_frac": 0.25,
-            "p90_pct": 399.92,
+            "within_10pct_frac": 0.5,
+            "p90_pct": 525.19,
             "per_room": [
               {
                 "detail": "p0<-bathroom",
                 "printed_m2": 8.621,
-                "reconstructed_m2": 8.838,
-                "error_pct": 2.52,
-                "used": true
-              },
-              {
-                "detail": "p11<-bedroom",
-                "printed_m2": 14.083,
-                "reconstructed_m2": 12.542,
-                "error_pct": -10.94,
-                "used": true
-              },
-              {
-                "detail": "p1<-dining_room_0",
-                "printed_m2": 15.691,
-                "reconstructed_m2": 17.723,
-                "error_pct": 12.95,
+                "reconstructed_m2": 9.067,
+                "error_pct": 5.17,
                 "used": true
               },
               {
                 "detail": "p4<-garden_1",
                 "printed_m2": 14.35,
-                "reconstructed_m2": 95.535,
-                "error_pct": 565.76,
+                "reconstructed_m2": 98.004,
+                "error_pct": 582.97,
                 "used": false
               }
             ]
@@ -1210,10 +1232,10 @@
         "M4": {
           "id": "M4",
           "name": "layout IoU",
-          "value": 0.9997,
+          "value": 0.9998,
           "unit": "IoU",
           "reference": "printed",
-          "n": 18,
+          "n": 16,
           "detail": {
             "per_room": [],
             "median_room_iou": null
@@ -1232,10 +1254,10 @@
       "g1": {
         "self_consistency": {
           "passed": false,
-          "value": 11.947,
+          "value": 294.069,
           "threshold": 10.0,
           "unit": "% median room-area error",
-          "n": 4,
+          "n": 2,
           "note": "where the plan prints room dimensions, reconstructed areas agree within \u00b110%"
         },
         "plausibility": {
@@ -1249,16 +1271,16 @@
         },
         "arrangement": {
           "passed": null,
-          "value": 0.9997098181142408,
+          "value": 0.9997750351608901,
           "threshold": 0.7,
           "unit": "layout IoU (supporting evidence only)",
-          "n": 18,
+          "n": 16,
           "reference": "printed",
           "note": "no arrangement annotation for this listing; IoU shown as evidence, criterion not judged"
         },
         "cross_model_scale": {
           "passed": false,
-          "value": 26.02,
+          "value": 26.14,
           "threshold": 15.0,
           "unit": "% disagreement between independent scale estimates",
           "n": 2,
@@ -1266,27 +1288,32 @@
         },
         "shell_budget": {
           "passed": true,
-          "value": 51472,
+          "value": 45804,
           "threshold": 1048576,
           "unit": "bytes",
           "n": 1,
           "note": "shell \u2264 1 MB so it loads inside the G1 time budget"
         }
       },
-      "confidence": 0.577,
+      "confidence": 0.592,
       "qa_flags": [
         "cross_model_scale_disagreement",
+        "dropped_1_implausible_regions",
         "low_assignment_margin",
         "majority_of_rooms_unphotographed",
         "not_to_scale_disclaimer",
+        "room_area_disagrees_with_printed",
         "scale_constraint_rejected",
-        "self_consistency_outside_10pct",
         "under_80pct_plausible_ceilings",
-        "unmatched_plan_polygons"
+        "unmatched_plan_polygons",
+        "wall_source_coverage_0.99ink_vs_1.00net",
+        "wall_source_fit_0.65ink_vs_0.74net",
+        "wall_source_wallnet",
+        "walls_from_pretrained_net"
       ],
-      "rooms": 18,
-      "shell_bytes": 51472,
-      "scale": 1.188087
+      "rooms": 16,
+      "shell_bytes": 45804,
+      "scale": 1.203343
     },
     {
       "listing_id": "92182410",
@@ -1435,7 +1462,10 @@
         "scale_candidates_disagree",
         "scale_constraints_disagree",
         "self_consistency_outside_10pct",
-        "unmatched_plan_polygons"
+        "unmatched_plan_polygons",
+        "wall_source_coverage_1.00ink_vs_1.00net",
+        "wall_source_fit_0.84ink_vs_0.78net",
+        "wall_source_ink"
       ],
       "rooms": 8,
       "shell_bytes": 28592,
@@ -1450,5 +1480,16 @@
     "partial": [],
     "total_seconds": 0
   },
-  "regressions": []
+  "regressions": [
+    {
+      "metric": "M2",
+      "previous": 16.223,
+      "current": 32.02,
+      "drop": 15.797,
+      "threshold": 2.5,
+      "rule": "absolute floor",
+      "history_points": 1,
+      "caveat": "\u03c3 over fewer than 3 runs is not an estimate; the floor rule is doing the work"
+    }
+  ]
 }

@@ -11,9 +11,15 @@ make setup                 # python deps + tesseract
 make vendor                # MoGe-2 source (not on PyPI)
 python -m pipeline.ingest.fetch_media --set data/golden/golden_set.json   # ~87 MB
 make holdout               # freeze the split, or verify the frozen one
+python -m tools.fetch_wallnet   # 98 MB wall segmenter for stage 5
 ```
 
 The MoGe-2 weights (~1.3 GB) download on first use into `$HF_HOME`.
+
+`fetch_wallnet` is optional but strongly recommended: without it stage 5 decides
+what a wall is by asking whether the pixel is dark, which makes kitchen cabinets
+and door swings into room boundaries. With it, stage 5 reads each plan both ways
+and keeps the better reading. See [PLAN-READING-REPORT.md](../PLAN-READING-REPORT.md).
 
 ## One listing, end to end
 
@@ -53,6 +59,7 @@ measurement and the harness logs a warning when you ask for it.
 ```bash
 make console          # http://127.0.0.1:8080 — queue, contact sheets, fix actions
 make sheets           # static contact sheets, zippable
+python -m tools.plan_vs_shell build --out out/review   # plan beside shell, per listing
 ```
 
 The contact sheet is the first thing to open, always. Phase 0's lesson stands: a
@@ -63,7 +70,10 @@ Debug order, which matches where things actually break:
 
 1. **Plan channel** — are the room polygons on the plan roughly where a person
    would draw them, and is `px_per_metre` from `printed_dimensions`? If not, the
-   arrangement cannot be right no matter what the photos say.
+   arrangement cannot be right no matter what the photos say. `plan_vs_shell`
+   answers the first half by eye; the `wall_source_*` QA flags say which engine
+   read the plan and how the two compared. An outline that stops at the kitchen
+   cabinets means the ink reading won and should not have.
 2. **Layout** — are the ceilings 2.3–3.2 m? A 5 m ceiling means "up" went wrong
    and the room is on its side.
 3. **Assembly** — look at the cost matrix, not the answer. A small `margin` means
