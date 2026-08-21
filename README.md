@@ -64,8 +64,22 @@ Ten stages, each emitting one schema-validated artifact with a confidence and a 
 
 ## Status
 
-**Phase 0 complete, gate G0 passed.** Every stage from triage to Gaussian splatting has been run on real UK listings and measured: triage F1 0.96, MapAnything 1.35 s per group, gsplat train-view PSNR 25.9 dB, **$0.009–0.021 of GPU per listing**. Two items carry into Sprint 1 — freezing the holdout split, and SPZ export plus a viewer test. See [`docs/PHASE-0-REPORT.md`](docs/PHASE-0-REPORT.md).
+**Phase 1 built; gate G1 not passed.** All ten stages run end to end on CPU — 30/30
+golden listings processed, 22 reaching a walkable glTF shell in ~88 s each. The
+viewer, review console, eval harness and batch runner are live.
 
-Next: Sprint 1 (see [`ROADMAP.md`](ROADMAP.md) §9) — freeze the holdout, build stage 4 (the room polygon), and wire plan OCR into the scale solve.
+On the frozen holdout, **one of five G1 criteria passes**. Self-consistency comes
+in at a median 14.3% against a ≤10% bar (9.0% on the dev split — the gap between
+the two is itself the finding). The failures concentrate almost entirely in the
+plan channel: colour-filled plans, open-plan spaces split into several polygons,
+and small unlabelled rooms that never become polygons at all. Assembly — the stage
+the roadmap front-loaded because it feared it most — is not the bottleneck.
+
+The G1 kill criterion does not fire, and the pivot rule is not needed: the shell
+exists and is usable. See [`docs/PHASE-1-REPORT.md`](docs/PHASE-1-REPORT.md).
+
+Next: **train the plan vectoriser** (ROADMAP S3's original plan, deferred in
+Phase 1 to unblock everything downstream). Every failing criterion is downstream of
+that one component.
 
 **Scope:** internal and non-commercial. Correctness is judged by plausibility, self-consistency against dimensions printed on the floor plan, and cross-model agreement — not by measuring flats. See [`ROADMAP.md`](ROADMAP.md) §0b.

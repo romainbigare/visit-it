@@ -20,7 +20,7 @@ Automatic 3D reconstruction of flat listings: unlabelled photos + (sometimes) a 
 | Phase | Sprints | Weeks | Deliverable | Gate |
 |---|---|---|---|---|
 | **P0 Foundations** | S1–S2 | 1–4 | Golden set + eval harness + de-risk spikes + platform skeleton | **G0**: 30 listings, harness live, spikes green |
-| **P1 Measurable shell** ✅ *built* | S3–S6 | 5–12 | Scaled, correctly-arranged 3D shell from plan+photos, in the viewer | **G1** self-consistent scale + 70% correct arrangement — see [`docs/PHASE-1-REPORT.md`](docs/PHASE-1-REPORT.md) |
+| **P1 Measurable shell** — *built, G1 not passed* | S3–S6 | 5–12 | Scaled, correctly-arranged 3D shell from plan+photos, in the viewer | **G1** 1 of 5 criteria passed; failures localised to the plan channel; kill criterion does not fire — [`docs/PHASE-1-REPORT.md`](docs/PHASE-1-REPORT.md) |
 | **P2 Photorealism** | S7–S11 | 13–22 | Per-room splats inside the shell; full waypoint walkthrough on mobile | **G2** blind panel prefers it to the photo gallery |
 | **P3 No-plan branch + hardening** | S12–S15 | 23–30 | Inferred-layout tier, review console, batch runner | **G3** ≥60% of listings need no manual fixing |
 | **P4 Generative completion** | not scheduled | — | Filling in unseen surfaces | Optional; only once P1–P3 are solid |
@@ -197,10 +197,17 @@ All streams: burn the top of the failure taxonomy (expected leaders per the repo
 
 ### Gate G1 (end of week 12)
 
-> **Status: measured. See [`docs/PHASE-1-REPORT.md`](docs/PHASE-1-REPORT.md) for the
-> numbers, the honest assessment against each criterion, and what carries into
-> Phase 2.** Every stage 0–9 is built and runs end to end on CPU; the viewer, the
-> review console and the eval harness are live.
+> **Status: measured, and not passed.** Every stage 0–9 is built and runs end to
+> end on CPU, and 22 of 30 golden listings reach a walkable shell — but on the
+> frozen holdout only the shell-payload criterion clears its bar. Self-consistency
+> lands at a median 14.3% against ≤10%; plausibility and cross-model agreement pass
+> on a minority of listings; arrangement has too little annotation coverage to
+> judge. The failures are localised: they are almost all the plan channel, and the
+> **kill criterion does not fire** — self-consistency *is* inside ±10% wherever the
+> vectoriser produced correct polygons. See
+> [`docs/PHASE-1-REPORT.md`](docs/PHASE-1-REPORT.md) for the numbers, the two bugs
+> the gate measurement found, and why training the plan vectoriser is now the
+> highest-value task in the project.
 
 Measured on holdout listings **that have a floor plan**. With no tape-measure
 ground truth, correctness is judged by the three checks in §0b — weaker than
