@@ -110,7 +110,7 @@
         "ceiling_outside_2.3_3.2m",
         "monocular_single_view"
       ],
-      "timing_s": 0.48
+      "timing_s": 0.397
     },
     {
       "schema": "layout/v1",
@@ -217,7 +217,7 @@
       "qa_flags": [
         "monocular_single_view"
       ],
-      "timing_s": 0.386
+      "timing_s": 0.343
     },
     {
       "schema": "layout/v1",
@@ -324,7 +324,7 @@
       "qa_flags": [
         "monocular_single_view"
       ],
-      "timing_s": 0.35
+      "timing_s": 0.339
     },
     {
       "schema": "layout/v1",
@@ -431,7 +431,7 @@
       "qa_flags": [
         "monocular_single_view"
       ],
-      "timing_s": 0.349
+      "timing_s": 0.35
     },
     {
       "schema": "layout/v1",
@@ -538,7 +538,7 @@
       "qa_flags": [
         "monocular_single_view"
       ],
-      "timing_s": 0.344
+      "timing_s": 0.349
     }
   ],
   "summary": {
@@ -554,5 +554,5 @@
     "ceiling_outside_2.3_3.2m",
     "monocular_single_view"
   ],
-  "timing_s": 1.996
+  "timing_s": 1.863
 }

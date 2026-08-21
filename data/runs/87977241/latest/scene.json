@@ -1,7 +1,7 @@
 {
   "schema": "scene/v1",
   "listing_id": "87977241",
-  "generated_at": "2026-08-21T00:23:40+00:00",
+  "generated_at": "2026-08-21T00:26:46+00:00",
   "tier": "A",
   "units": "metres",
   "profile": "standard",
@@ -9,7 +9,7 @@
   "address": "Guildford Road, Stockwell, London, SW8",
   "shell": {
     "uri": "shell.glb",
-    "bytes": 4768,
+    "bytes": 4772,
     "triangles": 62
   },
   "rooms": [
@@ -41,7 +41,7 @@
       ],
       "height_m": 2.611,
       "area_m2": 4.462,
-      "provenance": "inferred",
+      "provenance": "reconstructed",
       "confidence": 0.072,
       "photo_ids": [],
       "splats": null
@@ -74,7 +74,7 @@
       ],
       "height_m": 2.715,
       "area_m2": 11.533,
-      "provenance": "inferred",
+      "provenance": "reconstructed",
       "confidence": 0.524,
       "photo_ids": [
         "i000",
@@ -110,7 +110,7 @@
       ],
       "height_m": 2.57,
       "area_m2": 10.91,
-      "provenance": "inferred",
+      "provenance": "reconstructed",
       "confidence": 0.529,
       "photo_ids": [
         "i000",
@@ -146,7 +146,7 @@
       ],
       "height_m": 2.611,
       "area_m2": 13.87,
-      "provenance": "inferred",
+      "provenance": "reconstructed",
       "confidence": 0.78,
       "photo_ids": [
         "i003",
@@ -182,7 +182,7 @@
       ],
       "height_m": 2.627,
       "area_m2": 12.501,
-      "provenance": "inferred",
+      "provenance": "reconstructed",
       "confidence": 0.126,
       "photo_ids": [],
       "splats": null
@@ -264,8 +264,8 @@
   ],
   "waypoint_edges": [
     [
-      "w_a0",
-      "w_living_room"
+      "w_bedroom_0",
+      "w_bedroom_1"
     ],
     [
       "w_bathroom",
@@ -273,15 +273,15 @@
     ],
     [
       "w_a0",
-      "w_bathroom"
-    ],
-    [
-      "w_bedroom_0",
-      "w_bedroom_1"
+      "w_living_room"
     ],
     [
       "w_bedroom_0",
       "w_living_room"
+    ],
+    [
+      "w_a0",
+      "w_bathroom"
     ]
   ],
   "minimap": {

@@ -110,8 +110,19 @@ def build_scene(shell: dict, plan: dict, assembly: dict, scale: dict,
     # Any rooms the doorway graph left unreachable get joined to their nearest
     # neighbour. A disconnected walkthrough is worse than an approximate one.
     _connect_islands(waypoints, edges)
+    # Which way you face when you arrive decides whether a room reads as a room.
+    # Facing a neighbouring waypoint puts you nose-first into the nearest wall; the
+    # room's farthest corner shows two walls, the floor and the ceiling at once,
+    # which is the most of the room a single view can carry.
+    poly_by_room = {r["room_id"]: r["polygon_m"] for r in rooms_out}
     for wp in waypoints:
-        if wp["kind"] == "room_centre":
+        if wp["kind"] != "room_centre":
+            continue
+        poly = poly_by_room.get(wp["room_id"] or "")
+        if poly:
+            far = max(poly, key=lambda v: math.dist(v, wp["position_m"][:2]))
+            wp["look_deg"] = _facing(wp["position_m"], far)
+        else:
             nbrs = [w for w in waypoints
                     if any(set(e) == {wp["waypoint_id"], w["waypoint_id"]} for e in edges)]
             if nbrs:

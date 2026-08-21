@@ -31,7 +31,7 @@
       ],
       "height_m": 2.611,
       "area_m2": 4.462,
-      "provenance": "inferred",
+      "provenance": "reconstructed",
       "confidence": 0.072,
       "aperture_ids": [
         "a0"
@@ -65,7 +65,7 @@
       ],
       "height_m": 2.715,
       "area_m2": 11.533,
-      "provenance": "inferred",
+      "provenance": "reconstructed",
       "confidence": 0.524,
       "aperture_ids": []
     },
@@ -97,7 +97,7 @@
       ],
       "height_m": 2.57,
       "area_m2": 10.91,
-      "provenance": "inferred",
+      "provenance": "reconstructed",
       "confidence": 0.529,
       "aperture_ids": []
     },
@@ -129,7 +129,7 @@
       ],
       "height_m": 2.611,
       "area_m2": 13.87,
-      "provenance": "inferred",
+      "provenance": "reconstructed",
       "confidence": 0.78,
       "aperture_ids": []
     },
@@ -161,7 +161,7 @@
       ],
       "height_m": 2.627,
       "area_m2": 12.501,
-      "provenance": "inferred",
+      "provenance": "reconstructed",
       "confidence": 0.126,
       "aperture_ids": [
         "a0"
@@ -171,7 +171,7 @@
   "omitted_rooms": [],
   "glb": {
     "uri": "shell.glb",
-    "bytes": 4768,
+    "bytes": 4772,
     "triangles": 62,
     "budget_bytes": 1048576,
     "within_budget": true

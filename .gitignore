@@ -25,3 +25,9 @@ vendor/moge/
 .env.local
 .modal.toml
 modal.toml
+
+# Pipeline artifacts (regenerate with `python -m pipeline run`)
+data/runs/
+viewer/node_modules/
+viewer/dist/
+viewer/public/scenes/

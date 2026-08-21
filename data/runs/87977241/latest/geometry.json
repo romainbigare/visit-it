@@ -17,7 +17,7 @@
       "image_ids": [
         "i005"
       ],
-      "seconds": 30.599,
+      "seconds": 26.417,
       "notes": {
         "image": "data/golden/media/87977241/photo_005.jpeg",
         "px": [
@@ -39,7 +39,7 @@
       "image_ids": [
         "i004"
       ],
-      "seconds": 16.769,
+      "seconds": 13.672,
       "notes": {
         "image": "data/golden/media/87977241/photo_004.jpeg",
         "px": [
@@ -61,7 +61,7 @@
       "image_ids": [
         "i000"
       ],
-      "seconds": 15.469,
+      "seconds": 13.689,
       "notes": {
         "image": "data/golden/media/87977241/photo_000.jpeg",
         "px": [
@@ -84,7 +84,7 @@
         "i007",
         "i003"
       ],
-      "seconds": 14.986,
+      "seconds": 13.343,
       "notes": {
         "image": "data/golden/media/87977241/photo_007.jpeg",
         "px": [
@@ -107,7 +107,7 @@
         "i006",
         "i002"
       ],
-      "seconds": 15.869,
+      "seconds": 13.682,
       "notes": {
         "image": "data/golden/media/87977241/photo_006.jpeg",
         "px": [
@@ -122,5 +122,5 @@
   "qa_flags": [
     "geometry_engine_fallback"
   ],
-  "timing_s": 94.136
+  "timing_s": 81.247
 }
