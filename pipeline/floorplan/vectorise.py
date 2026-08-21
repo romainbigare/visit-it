@@ -316,6 +316,103 @@ def segment_with_wallnet(pi: PlanImage, text: PlanText,
     return v
 
 
+def segment_from_room_seeds(pi: PlanImage, text: PlanText,
+                            room_seeds: list, mask: np.ndarray | None = None,
+                            labels_for_seeds: list | None = None) -> Vectorisation | None:
+    """Grow rooms somebody else found out to the walls we can see.
+
+    Two models, each good at the half the other is bad at. A room-polygon model
+    knows *which* rooms exist, what type each is, and that an open-plan kitchen and
+    living room are one space -- all things our caption seeding has to guess. What
+    it cannot do is put a corner on a wall: it works on a small copy of the plan
+    and rounds every coordinate to a coarse grid.
+
+    The wall map is the opposite: exact about where a wall is, silent about which
+    enclosed region is a room.
+
+    So take the other model's rooms as starting points and let each one grow until
+    it meets a wall. Same watershed as ``segment_classical``, better starting
+    points -- one per real room instead of one per caption.
+
+    ``room_seeds`` are polygons in **this** ``PlanImage``'s pixels, which is the
+    deskewed, size-capped copy rather than the file on disk. Getting that wrong
+    puts every outline out by a couple of percent.
+    """
+    if not room_seeds:
+        return None
+    if mask is None:
+        mask = wallnet.barrier(pi.rgb, pi.ink, text.words, pi.wall_half_px)
+    if mask is None or not mask.any():
+        mask, _ = erase_text(pi.ink, text)
+
+    hull = structure_hull(mask)
+    free = (mask == 0) & (hull > 0)
+    free = ndi.binary_opening(free, np.ones((3, 3)))
+    h, w = free.shape
+    dist = cv2.distanceTransform(free.astype(np.uint8), cv2.DIST_L2, 5)
+
+    markers = np.zeros((h, w), np.int32)
+    markers[0, :] = markers[-1, :] = EXTERIOR
+    markers[:, 0] = markers[:, -1] = EXTERIOR
+    markers[hull == 0] = EXTERIOR
+
+    seeds: list[tuple[int, TextBlock | None, tuple[float, float]]] = []
+    next_id = EXTERIOR + 1
+    for idx, poly in enumerate(room_seeds):
+        pts = np.asarray(poly, dtype=np.int32).reshape(-1, 2)
+        if len(pts) < 3:
+            continue
+        filled = np.zeros((h, w), np.uint8)
+        cv2.fillPoly(filled, [pts], 1)
+        # Pull the marker well inside the room. A coarse polygon's edge routinely
+        # lands on -- or past -- the wall, and a marker touching the wall lets the
+        # room grow straight through it into its neighbour.
+        keep = filled & free.astype(np.uint8)
+        if keep.any():
+            room_dist = cv2.distanceTransform(keep, cv2.DIST_L2, 5)
+            core = (room_dist >= max(2.0, 0.45 * float(room_dist.max()))).astype(np.uint8)
+        else:
+            core = np.zeros((h, w), np.uint8)
+        if not core.any():
+            # The polygon missed the free space entirely. Fall back to its centre
+            # if that at least lands somewhere a room could be.
+            cx, cy = pts.mean(axis=0).astype(int)
+            if 0 <= cy < h and 0 <= cx < w and free[cy, cx]:
+                r = max(2, int(pi.wall_half_px))
+                core[max(0, cy - r):cy + r + 1, max(0, cx - r):cx + r + 1] = 1
+            else:
+                continue
+        ys, xs = np.nonzero(core)
+        markers[core > 0] = next_id
+        block = None
+        if labels_for_seeds and idx < len(labels_for_seeds):
+            block = labels_for_seeds[idx]
+        seeds.append((next_id, block, (float(xs.mean()), float(ys.mean()))))
+        next_id += 1
+
+    if not seeds:
+        return None
+
+    markers[~free] = 0
+    markers[0, :] = markers[-1, :] = EXTERIOR
+    markers[:, 0] = markers[:, -1] = EXTERIOR
+    labels = watershed(-dist, markers, mask=free)
+    labels[(hull == 0) & (labels > EXTERIOR)] = EXTERIOR
+
+    rooms = _regions_from_labels(labels, seeds)
+    if not rooms:
+        return None
+    footprint = _footprint(labels, pi.wall_half_px)
+    flags = ["rooms_from_external_seeds"]
+    n_outlines = count_outlines(footprint)
+    if n_outlines > 1:
+        flags.append("multiple_plan_outlines")
+        rooms, footprint = _keep_largest_outline(rooms, footprint, labels)
+    return Vectorisation(rooms=rooms, labels=labels, free=free, footprint=footprint,
+                         inside=(hull > 0), n_outlines=n_outlines, text_erased=0,
+                         qa_flags=flags)
+
+
 def segment_classical(pi: PlanImage, text: PlanText) -> Vectorisation:
     """Watershed the free space, seeded by captions and by unclaimed distance peaks."""
     clean, n_erased = erase_text(pi.ink, text)

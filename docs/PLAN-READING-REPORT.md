@@ -279,7 +279,7 @@ a handful of plans from scratch if we ever want a clean measurement.
 
 ## 6c. Raster2Seq: what it is good at, and the one thing holding it back
 
-Run on our plans (`notebooks/raster2seq_eval_colab.ipynb`) it does what the wall model
+Run on our plans (`notebooks/plan_reading_colab.ipynb`) it does what the wall model
 cannot: it predicts **which rooms exist, what type each is, and how they fit together**,
 directly, with no captions read. Open-plan spaces stay whole. Unlabelled WCs, cupboards and
 hallways are found. That is the half of the problem our watershed has always guessed at.
@@ -308,6 +308,24 @@ trained tokeniser — this checkpoint was trained at 32 bins, and passing 64 cha
 vocabulary size out from under the weights. The quantisation cannot be tuned away at
 inference; it can only be worked around.
 
+### The join, measured before building it
+
+Raster2Seq needs a GPU, so the join was tested without one first: take our own
+(wall-accurate) outlines, coarsen them to Raster2Seq's 32-bin grid — the one property of
+its output that matters here — then feed those coarse rooms back in as starting points and
+see how much the walls give back.
+
+| outlines | median outline-on-wall |
+|---|---|
+| ours, as shipped | 0.828 |
+| coarsened to a 32-bin grid | 0.514 |
+| **those coarse rooms grown out to the walls** | **0.854** |
+
+*n = 25 plans; 219 of 227 rooms survive.* All of the lost accuracy comes back and a little
+more — growing a room until it meets a wall puts its edge on a wall, which is exactly what
+this metric asks for, so read that last row as "the mechanism works", not as a head-to-head
+result. The real number comes from the notebook, on real predictions.
+
 ### The two models are complementary, not competing
 
 | | Raster2Seq | the wall model |
@@ -331,9 +349,12 @@ That is an integration of three things we have, not new research.
 
 ### Ranked
 
+All six are implemented and measured, one per section, in
+[`notebooks/plan_reading_colab.ipynb`](../notebooks/plan_reading_colab.ipynb).
+
 | | what | effort | what it buys |
 |---|---|---|---|
-| 1 | **Seed the watershed with Raster2Seq rooms** over the wall-model barrier | small — all three pieces exist | the room graph *and* pixel-accurate outlines |
+| 1 | **Seed the watershed with Raster2Seq rooms** over the wall-model barrier — shipped as `vectorise.segment_from_room_seeds` | small — all three pieces exist | the room graph *and* pixel-accurate outlines |
 | 2 | Try the **`Raster2Graph-512`** checkpoint the authors also publish | one string | double the coordinate resolution, no training |
 | 3 | **Tile** the plan and run at native wall thickness, merge | medium | the small rooms the 256-pixel downscale erases |
 | 4 | **Ensemble** the three preprocessing variants plus small rotations | small | recall, and a confidence signal for free |
