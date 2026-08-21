@@ -391,6 +391,15 @@ output) is not needed. The shell is the usable output and it exists.
 
 ## 8. What to do next, in order
 
+> Costed in full, with the evidence behind each item, in
+> [`PHASE-1-FIXES.md`](PHASE-1-FIXES.md). Scheduled as ROADMAP Sprint 6b
+> (Amendment B).
+
+0. **Build the shell from plan polygons, not photo-derived ones** (F2). Measured
+   after this report's first draft and cheap to do: photo-derived rooms come out a
+   median 31% larger than their own plan polygons, and 7 of 22 shells cover under
+   70% of the plan because rooms nobody photographed leave holes. A correction to
+   how Phase 1 read AD-2, not to AD-2 itself.
 1. **Train the plan vectoriser.** This is now the single highest-value task in the
    project by a wide margin, and §2 and §3 are the case for it. The corpus is
    settled (ROADMAP §7 R6), and the classical engine gives it a measured baseline

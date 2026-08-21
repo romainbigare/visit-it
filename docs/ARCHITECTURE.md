@@ -46,6 +46,21 @@ The feasibility report's central finding stands: photographs contain **zero** si
 - **Tier A — "Plan-anchored layout"**: listing has a floor plan. Rooms are assigned to plan polygons; the arrangement is real; area is anchored to the stated floor area and to any dimensions printed on the plan. This is the flagship output.
 - **Tier B — "Inferred layout"**: no plan. Individually reconstructed rooms in a synthesised arrangement, visually marked as inferred (desaturated connective tissue, explicit label, optional 30-second drag-and-drop arrangement step for the agent).
 
+> **Amendment (21 Aug 2026), AD-2 — which side supplies a room's *shape*.**
+> AD-2 says floor-plan-first spine, photos attach to it. Phase 1 implemented that as
+> "shape from the photographs, position from the plan", and the measurement says that
+> reading was wrong. Photo-derived rooms come out a median **31% larger** than their own
+> plan polygons — every one is an oriented bounding box, because one ultra-wide photograph
+> does not support a concave footprint — and 7 of 22 shells cover under 70% of the plan
+> because rooms nobody photographed leave holes.
+>
+> **The plan polygon supplies the room's outline. The photographs supply its ceiling
+> height, an independent cross-check on scale, and the geometry the Phase 2 splats are
+> trained and culled against.** A room with no photograph is still built, tagged
+> `inferred` so the honesty rendering stays truthful. The decision itself is unchanged;
+> this records what "attach to it" means. See ROADMAP Amendment B and
+> [`PHASE-1-FIXES.md`](PHASE-1-FIXES.md) F2.
+
 Waypoint navigation is load-bearing, not cosmetic: the scene only has to look right from the waypoints and sightlines between them, which is exactly what sparse listing photos can support. This decision propagates backwards — splat optimisation targets waypoint views, and the culling volume comes from the layout polygon.
 
 ## 3. AD-3 — Pipeline as a staged DAG with typed artifacts

@@ -21,13 +21,34 @@ Automatic 3D reconstruction of flat listings: unlabelled photos + (sometimes) a 
 |---|---|---|---|---|
 | **P0 Foundations** | S1–S2 | 1–4 | Golden set + eval harness + de-risk spikes + platform skeleton | **G0**: 30 listings, harness live, spikes green |
 | **P1 Measurable shell** — *built, G1 not passed* | S3–S6 | 5–12 | Scaled, correctly-arranged 3D shell from plan+photos, in the viewer | **G1** 1 of 5 criteria passed; failures localised to the plan channel; kill criterion does not fire — [`docs/PHASE-1-REPORT.md`](docs/PHASE-1-REPORT.md) |
-| **P2 Photorealism** | S7–S11 | 13–22 | Per-room splats inside the shell; full waypoint walkthrough on mobile | **G2** blind panel prefers it to the photo gallery |
-| **P3 No-plan branch + hardening** | S12–S15 | 23–30 | Inferred-layout tier, review console, batch runner | **G3** ≥60% of listings need no manual fixing |
+| **P1b Plan vectoriser** 🅑 | S6b | 13–16 | Trained plan reader; shell built from plan polygons | **G1b** ≥80% room F1 + G1 re-measured on fresh listings |
+| **P2 Photorealism** | S7–S11 | 17–26 | Per-room splats inside the shell; full waypoint walkthrough on mobile | **G2** blind panel prefers it to the photo gallery |
+| **P3 No-plan branch + hardening** | S12–S15 | 27–34 | Inferred-layout tier, review console, batch runner | **G3** ≥60% of listings need no manual fixing |
 | **P4 Generative completion** | not scheduled | — | Filling in unseen surfaces | Optional; only once P1–P3 are solid |
 
 Two useful things fall out along the way: the **P1 shell** is a working scaled floor plan on its own, and **P2** is the walkthrough. This ordering deliberately front-loads the stage most likely to kill the project (global assembly) and the discipline most likely to save it (the eval harness).
 
 > **Amendment A (19 Aug 2026) — service profiles and speed targets.** A target was set: **5–10 s per analysis, marginal cost in single-digit pence**, so it stays cheap to run at volume. The full analysis — three service profiles (`instant`/`standard`/`premium`), price-point variants, unit economics on verified Aug-2026 GPU pricing, and three alternative dev journeys — is in [`docs/VARIANTS.md`](docs/VARIANTS.md); the architectural decisions are AD-16/17/18 in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). **Journey C (twin-track) deltas are adopted into this plan**, marked ⚡ below: latency (M12) and COGS instrumentation from S1; feed-forward-splat and serverless cold-start spikes in S1; per-profile criteria added to G0–G3; the D-stream builds two stage-8 engines in P2 (+1 sprint, both-profiles GA ≈ week 32). The journey choice (A/B/C) is revisited once at G0 — until then C keeps all doors open at a cost of two spikes and some instrumentation.
+
+> **Amendment B (21 Aug 2026) — what Phase 1 measured, and the two things it changes.**
+> G1 was measured and **not passed**: one of five criteria clears its bar on the frozen
+> holdout. The failures are localised — almost all of them are the plan channel — and the
+> kill criterion does not fire. Two changes follow, both marked 🅑 below, and the full
+> evidence and costing is in [`docs/PHASE-1-FIXES.md`](docs/PHASE-1-FIXES.md).
+>
+> 1. **The plan vectoriser is promoted from "Sprint 3 model plan" to the first task of
+>    Phase 2 (new Sprint 6b), with its own gate.** It was always specified here; Phase 1
+>    shipped a classical engine to unblock stages 6–9 and the measurement says that engine
+>    is now the binding constraint. Every failing G1 criterion is downstream of it.
+> 2. **The shell is built from plan polygons, not photo-derived ones** — a correction to
+>    how Phase 1 *implemented* AD-2, not to AD-2 itself. Measured: photo-derived rooms come
+>    out a median **31% larger** than their own plan polygons (every one is a rectangle,
+>    F3), and 7 of 22 shells cover under 70% of the plan because rooms nobody photographed
+>    leave holes. The plan polygon is the room outline; the photographs are for ceiling
+>    height, for cross-checking scale, and for the Phase 2 splats.
+>
+> G1 is **not** re-run against a lowered bar. It is re-run after Sprint 6b, on freshly
+> scraped listings, because the holdout was inspected during the Phase 1 measurement.
 
 ## 0b. How we judge correctness without measuring flats
 
@@ -225,6 +246,35 @@ measurement, strong enough to separate working from broken.
 
 **Kill criterion:** if arrangement stays below 70% and self-consistency cannot be
 brought inside ±10%, the assembly stage does not work and the rest does not matter.
+
+---
+
+### Sprint 6b 🅑 — the plan vectoriser (weeks 13–16, added 21 Aug 2026)
+
+> Inserted by Amendment B. This was ROADMAP Sprint 3's "model plan" all along; Phase 1
+> deferred it and then measured that it is the binding constraint. It runs before P2
+> because P2's splats are culled against room polygons, and culling against a wrong
+> polygon is worse than not culling.
+
+| Stream | Work |
+|---|---|
+| C | **Train the vectoriser.** RoomFormer-class, predicting room polygons directly. Pretrain on ResPlan (17K vector) + Swiss Dwellings (42K apartments, already downloaded and verified) + CubiCasa5K (5K raster — the modality the other two lack). Fine-tune on our own annotated UK plans. Keep the classical engine as the fallback binding and as the baseline to beat. |
+| C | 🅑 **Shell from plan polygons** (see Amendment B). Small change, high value: removes the 31% rectangle inflation and the holes where unphotographed rooms should be. Rooms with no photograph are still built and tagged `inferred`. |
+| A | Annotate the remaining plan-bearing listings for arrangement (`tools/annotation_aid.py`); scrape 30 fresh listings for the re-measurement, because the holdout was inspected during the Phase 1 gate. |
+| A | Re-point the self-consistency metric: under the plan-polygon shell it measures the *vectoriser* against the plan's own printed text, not the photo channel. The photo channel's honest checks become ceiling height and cross-model scale agreement. |
+| F | GPU in the loop. Stage 3 is 88% of an 87.6 s run and 40× faster on the weakest card Phase 0 tested. |
+
+**Gate G1b (end of week 16).** Re-run G1 on freshly scraped listings, unchanged bars:
+self-consistency within ±10%, ≥80% plausible ceilings, ≥70% correct arrangement,
+cross-model scale within 15%. Plus one new criterion the vectoriser owns:
+
+- [ ] **≥80% room F1** on the plan validation split (the target Sprint 3 already set).
+- [ ] Colour-filled and multi-storey plans no longer fail outright — the two classes
+      that broke the classical engine.
+
+**Kill criterion:** unchanged from G1. If a trained vectoriser hitting 80% room F1 still
+leaves arrangement below 70% and self-consistency outside ±10%, the fault is not the
+plan channel and the roadmap's assumptions need revisiting rather than its schedule.
 
 ---
 

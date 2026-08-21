@@ -1,6 +1,6 @@
 # Eval — full channel, dev split
 
-8/10 listings scored (2 incomplete) · 2026-08-21T10:24:26+00:00
+8/10 listings scored (2 incomplete) · 2026-08-21T10:34:55+00:00
 
 | metric | median | p90 | coverage | reference | n obs |
 |---|---|---|---|---|---|

@@ -14,6 +14,7 @@ Automatic 3D reconstruction of flat listings: an unlabelled bag of estate-agent 
 | [`docs/DATA-SOURCES.md`](docs/DATA-SOURCES.md) | Where listings, photos and floor plans come from: portal APIs (mostly closed), public datasets, the in-house scraping decision, and what the first scraper run actually measured. |
 | [`docs/PHASE-1-REPORT.md`](docs/PHASE-1-REPORT.md) | **Start here for status** — what Phase 1 built, what it measures, the honest G1 assessment, and what to do next. |
 | [`docs/PHASE-0-REPORT.md`](docs/PHASE-0-REPORT.md) | Phase 0: the de-risking spikes, the model validation numbers, and the G0 assessment. |
+| [`docs/PHASE-1-FIXES.md`](docs/PHASE-1-FIXES.md) | The prioritised fix list coming out of Phase 1 — what to change, why, and what each costs. Scheduled as ROADMAP Sprint 6b. |
 | [`docs/FAILURE-TAXONOMY.md`](docs/FAILURE-TAXONOMY.md) | Every failure mode seen twice, the QA flag that detects it, and whether it is fixed. The top of this list is what the next sprint burns down. |
 | [`docs/runbooks/phase1-pipeline.md`](docs/runbooks/phase1-pipeline.md) | How to run the pipeline, score it, and debug a listing that came out wrong. |
 | [`eval/results/VALIDATION-REPORT.md`](eval/results/VALIDATION-REPORT.md) | **Model validation results** — what actually runs, measured on the real UK golden set, with figures. |
@@ -150,8 +151,10 @@ the roadmap front-loaded because it feared it most — is not the bottleneck.
 The G1 kill criterion does not fire, and the pivot rule is not needed: the shell
 exists and is usable. See [`docs/PHASE-1-REPORT.md`](docs/PHASE-1-REPORT.md).
 
-Next: **train the plan vectoriser** (ROADMAP S3's original plan, deferred in
-Phase 1 to unblock everything downstream). Every failing criterion is downstream of
-that one component.
+Next, both scheduled as ROADMAP **Sprint 6b** (Amendment B): **build the shell from
+plan polygons rather than photo-derived ones** (measured: photo rooms are 31% too
+big and leave holes), and **train the plan vectoriser** — S3's original plan,
+deferred in Phase 1 to unblock everything downstream. Every failing criterion is
+downstream of those two. See [`docs/PHASE-1-FIXES.md`](docs/PHASE-1-FIXES.md).
 
 **Scope:** internal and non-commercial. Correctness is judged by plausibility, self-consistency against dimensions printed on the floor plan, and cross-model agreement — not by measuring flats. See [`ROADMAP.md`](ROADMAP.md) §0b.

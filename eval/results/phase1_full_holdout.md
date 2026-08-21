@@ -1,6 +1,6 @@
 # Eval — full channel, holdout split
 
-14/20 listings scored (6 incomplete) · 2026-08-21T10:24:27+00:00
+14/20 listings scored (6 incomplete) · 2026-08-21T10:34:56+00:00
 
 | metric | median | p90 | coverage | reference | n obs |
 |---|---|---|---|---|---|
