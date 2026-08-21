@@ -422,7 +422,7 @@ def segment_with_wallnet(pi: PlanImage, text: PlanText,
 #: How far inside a predicted room its starting point is pulled, as a fraction of
 #: the room's own inscribed radius. A coarse polygon's edge routinely lands on -- or
 #: past -- the wall, and a starting point touching a wall lets the room grow straight
-#: through it into its neighbour. Swept in ``notebooks/tuning_modal.ipynb``.
+#: through it into its neighbour. Swept in ``notebooks/plan_reading_modal.ipynb``.
 SEED_CORE_FRACTION = 0.45
 
 #: Keep rooms inside what the walls actually enclose, rather than inside the convex

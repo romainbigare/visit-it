@@ -378,8 +378,10 @@ That is an integration of three things we have, not new research.
 
 ### Ranked
 
-All six are implemented and measured, one per section, in
-[`notebooks/plan_reading_modal.ipynb`](../notebooks/plan_reading_modal.ipynb).
+Numbers 1-4 are implemented and measured, one step per section, in
+[`notebooks/plan_reading_modal.ipynb`](../notebooks/plan_reading_modal.ipynb), which also
+grows each of them out to the walls and sweeps the two settings that govern the growing.
+Numbers 5 and 6 are not built: both were dropped in favour of getting 1-4 measured first.
 
 | | what | effort | what it buys |
 |---|---|---|---|

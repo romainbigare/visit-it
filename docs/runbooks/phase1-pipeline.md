@@ -88,13 +88,14 @@ python -m tools.import_room_predictions --clear   # back to the ink/wall reading
 
 `results.zip` comes from `notebooks/plan_reading_modal.ipynb`. With predictions in place
 stage 5 reports `method: room_finder_vectorise/v1` and flags how many of the rooms got
-their name from the plan rather than from the model. `notebooks/tuning_modal.ipynb` sweeps
-the two settings that govern how the predicted rooms are grown.
+their name from the plan rather than from the model.
 
-Before doing any of that, run `notebooks/plan_reading_modal.ipynb` on a Modal GPU. It
-tries six changes one at a time -- including pairing our wall model with a second model
-that finds rooms directly -- and measures every one on the same 25 plans. It needs no
-labels and no training, and it says which change to keep.
+Before doing any of that, run `notebooks/plan_reading_modal.ipynb` on a Modal GPU. One
+notebook covers the whole thing: our reading today, four ways of running the room-finder,
+the two joined by the pipeline's own code, and a sweep of the two settings that govern the
+join -- each measured on the same 25 plans. It needs no labels and no training, and it ends
+by naming the reading to import and the settings to change. Import a **room-finder** run,
+not a combined one; stage 5 does the combining itself.
 
 The contact sheet is the first thing to open, always. Phase 0's lesson stands: a
 flat grey render scored 12 dB and read as *merely poor* in a results table; only

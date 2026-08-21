@@ -26,15 +26,39 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from pipeline.floorplan.roomfinder import PREDICTION_DIR   # noqa: E402
 
-#: Readings the notebook writes that are ours, not the model's. Importing one of
-#: these would feed our own rooms back in as if they were a second opinion.
-OURS = {"what_we_have_today", "both_models_together"}
+#: Files in the zip that are not a reading at all.
+NOT_READINGS = {"ladder", "every_reading", "readings"}
+
+#: Readings the notebook writes that are ours, not the model's -- used only for a
+#: zip old enough to have no `readings.json` saying so itself.
+OURS = {"what_we_have_today", "ours", "both_models_together"}
 
 
 def readings_in(archive: Path) -> dict[str, str]:
     with zipfile.ZipFile(archive) as z:
         return {Path(n).stem: n for n in z.namelist()
-                if n.endswith(".json") and Path(n).stem != "ladder"}
+                if n.endswith(".json") and Path(n).stem not in NOT_READINGS}
+
+
+def manifest_in(archive: Path) -> dict:
+    """What the notebook said each reading is: the model's own, ours, or the two
+    combined. Absent from zips made before the notebook wrote one."""
+    with zipfile.ZipFile(archive) as z:
+        if "readings.json" not in z.namelist():
+            return {}
+        try:
+            return json.loads(z.read("readings.json"))
+        except Exception:                                    # noqa: BLE001
+            return {}
+
+
+def is_the_models_own(name: str, manifest: dict) -> bool:
+    """Only the room-finder's own rooms are worth importing. Ours are already what
+    stage 5 produces, and a combined reading is stage 5's own output -- importing
+    either feeds our rooms back in as if they were a second opinion."""
+    if manifest:
+        return manifest.get(name, {}).get("kind") == "room_finder"
+    return name not in OURS
 
 
 def load_reading(archive: Path, name: str) -> dict:
@@ -83,12 +107,20 @@ def main(argv: list[str] | None = None) -> int:
         ap.error("give me the zip the notebook produced")
 
     available = readings_in(args.archive)
+    manifest = manifest_in(args.archive)
     if args.list or not args.reading:
         print(f"readings in {args.archive.name}:")
-        for name in sorted(available):
-            note = "  (ours, not the model's — importing this feeds our own rooms back in)" \
-                if name in OURS else ""
-            print(f"  {name}{note}")
+        # the ones you can actually pick first, best score first within each group
+        def order(n):
+            return (not is_the_models_own(n, manifest),
+                    -(manifest.get(n, {}).get("score") or 0))
+
+        for name in sorted(available, key=order):
+            entry = manifest.get(name, {})
+            score = f'  {entry["score"]:.0%}' if entry.get("score") is not None else ""
+            note = "" if is_the_models_own(name, manifest) else \
+                "  (not the model's own rooms — importing this feeds our rooms back in)"
+            print(f"  {name}{score}{note}")
         if args.list:
             return 0
         print("\npick one with --reading")
@@ -97,8 +129,8 @@ def main(argv: list[str] | None = None) -> int:
     if args.reading not in available:
         print(f"no reading called {args.reading!r} — see --list", file=sys.stderr)
         return 1
-    if args.reading in OURS:
-        print(f"'{args.reading}' is our own reading, not the model's. Importing it would "
+    if not is_the_models_own(args.reading, manifest):
+        print(f"'{args.reading}' is not the room-finder's own rooms. Importing it would "
               f"feed our rooms back in as their own seeds.", file=sys.stderr)
         return 1
 

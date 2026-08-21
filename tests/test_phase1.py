@@ -801,5 +801,73 @@ class RoomFinderTest(unittest.TestCase):
         self.assertEqual(named.get("bathroom"), "room_finder",
                          "the room with no printed name keeps the predicted type")
 
+
+class ImportPredictionsTest(unittest.TestCase):
+    """Only the room-finder's own rooms may be imported. A combined reading is our
+    own output, and importing one feeds our rooms back in as their own seeds."""
+
+    @staticmethod
+    def _zip(tmp, manifest=True):
+        import zipfile
+        rooms = {"L1": {"rooms": [{"polygon_px": [[0, 0], [9, 0], [9, 9]],
+                                   "label": "kitchen"}]}}
+        path = Path(tmp) / "results.zip"
+        with zipfile.ZipFile(path, "w") as z:
+            z.writestr("every_reading.json", json.dumps([{"name": "x", "score": 0.5}]))
+            z.writestr("second_opinion_cleaned_up_picture.json", json.dumps(rooms))
+            z.writestr("both_models_together.json", json.dumps(rooms))
+            # a combination whose name says nothing about where it came from --
+            # the whole reason the zip carries a manifest rather than a name list
+            z.writestr("rooms_kept_inside_the_building.json", json.dumps(rooms))
+            if manifest:
+                z.writestr("readings.json", json.dumps({
+                    "second_opinion_cleaned_up_picture":
+                        {"kind": "room_finder", "name": "Second opinion", "score": 0.61},
+                    "both_models_together":
+                        {"kind": "combined", "name": "Both models", "score": 0.85},
+                    "rooms_kept_inside_the_building":
+                        {"kind": "combined", "name": "… inside", "score": 0.92},
+                }))
+        return path
+
+    def test_the_ladder_is_not_offered_as_a_reading(self):
+        from tools import import_room_predictions as imp
+        with tempfile.TemporaryDirectory() as tmp:
+            self.assertNotIn("every_reading", imp.readings_in(self._zip(tmp)))
+
+    def test_a_combined_reading_is_refused(self):
+        """Including one whose name gives no hint that it is ours."""
+        from tools import import_room_predictions as imp
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp) / "out"
+            for name in ("both_models_together", "rooms_kept_inside_the_building"):
+                rc = imp.main([str(self._zip(tmp)), "--reading", name, "--out", str(out)])
+                self.assertEqual(rc, 1, name)
+                self.assertFalse(out.exists(), f"{name}: nothing should be written")
+
+    def test_the_models_own_rooms_import(self):
+        from tools import import_room_predictions as imp
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp) / "out"
+            rc = imp.main([str(self._zip(tmp)), "--reading",
+                           "second_opinion_cleaned_up_picture", "--out", str(out)])
+            self.assertEqual(rc, 0)
+            written = json.loads((out / "L1.json").read_text())
+        self.assertEqual(written["space"], "source_image_pixels")
+        self.assertEqual(len(written["rooms"]), 1)
+
+    def test_a_zip_with_no_manifest_still_refuses_our_own(self):
+        """Zips made before the notebook wrote a manifest fall back to the names."""
+        from tools import import_room_predictions as imp
+        with tempfile.TemporaryDirectory() as tmp:
+            archive = self._zip(tmp, manifest=False)
+            out = Path(tmp) / "out"
+            self.assertEqual(imp.main([str(archive), "--reading",
+                                       "both_models_together", "--out", str(out)]), 1)
+            self.assertEqual(imp.main([str(archive), "--reading",
+                                       "second_opinion_cleaned_up_picture",
+                                       "--out", str(out)]), 0)
+
+
 if __name__ == "__main__":
     unittest.main()
