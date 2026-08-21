@@ -1,0 +1,27 @@
+{
+  "version": "v1",
+  "listing_id": "87977241",
+  "method": "human",
+  "rooms": [],
+  "adjacency": [],
+  "assignment": {
+    "kitchen": "p0",
+    "living_room": [
+      "p1",
+      "p2"
+    ],
+    "bedroom_0": [
+      "p3",
+      "p4"
+    ],
+    "bedroom_1": [
+      "p3",
+      "p4"
+    ],
+    "bathroom": null
+  },
+  "notes": "Clean black-on-white plan, vectorised well. RECEPTION / DINING ROOM is one space drawn as p1+p2 (F12). No bathroom, WC or hall polygon (F2).",
+  "annotated_by": "phase-1 annotation drive",
+  "reference": "Read off the listing's own floor plan with the vectorised polygons overlaid (tools/annotation_aid.py). No measurement involved \u2014 this records which polygon a room IS, not how big.",
+  "updated_at": "2026-08-21T00:52:15+00:00"
+}

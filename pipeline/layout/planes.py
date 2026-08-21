@@ -98,7 +98,13 @@ def dominant_up(points: np.ndarray, prior_up: np.ndarray | None = None) -> np.nd
 
 
 def floor_ceiling(heights: np.ndarray, bins: int = 240) -> tuple[float | None, float | None]:
-    """The two outer dense layers of the height histogram."""
+    """The two outer dense layers of the height histogram.
+
+    Returns the layers whatever they are; deciding whether they are *actually* the
+    floor and the ceiling is :func:`both_surfaces_visible`'s job, because the two
+    questions have different answers and conflating them is how a bathroom ends up
+    with a 0.53 m ceiling.
+    """
     if heights.size < 50:
         return None, None
     lo, hi = np.percentile(heights, [0.5, 99.5])
@@ -111,6 +117,42 @@ def floor_ceiling(heights: np.ndarray, bins: int = 240) -> tuple[float | None, f
     if dense.size < 2:
         return None, None
     return float(centres[dense[0]]), float(centres[dense[-1]])
+
+
+def both_surfaces_visible(rot: np.ndarray, lo: float, hi: float,
+                          min_support: float = 0.06) -> tuple[bool, str | None]:
+    """Are the floor *and* the ceiling actually in this photograph?
+
+    Measured, not assumed. A living-room shot at 100 degrees sees both; a bathroom
+    close-up, a corridor, or anything shot at a downward angle sees the floor and
+    a wall — and the two dense layers the histogram then finds are the floor and a
+    skirting board, which is how you get a "0.53 m ceiling".
+
+    Three checks, each catching a different way of failing:
+
+    * the gap is too small to be a room at all;
+    * the upper layer has almost no points behind it (a wall edge, not a ceiling);
+    * the room is far wider than it is tall, which no real room is.
+
+    Returning ``None`` for the height is the honest answer here. The scale solve
+    and the shell builder both handle a missing height; neither can defend itself
+    against a confidently wrong one.
+    """
+    if lo is None or hi is None:
+        return False, "no_floor_ceiling_found"
+    gap = hi - lo
+    if gap < 1.9:
+        return False, "floor_ceiling_gap_too_small"
+    z = rot[:, 2]
+    near_hi = float((np.abs(z - hi) < 0.18).mean())
+    near_lo = float((np.abs(z - lo) < 0.18).mean())
+    if near_hi < min_support or near_lo < min_support:
+        return False, "ceiling_or_floor_barely_observed"
+    span = float(np.percentile(rot[:, 0], 97) - np.percentile(rot[:, 0], 3))
+    span = max(span, float(np.percentile(rot[:, 1], 97) - np.percentile(rot[:, 1], 3)))
+    if span > gap * 6.0:
+        return False, "room_far_wider_than_tall"
+    return True, None
 
 
 def orient(points: np.ndarray, prior_up: np.ndarray | None = None

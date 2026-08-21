@@ -1,0 +1,31 @@
+{
+  "version": "v1",
+  "listing_id": "91850037",
+  "method": "human",
+  "rooms": [],
+  "adjacency": [],
+  "assignment": {
+    "bedroom_0": [
+      "p0",
+      "p1",
+      "p2"
+    ],
+    "bedroom_1": [
+      "p0",
+      "p1",
+      "p2"
+    ],
+    "bedroom_2": [
+      "p0",
+      "p1",
+      "p2"
+    ],
+    "kitchen": null,
+    "bathroom_0": null,
+    "bathroom_1": null
+  },
+  "notes": "Navy-on-white plan, non-Manhattan hallway. Three bedroom polygons and the lounge were found; kitchen, both bathrooms, hallway and store were not (F2). Three bedrooms exist and three bedroom groups were made, so any assignment among p0/p1/p2 is acceptable.",
+  "annotated_by": "phase-1 annotation drive",
+  "reference": "Read off the listing's own floor plan with the vectorised polygons overlaid (tools/annotation_aid.py). No measurement involved \u2014 this records which polygon a room IS, not how big.",
+  "updated_at": "2026-08-21T00:52:15+00:00"
+}

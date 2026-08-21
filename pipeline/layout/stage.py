@@ -39,21 +39,27 @@ def layout_from_points(points: np.ndarray, confidence: np.ndarray | None,
         qa.append("clipping_removed_too_much")
 
     lo, hi = planes.floor_ceiling(kept[:, 2])
-    height = (hi - lo) if (lo is not None and hi is not None) else None
+    visible, why = planes.both_surfaces_visible(kept, lo, hi)
+    if not visible:
+        # Refuse rather than guess. Phase 1 measured this on the golden set: a
+        # third of rooms came back under 2.3 m, and they were the bathrooms,
+        # corridors and balconies where the camera never saw both surfaces.
+        qa.append(why or "floor_ceiling_not_both_visible")
+        height = None
+    else:
+        height = hi - lo
     dirs = planes.wall_directions(kept[:, :2])
     poly = planes.footprint_polygon(kept[:, :2], dirs)
     poly = geom.ensure_ccw(poly)
     walls = planes.fit_walls(kept[:, :2], poly)
-    aps = (apertures.detect(kept, poly, lo, hi)
-           if (lo is not None and hi is not None) else [])
+    aps = apertures.detect(kept, poly, lo, hi) if visible else []
     area = geom.area(poly)
     long_m, short_m, orient_deg = geom.oriented_extent(poly)
 
     # ROADMAP §0b check 1, applied here rather than at the gate so a broken room
     # is visible in the contact sheet the day it happens.
-    if height is None:
-        qa.append("no_floor_ceiling_found")
-    elif not (planes.CEILING_PLAUSIBLE_M[0] <= height <= planes.CEILING_PLAUSIBLE_M[1]):
+    if height is not None and not (
+            planes.CEILING_PLAUSIBLE_M[0] <= height <= planes.CEILING_PLAUSIBLE_M[1]):
         qa.append("ceiling_outside_2.3_3.2m")
         if not (planes.CEILING_POSSIBLE_M[0] <= height <= planes.CEILING_POSSIBLE_M[1]):
             qa.append("ceiling_implausible")
@@ -82,8 +88,8 @@ def layout_from_points(points: np.ndarray, confidence: np.ndarray | None,
         "engine": engine,
         "n_views": int(n_views),
         "up_axis": [round(float(v), 5) for v in up],
-        "floor_h_m": round(float(lo), 4) if lo is not None else None,
-        "ceiling_h_m": round(float(hi), 4) if hi is not None else None,
+        "floor_h_m": round(float(lo), 4) if (lo is not None and visible) else None,
+        "ceiling_h_m": round(float(hi), 4) if (hi is not None and visible) else None,
         "room_height_m": round(float(height), 4) if height is not None else None,
         "polygon_m": [[round(x, 4), round(y, 4)] for x, y in poly],
         "area_m2": round(area, 4),
@@ -148,7 +154,9 @@ def run(ctx: StageContext) -> StageResult:
         lay["listing_id"] = ctx.listing_id
         layouts.append(lay)
 
-    heights = [l["room_height_m"] for l in layouts if l["room_height_m"]]
+    heights = [l["room_height_m"] for l in layouts
+               if l["room_height_m"] and l.get("room_label") not in ("garden", "balcony",
+                                                                     "terrace")]
     plausible = [h for h in heights
                  if planes.CEILING_PLAUSIBLE_M[0] <= h <= planes.CEILING_PLAUSIBLE_M[1]]
     frac = len(plausible) / len(heights) if heights else None

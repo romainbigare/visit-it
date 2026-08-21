@@ -16,10 +16,12 @@ two files that both still exist.
 """
 from __future__ import annotations
 
+import fcntl
 import hashlib
 import json
 import logging
 import os
+import contextlib
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
@@ -158,6 +160,25 @@ class ArtifactStore:
             d.mkdir(parents=True, exist_ok=True)
 
     # -- index ------------------------------------------------------------
+    @contextlib.contextmanager
+    def _index_lock(self):
+        """Serialise the index's read-modify-write across processes.
+
+        Two pipeline runs touching the same listing is not hypothetical — the
+        batch runner and a review-console re-run collide the first time someone
+        fixes a listing while the nightly job is going. Without this, one of them
+        reads the index, the other writes it, and the first one's write erases a
+        stage that really did run.
+        """
+        self.root.mkdir(parents=True, exist_ok=True)
+        lock = self.root / ".index.lock"
+        with open(lock, "a+") as fh:
+            fcntl.flock(fh.fileno(), fcntl.LOCK_EX)
+            try:
+                yield
+            finally:
+                fcntl.flock(fh.fileno(), fcntl.LOCK_UN)
+
     def _index(self) -> dict:
         if self.index_path.exists():
             return json.loads(self.index_path.read_text())
@@ -185,20 +206,21 @@ class ArtifactStore:
         blob.parent.mkdir(parents=True, exist_ok=True)
         if not blob.exists():
             blob.write_text(json.dumps(payload, indent=2, default=_json_default) + "\n")
-        idx = self._index()
-        hist = idx["stages"].setdefault(stage, [])
         written_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
-        version = len(hist) + 1
-        if hist and hist[-1]["sha256"] == sha:
-            # Identical content: keep the history honest rather than logging a
-            # fake new version every nightly run.
-            version = hist[-1]["version"]
-            hist[-1]["last_seen_at"] = written_at
-            hist[-1]["seen_count"] = hist[-1].get("seen_count", 1) + 1
-        else:
-            hist.append({"version": version, "sha256": sha, "written_at": written_at,
-                         "run_id": run_id, "seen_count": 1})
-        self._write_index(idx)
+        with self._index_lock():
+            idx = self._index()
+            hist = idx["stages"].setdefault(stage, [])
+            version = len(hist) + 1
+            if hist and hist[-1]["sha256"] == sha:
+                # Identical content: keep the history honest rather than logging a
+                # fake new version every nightly run.
+                version = hist[-1]["version"]
+                hist[-1]["last_seen_at"] = written_at
+                hist[-1]["seen_count"] = hist[-1].get("seen_count", 1) + 1
+            else:
+                hist.append({"version": version, "sha256": sha, "written_at": written_at,
+                             "run_id": run_id, "seen_count": 1})
+            self._write_index(idx)
         (self.latest / latest_name).write_text(blob.read_text())
         return Artifact(stage, self.listing_id, payload, sha, version, written_at,
                         run_id, blob)

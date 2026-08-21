@@ -1,0 +1,30 @@
+{
+  "version": "v1",
+  "listing_id": "169576625",
+  "method": "human",
+  "rooms": [],
+  "adjacency": [],
+  "assignment": {
+    "bedroom_0": [
+      "p1",
+      "p2"
+    ],
+    "bedroom_1": [
+      "p1",
+      "p2"
+    ],
+    "bedroom_2": [
+      "p1",
+      "p2"
+    ],
+    "dining_room": [
+      "p3",
+      "p4",
+      "p5"
+    ]
+  },
+  "notes": "Atlas Building, 2 bed. Bedrooms and balcony correct. The open-plan RECEPTION / KITCHEN is carved into p3+p4+p5 (F12 at scale); any of the three is a correct home for a photo of that space. Hall and bathroom slivers (p6/p7/p8) are indeterminate and omitted.",
+  "annotated_by": "phase-1 annotation drive",
+  "reference": "Read off the listing's own floor plan with the vectorised polygons overlaid (tools/annotation_aid.py). No measurement involved \u2014 this records which polygon a room IS, not how big.",
+  "updated_at": "2026-08-21T00:52:15+00:00"
+}

@@ -12,7 +12,10 @@ Automatic 3D reconstruction of flat listings: an unlabelled bag of estate-agent 
 | [`docs/LICENSING.md`](docs/LICENSING.md) | Availability record for every model, dataset and library — what is open, what needs an application, what checkpoint to pin, and what breaks when you try to fetch it. |
 | [`docs/VARIANTS.md`](docs/VARIANTS.md) | Service profiles (instant / standard / premium), unit economics at different price points (incl. the 5–10 s / £0.05 target), and three alternative development journeys with a recommendation. |
 | [`docs/DATA-SOURCES.md`](docs/DATA-SOURCES.md) | Where listings, photos and floor plans come from: portal APIs (mostly closed), public datasets, the in-house scraping decision, and what the first scraper run actually measured. |
-| [`docs/PHASE-0-REPORT.md`](docs/PHASE-0-REPORT.md) | **Start here for status** — what Phase 0 did, what the numbers said, the honest G0 assessment, and what to do next. |
+| [`docs/PHASE-1-REPORT.md`](docs/PHASE-1-REPORT.md) | **Start here for status** — what Phase 1 built, what it measures, the honest G1 assessment, and what to do next. |
+| [`docs/PHASE-0-REPORT.md`](docs/PHASE-0-REPORT.md) | Phase 0: the de-risking spikes, the model validation numbers, and the G0 assessment. |
+| [`docs/FAILURE-TAXONOMY.md`](docs/FAILURE-TAXONOMY.md) | Every failure mode seen twice, the QA flag that detects it, and whether it is fixed. The top of this list is what the next sprint burns down. |
+| [`docs/runbooks/phase1-pipeline.md`](docs/runbooks/phase1-pipeline.md) | How to run the pipeline, score it, and debug a listing that came out wrong. |
 | [`eval/results/VALIDATION-REPORT.md`](eval/results/VALIDATION-REPORT.md) | **Model validation results** — what actually runs, measured on the real UK golden set, with figures. |
 | [`docs/PRIOR-ART.md`](docs/PRIOR-ART.md) | Rent3D, Plan2Scene and the research line that attacked this problem in 2015–2021: what they built, why it stalled, why every commercial player controls capture instead, and what that implies for us. |
 
@@ -27,10 +30,37 @@ make setup      # deps (torch CPU) + tesseract
 make vendor     # MoGe-2 source (not on PyPI)
 make data       # auto-fetchable datasets -> $VISITIT_DATA_HOME
 make golden     # rebuild the 30-listing UK golden set
-make validate   # run model validation, regenerate figures
+make holdout    # freeze (or verify) the dev/holdout split
 ```
 
-Datasets are cached under `$VISITIT_DATA_HOME` (default `~/.cache/visit-it/datasets`), checksummed into `datasets.lock.json`, and resume if interrupted — `make status` reports what a given box has.
+Then run the pipeline:
+
+```bash
+python -m pipeline run 87977241        # one listing, stages 0-9, ~100 s on 4 CPU cores
+python -m pipeline show 87977241       # what it produced, with its QA flags
+make score                             # M1-M5 and the G1 criteria on the dev split
+make console                           # review console: queue, contact sheets, fix actions
+make viewer                            # the shell walkthrough in a browser
+```
+
+Datasets are cached under `$VISITIT_DATA_HOME` (default `~/.cache/visit-it/datasets`), checksummed into `datasets.lock.json`, and resume if interrupted — `make status` reports what a given box has. Pipeline artifacts live under `data/runs/` (or `$VISITIT_RUN_HOME`), content-addressed and versioned, so `--from 6` re-runs the cheap end without touching the expensive one.
+
+## The pipeline
+
+Ten stages, each emitting one schema-validated artifact with a confidence and a list of QA flags. Streams B (photos) and C (the plan) meet only at stage 6.
+
+| | stage | reads | produces |
+|---|---|---|---|
+| 0 | triage | the listing | `manifest.json` — what each image is, what the listing says about itself |
+| 1 | conditioning | 0 | `calibration.json` — the field-of-view prior and the rectification gate |
+| 2 | grouping | 0 | `groups.json` — photos grouped into rooms |
+| 3 | geometry | 1, 2 | per-room point maps (MoGe-2; MapAnything in Phase 2) |
+| 4 | layout | 3 | room polygons, ceiling heights, apertures |
+| 5 | plan | 0 | `plan.json` — **the spine**: room polygons, adjacency, doors, metric scale |
+| 6 | assembly | 4, 5 | `assembly.json` — which reconstructed room goes in which plan polygon |
+| 7 | scale | 4, 5, 6 | `scale.json` — one global scalar, and the three §0b checks |
+| 8 | shell | 5, 6, 7 | the glTF shell, apertures cut, provenance per face |
+| 9 | package | 8 | `scene.json` — the viewer's only input |
 
 ## Status
 

@@ -1,0 +1,34 @@
+{
+  "version": "v1",
+  "listing_id": "91642188",
+  "method": "human",
+  "rooms": [],
+  "adjacency": [],
+  "assignment": {
+    "hallway": "p0",
+    "bathroom": [
+      "p1",
+      "p3"
+    ],
+    "bedroom_0": [
+      "p4",
+      "p5"
+    ],
+    "bedroom_1": [
+      "p4",
+      "p5"
+    ],
+    "bedroom_2": [
+      "p4",
+      "p5"
+    ],
+    "dining_room": [
+      "p6",
+      "p7"
+    ]
+  },
+  "notes": "The best vectorisation in the set: hallway, both bathrooms, kitchen, both bedrooms and the living room all found and labelled correctly. The living room is split into p6+p7 (F12). This plan prints no dimensions and the listing states no area, so it has no metric scale and stage 6 is skipped \u2014 a correct plan the pipeline still cannot use.",
+  "annotated_by": "phase-1 annotation drive",
+  "reference": "Read off the listing's own floor plan with the vectorised polygons overlaid (tools/annotation_aid.py). No measurement involved \u2014 this records which polygon a room IS, not how big.",
+  "updated_at": "2026-08-21T00:52:15+00:00"
+}

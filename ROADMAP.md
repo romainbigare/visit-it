@@ -20,7 +20,7 @@ Automatic 3D reconstruction of flat listings: unlabelled photos + (sometimes) a 
 | Phase | Sprints | Weeks | Deliverable | Gate |
 |---|---|---|---|---|
 | **P0 Foundations** | S1–S2 | 1–4 | Golden set + eval harness + de-risk spikes + platform skeleton | **G0**: 30 listings, harness live, spikes green |
-| **P1 Measurable shell** | S3–S6 | 5–12 | Scaled, correctly-arranged 3D shell from plan+photos, in the viewer | **G1** self-consistent scale + 70% correct arrangement |
+| **P1 Measurable shell** ✅ *built* | S3–S6 | 5–12 | Scaled, correctly-arranged 3D shell from plan+photos, in the viewer | **G1** self-consistent scale + 70% correct arrangement — see [`docs/PHASE-1-REPORT.md`](docs/PHASE-1-REPORT.md) |
 | **P2 Photorealism** | S7–S11 | 13–22 | Per-room splats inside the shell; full waypoint walkthrough on mobile | **G2** blind panel prefers it to the photo gallery |
 | **P3 No-plan branch + hardening** | S12–S15 | 23–30 | Inferred-layout tier, review console, batch runner | **G3** ≥60% of listings need no manual fixing |
 | **P4 Generative completion** | not scheduled | — | Filling in unseen surfaces | Optional; only once P1–P3 are solid |
@@ -148,6 +148,16 @@ splats on the device matrix. Everything else is recoverable.
 
 > Goal: listing in → **scaled, correctly-arranged, untextured 3D shell + interactive floor plan** out, in the browser. No splats. This is the report's "deliberately unglamorous and right" first product, and it exercises the killer stage (assembly) earliest.
 
+> **Built (Phase 1 implementation note).** Sprints 3–6 below are the plan of
+> record and are left unedited. What actually shipped differs in two places, both
+> recorded rather than quietly substituted: the **plan vectoriser** is a classical
+> raster engine rather than the RoomFormer-class network (no GPU or training set
+> was needed to unblock stages 6–9, and it gives the learned model a measured
+> baseline to beat — the `learned` engine binding is reserved for it), and
+> **aperture detection** finds openings in the room's own point coverage rather
+> than with SAM2 + Grounding DINO, for the same reason. Both are engine plugins
+> behind the AD-4 interface, so swapping them changes no artifact contract.
+
 ### Sprint 3 — plan channel front half
 
 | Stream | Work |
@@ -186,6 +196,11 @@ splats on the device matrix. Everything else is recoverable.
 All streams: burn the top of the failure taxonomy (expected leaders per the report: room-type confusions hall/bedroom and dining/living feeding wrong assignments; vectorisation misses on stylised plans; monocular polygon scale noise). A: run G1 eval on the **holdout** at sprint end. E: polish pass so the G1 demo is honest but presentable. F: assignment-nudge UI in review console (drag a room chip onto a different polygon, re-run 6→9 in seconds).
 
 ### Gate G1 (end of week 12)
+
+> **Status: measured. See [`docs/PHASE-1-REPORT.md`](docs/PHASE-1-REPORT.md) for the
+> numbers, the honest assessment against each criterion, and what carries into
+> Phase 2.** Every stage 0–9 is built and runs end to end on CPU; the viewer, the
+> review console and the eval harness are live.
 
 Measured on holdout listings **that have a floor plan**. With no tape-measure
 ground truth, correctness is judged by the three checks in §0b — weaker than

@@ -82,14 +82,21 @@ def build_constraints(layouts: dict, plan: dict | None, manifest: dict | None,
     return cs
 
 
+#: Spaces with no ceiling to be plausible about.
+OUTDOOR = {"garden", "balcony", "terrace"}
+
+
 def checks(layouts: dict, plan: dict | None, sol: Solution, scale: float) -> dict:
-    rooms = layouts["rooms"]
+    rooms = [r for r in layouts["rooms"] if r.get("room_label") not in OUTDOOR]
     heights = [r["room_height_m"] * scale for r in rooms if r.get("room_height_m")]
     extents = [max(r["extent_m"]) * scale for r in rooms if r.get("extent_m")]
     plausible = [h for h in heights
                  if CEILING_PLAUSIBLE_M[0] <= h <= CEILING_PLAUSIBLE_M[1]]
     plaus = {
         "n_rooms": len(rooms),
+        "n_rooms_with_height": len(heights),
+        "n_rooms_no_height": len(rooms) - len(heights),
+        "excluded_outdoor": len(layouts["rooms"]) - len(rooms),
         "ceiling_plausible_frac": round(len(plausible) / len(heights), 3) if heights else None,
         "median_ceiling_m": round(float(np.median(heights)), 3) if heights else None,
         "max_extent_m": round(max(extents), 3) if extents else None,

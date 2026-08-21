@@ -1,0 +1,18 @@
+{
+  "version": "v1",
+  "listing_id": "172018976",
+  "method": "human",
+  "rooms": [],
+  "adjacency": [],
+  "assignment": {
+    "kitchen": "p2",
+    "bedroom_0": "p0",
+    "bathroom": null,
+    "garden_0": null,
+    "garden_1": null
+  },
+  "notes": "Concordia Wharf, 1 bed. p0/p1/p2 = bedroom / reception / kitchen, all correct. Hall, bathroom and balcony are not vectorised (F2). Grouping made two bedroom groups for a one-bed flat, so bedroom_1 is a duplicate and is omitted rather than guessed.",
+  "annotated_by": "phase-1 annotation drive",
+  "reference": "Read off the listing's own floor plan with the vectorised polygons overlaid (tools/annotation_aid.py). No measurement involved \u2014 this records which polygon a room IS, not how big.",
+  "updated_at": "2026-08-21T00:52:15+00:00"
+}

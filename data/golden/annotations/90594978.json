@@ -1,0 +1,76 @@
+{
+  "version": "v1",
+  "listing_id": "90594978",
+  "method": "derived",
+  "rooms": [
+    {
+      "plan_room_id": "p0",
+      "label": "garden",
+      "printed_area_m2": null,
+      "method": "unknown"
+    },
+    {
+      "plan_room_id": "p1",
+      "label": "bedroom",
+      "printed_area_m2": 47.25,
+      "method": "derived"
+    },
+    {
+      "plan_room_id": "p2",
+      "label": "dining_room",
+      "printed_area_m2": 53.36,
+      "method": "derived"
+    },
+    {
+      "plan_room_id": "p3",
+      "label": "hallway",
+      "printed_area_m2": null,
+      "method": "unknown"
+    },
+    {
+      "plan_room_id": "p5",
+      "label": "bedroom",
+      "printed_area_m2": null,
+      "method": "unknown"
+    },
+    {
+      "plan_room_id": "p6",
+      "label": "bedroom",
+      "printed_area_m2": null,
+      "method": "unknown"
+    },
+    {
+      "plan_room_id": "p7",
+      "label": "hallway",
+      "printed_area_m2": null,
+      "method": "unknown"
+    }
+  ],
+  "adjacency": [
+    [
+      "p0",
+      "p1"
+    ],
+    [
+      "p1",
+      "p3"
+    ],
+    [
+      "p3",
+      "p6"
+    ],
+    [
+      "p3",
+      "p7"
+    ],
+    [
+      "p6",
+      "p7"
+    ]
+  ],
+  "assignment": {},
+  "notes": "Seeded from the plan's own printed text. `assignment` is deliberately empty \u2014 it is the one fact the plan cannot supply, and the arrangement criterion is not judged without it.",
+  "plan_source": "data/golden/media/90594978/floorplan_014.jpeg",
+  "derived_from_plan_sha": null,
+  "updated_at": "2026-08-21T00:52:18+00:00"
+}
