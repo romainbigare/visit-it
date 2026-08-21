@@ -90,12 +90,17 @@ python -m tools.import_room_predictions --clear   # back to the ink/wall reading
 stage 5 reports `method: room_finder_vectorise/v1` and flags how many of the rooms got
 their name from the plan rather than from the model.
 
-Before doing any of that, run `notebooks/plan_reading_modal.ipynb` on a Modal GPU. One
-notebook covers the whole thing: our reading today, four ways of running the room-finder,
-the two joined by the pipeline's own code, and a sweep of the two settings that govern the
-join -- each measured on the same 25 plans. It needs no labels and no training, and it ends
-by naming the reading to import and the settings to change. Import a **room-finder** run,
-not a combined one; stage 5 does the combining itself.
+Before doing any of that, run `notebooks/plan_reading_modal.ipynb` on a Modal GPU. It
+starts from the room-finder as published and tunes it: all five checkpoints the authors
+publish, the picture it is shown (cleaned, cropped, thresholded, strokes thickened), the
+plan cut into quarters, four views merged, and its own answer tidied. The last step pulls
+the corners onto our wall map, which is what stage 5 does anyway. Every step is measured on
+the same 25 plans and the notebook prints the recipe that won.
+
+Two numbers, because either alone can be gamed: the share of the room names printed on the
+plan that land inside exactly one predicted room, and the share of each room edge that sits
+on a wall. A reading that deletes an awkward room loses on the first. Import a **room-finder**
+row, not the grown one; stage 5 does the growing itself.
 
 The contact sheet is the first thing to open, always. Phase 0's lesson stands: a
 flat grey render scored 12 dB and read as *merely poor* in a results table; only

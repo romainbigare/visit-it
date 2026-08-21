@@ -345,6 +345,7 @@ Three ways to measure the spill automatically, all tried, none usable yet:
 | flood-fill inward from the page edge to find what the walls enclose | the outer wall has gaps at every external door and bay, so the flood leaks and the "footprint" comes out at 5% of the page |
 | close the ink into a silhouette and fill it | works on some plans (78% of room area inside on one), collapses to 7% on a thin-line drawing where closing does not connect the outline |
 | overlap between rooms | comes back at 100% on all 25 — the watershed produces disjoint regions by construction, so the spikes never overlap, they just cover blank page |
+| flood-fill over the *predicted wall map* rather than the ink | the promising one, because the net marks doors and windows as barrier in their own right, so an external doorway should not leak. It leaks anyway: the net marks thin double-line partitions and **misses thick solid outer walls**, drawn as a filled black band. With no closed envelope the flood swallows the flat and only the few fully-sealed rooms survive — measured interiors of 2%, 4% and 5% of the page on plans where the flat covers half of it. Closing the gaps first makes it kernel-dependent rather than correct: on one plan a kernel of 4x the wall thickness gives 0% and 10x gives 33% |
 
 So the number in every table on this page is measuring something real but incomplete, and
 `notebooks/plan_reading_modal.ipynb` says so where it reports it. **Until this is closed,
@@ -352,7 +353,7 @@ the four-panel pictures are the arbiter, not the score.**
 
 Fixing the *cause* is the more useful move than measuring the symptom: replace the convex
 hull with a real footprint, and the rooms have nowhere to spill to. That needs a footprint
-method that survives a gappy outer wall, which is exactly what the three attempts above
+method that survives a gappy outer wall, which is exactly what the four attempts above
 failed at — so it is a real piece of work, not a tweak.
 
 ### The two models are complementary, not competing
