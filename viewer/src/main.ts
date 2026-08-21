@@ -117,9 +117,35 @@ async function load(): Promise<void> {
   // the frame, rather than a fixed multiple that suits whichever flat was open when
   // it was chosen.
   const fovRad = THREE.MathUtils.degToRad(dollCamera.fov);
-  const dist = (span * 0.62) / Math.tan(fovRad / 2);
-  dollCamera.position.set((minx + maxx) / 2, dist * 0.82,
-                          -(miny + maxy) / 2 + dist * 0.62);
+  const cx = (minx + maxx) / 2;
+  const cz = -(miny + maxy) / 2;
+  const ceilTop = Math.max(...scene.rooms.map((r) => r.height_m), 2.4);
+  // Every corner of the flat, floor and ceiling, is what has to fit — not the plan
+  // extent. Seen from an angle a long flat leans out of frame, so we place the
+  // camera, measure how far the corners spill past the edge, and push back by
+  // exactly that much. Three passes converge and it cannot clip a wing off.
+  const corners: THREE.Vector3[] = [];
+  for (const x of [minx, maxx]) {
+    for (const z of [-miny, -maxy]) {
+      for (const y of [0, ceilTop]) corners.push(new THREE.Vector3(x, y, z));
+    }
+  }
+  const dir = new THREE.Vector3(0, 0.82, 0.62).normalize();
+  let dist = (span * 0.62) / Math.tan(fovRad / 2);
+  for (let pass = 0; pass < 3; pass++) {
+    dollCamera.position.set(cx + dir.x * dist, dir.y * dist, cz + dir.z * dist);
+    dollCamera.lookAt(cx, 1.2, cz);
+    dollCamera.updateMatrixWorld(true);
+    let spill = 0;
+    for (const c of corners) {
+      const view = c.clone().applyMatrix4(dollCamera.matrixWorldInverse);
+      if (view.z >= -0.05) continue;  // behind the lens: not a constraint
+      const p = c.clone().project(dollCamera);
+      spill = Math.max(spill, Math.abs(p.x), Math.abs(p.y));
+    }
+    if (spill <= 0) break;
+    dist *= spill / 0.9;  // 0.9 keeps a tenth of the frame as margin
+  }
   orbit = new OrbitControls(dollCamera, renderer.domElement);
   orbit.target.set((minx + maxx) / 2, 1.2, -(miny + maxy) / 2);
   orbit.enableDamping = true;

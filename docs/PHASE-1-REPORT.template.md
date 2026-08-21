@@ -218,13 +218,18 @@ and the Hungarian assignment puts it wherever is cheapest. Every "wrong room" er
 we inspected traces back here. It is also why 63% of vectorised rooms carry a label
 rather than ~100%.
 
-**Colour-filled plans break the "walls are the thickest strokes" assumption.**
-Several plans in the set fill each room with a pastel colour, so the darkest,
-thickest ink on the page is the room fill and not the wall. On one, only the single
-space whose caption survived OCR was segmented — one polygon for a two-bedroom
-flat. On another the vectoriser latched onto the wrong storey of a maisonette. This
-is a *class* of plan, not a one-off, and the classical vectoriser cannot be patched
-into handling it.
+**Colour-filled plans broke the ink detector — since fixed.**
+Several plans in the set fill each room with a pastel colour. The detector asked
+"how far is this pixel from the page colour?" rather than "how dark is it?", so a
+pastel fill scored as ink as strongly as a black wall line, and being far larger in
+area it swamped the walls: ink coverage measured 41–50% of the page on colour plans
+against 12–15% on black-and-white ones, at a median ink luminance of 213/255. On
+one such plan only the single space whose caption survived OCR was segmented — one
+polygon for a two-bedroom flat. Thresholding on luminance and then splitting dark
+from mid-tone (Otsu) recovered 6 correct rooms on that plan. A separate guard now
+keeps only the largest outline when a maisonette prints both storeys on one sheet.
+This was patchable; the point of F1 is that the *next* plan style will need its own
+patch.
 
 **Open-plan spaces are carved into several polygons.** "RECEPTION / DINING ROOM" and
 "RECEPTION / KITCHEN" are single spaces with two room words in the caption. The

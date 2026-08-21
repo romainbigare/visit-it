@@ -113,11 +113,11 @@ and over fourteen are different claims.
 
 | criterion | holdout | dev | judged (holdout) | verdict |
 |---|---|---|---|---|
-| Self-consistency (±10% vs printed dimensions) | 0.14 pass · median 14.3 | 0.67 pass | 7/14 | **fails** |
-| Plausibility (≥80% ceilings 2.3–3.2 m, none >12 m) | 0.21 pass · median 0.67 | 0.38 pass | 14/14 | **fails** |
-| Arrangement (≥70% of rooms in the right polygon) | 0.5 pass · median 0.67 | 1.0 pass | 4/14 | **not judged** (coverage) |
-| Cross-model scale agreement (within 15%) | 0.46 pass · median 16.72 | 0.5 pass | 13/14 | **fails** |
-| Shell within the 1 MB budget | 1.0 pass · median 5526.0 | 1.0 pass | 14/14 | **passes** |
+| Self-consistency (±10% vs printed dimensions) | 0.6 pass · median 9.01 | 0.33 pass | 5/17 | **not judged** (coverage) |
+| Plausibility (≥80% ceilings 2.3–3.2 m, none >12 m) | 0.29 pass · median 0.63 | 0.62 pass | 17/17 | **fails** |
+| Arrangement (≥70% of rooms in the right polygon) | 0.33 pass · median 0.5 | 1.0 pass | 6/17 | **not judged** (coverage) |
+| Cross-model scale agreement (within 15%) | 0.46 pass · median 17.74 | 0.75 pass | 13/17 | **fails** |
+| Shell within the 1 MB budget | 1.0 pass · median 24168.0 | 1.0 pass | 17/17 | **passes** |
 
 > **A caveat that belongs at the top, not in a footnote.** Two bugs in the scale
 > constraints (§4) were found by *inspecting holdout failures* after the first
@@ -140,12 +140,12 @@ agree with.
 
 | | value |
 |---|---|
-| median per-room area error against the printed dimensions | **10.82%** over 13 listings |
-| p90 across listings | 84.45% |
-| listings whose median is inside ±10% | 0.14 of 7 judged |
-| rooms inside ±10% of their own printed size | median 0.5 |
-| scale-solve residual RMS | median 14.56% |
-| scale constraints rejected as outliers | 8 across all listings |
+| median per-room area error against the printed dimensions | **11.95%** over 11 listings |
+| p90 across listings | 34.66% |
+| listings whose median is inside ±10% | 0.6 of 5 judged |
+| rooms inside ±10% of their own printed size | median 0.33 |
+| scale-solve residual RMS | median 11.41% |
+| scale constraints rejected as outliers | 10 across all listings |
 
 
 The mechanism is sound and the failures are localised. Stage 7 solves **one**
@@ -181,7 +181,7 @@ plausible about.
 | ceiling height, where reported | median 2.57 m (p10 2.07, p90 2.88) |
 | rooms within 2.3–3.2 m | **82.0%** of 105 |
 | rooms where we refused to report a height | 66 (`floor_ceiling_gap_too_small` 37, `ceiling_or_floor_barely_observed` 27, `no_floor_ceiling_found` 2) |
-| listings meeting the ≥80% bar | 0.21 of 14 judged |
+| listings meeting the ≥80% bar | 0.29 of 17 judged |
 | any room over 12 m across | none |
 
 
@@ -202,7 +202,7 @@ height. Two methods sharing no model and no input.
 
 | | value |
 |---|---|
-| disagreement between the plan-channel and photo-channel estimates | median **15.63%** (p90 26.68%) over 21 listings |
+| disagreement between the plan-channel and photo-channel estimates | median **12.95%** (p90 26.02%) over 21 listings |
 | listings within 15% | 0.46 of 13 judged |
 
 
@@ -224,11 +224,11 @@ indeterminate rather than guessing.
 
 | | value |
 |---|---|
-| holdout listings with arrangement truth | 4 of 14 scored |
+| holdout listings with arrangement truth | 6 of 17 scored |
 | annotation coverage of plan-bearing listings | 29.0% |
-| rooms placed in an acceptable polygon (M5) | median 66.67% over 21 rooms |
-| listings meeting the ≥70% bar | 0.5 |
-| shell-vs-plan footprint IoU (supporting evidence, not the criterion) | median 0.37 |
+| rooms placed in an acceptable polygon (M5) | median 50.0% over 33 rooms |
+| listings meeting the ≥70% bar | 0.33 |
+| shell-vs-plan footprint IoU (supporting evidence, not the criterion) | median 1.0 |
 
 
 **We are not claiming this criterion either way.** Four annotated holdout listings
@@ -252,13 +252,18 @@ and the Hungarian assignment puts it wherever is cheapest. Every "wrong room" er
 we inspected traces back here. It is also why 63% of vectorised rooms carry a label
 rather than ~100%.
 
-**Colour-filled plans break the "walls are the thickest strokes" assumption.**
-Several plans in the set fill each room with a pastel colour, so the darkest,
-thickest ink on the page is the room fill and not the wall. On one, only the single
-space whose caption survived OCR was segmented — one polygon for a two-bedroom
-flat. On another the vectoriser latched onto the wrong storey of a maisonette. This
-is a *class* of plan, not a one-off, and the classical vectoriser cannot be patched
-into handling it.
+**Colour-filled plans broke the ink detector — since fixed.**
+Several plans in the set fill each room with a pastel colour. The detector asked
+"how far is this pixel from the page colour?" rather than "how dark is it?", so a
+pastel fill scored as ink as strongly as a black wall line, and being far larger in
+area it swamped the walls: ink coverage measured 41–50% of the page on colour plans
+against 12–15% on black-and-white ones, at a median ink luminance of 213/255. On
+one such plan only the single space whose caption survived OCR was segmented — one
+polygon for a two-bedroom flat. Thresholding on luminance and then splitting dark
+from mid-tone (Otsu) recovered 6 correct rooms on that plan. A separate guard now
+keeps only the largest outline when a maisonette prints both storeys on one sheet.
+This was patchable; the point of F1 is that the *next* plan style will need its own
+patch.
 
 **Open-plan spaces are carved into several polygons.** "RECEPTION / DINING ROOM" and
 "RECEPTION / KITCHEN" are single spaces with two room words in the caption. The
@@ -311,7 +316,7 @@ someone will try it again.
 
 ## 5. Cost and latency
 
-Measured over 159 runs on four CPU cores, no GPU.
+Measured over 232 runs on four CPU cores, no GPU.
 
 | stage | p50 (s) | p95 (s) | share of the run |
 |---|---|---|---|
@@ -320,11 +325,11 @@ Measured over 159 runs on four CPU cores, no GPU.
 | 2-grouping | 0.0 | 0.0 | 0% |
 | 3-geometry | 76.996 | 94.794 | 88% |
 | 4-layout | 2.244 | 4.089 | 3% |
-| 5-plan | 3.811 | 59.062 | 4% |
-| 6-assembly | 0.044 | 0.066 | 0% |
+| 5-plan | 4.382 | 8.754 | 5% |
+| 6-assembly | 0.052 | 0.126 | 0% |
 | 7-scale | 0.001 | 0.002 | 0% |
-| 8-shell | 0.004 | 0.006 | 0% |
-| 9-package | 0.001 | 0.002 | 0% |
+| 8-shell | 0.005 | 0.076 | 0% |
+| 9-package | 0.001 | 0.005 | 0% |
 | **end to end (full runs, n=33)** | **87.627** | 149.084 | 100% |
 Stage 3 is 85–95% of the wall clock on a full run and all of it is GPU work being
 done on a CPU. Phase 0 measured MoGe-2 at 0.364 s/image on a free T4 against 14.4 s
@@ -363,13 +368,13 @@ clean pre-fix reading and the post-fix one.
 
 | criterion | status |
 |---|---|
-| ≥30 listings processed end to end | 30/30 run; 22 reached the shell |
+| ≥30 listings processed end to end | 30/30 run; 25 reached the shell |
 | Holdout frozen before any tuning | sealed, and the seal is checked in CI |
-| Self-consistency within ±10% | 0.14 of 7 judged |
-| Plausibility: ≥80% ceilings 2.3–3.2 m, none over 12 m | 0.21 of 14 judged |
-| Arrangement: ≥70% of rooms in the right polygon | 4 listings annotated — not enough coverage to judge the gate |
+| Self-consistency within ±10% | 0.6 of 5 judged |
+| Plausibility: ≥80% ceilings 2.3–3.2 m, none over 12 m | 0.29 of 17 judged |
+| Arrangement: ≥70% of rooms in the right polygon | 6 listings annotated — not enough coverage to judge the gate |
 | Cross-model scale within 15% | 0.46 of 13 judged |
-| Shell loads under 2 s desktop | median 5168.0 bytes, 0 over the 1 MB budget; measured load under 100 ms in the headless browser |
+| Shell loads under 2 s desktop | median 26216.0 bytes, 0 over the 1 MB budget; measured load under 100 ms in the headless browser |
 | Eval harness running with a recorded baseline | M1–M5 + the G1 criteria, plan-channel isolation, nightly batch with regression alerts |
 | Latency instrumented per stage (M12) | end to end p50 87.627 s on CPU; budgets asserted in CI |
 
@@ -474,23 +479,24 @@ python -m eval.fill_report               # refreshes every table in this documen
 
 | stage | ok | partial/skipped | failed |
 |---|---|---|---|
-| 6-assembly | 22 | 8 | 0 |
-| 7-scale | 22 | 8 | 0 |
-| 8-shell | 22 | 8 | 0 |
-| 9-package | 22 | 8 | 0 |
+| 5-plan | 25 | 5 | 0 |
+| 6-assembly | 25 | 5 | 0 |
+| 7-scale | 25 | 5 | 0 |
+| 8-shell | 25 | 5 | 0 |
+| 9-package | 25 | 5 | 0 |
 
 ### Plan channel (stage 5) — 25 listings
 
 | | value |
 |---|---|
-| scale source | printed_dimensions 12, stated_area 8, none 3, printed_area 2 |
-| rooms found per listing | median 7.0 (p10 2.4, p90 16.0) |
-| rooms carrying a label | 63% |
-| doors found per listing | median 1.0 |
-| adjacency edges per listing | median 3.0 |
+| scale source | printed_dimensions 11, stated_area 10, none 3, printed_area 1 |
+| rooms found per listing | median 8.0 (p10 4.4, p90 15.0) |
+| rooms carrying a label | 59% |
+| doors found per listing | median 5.0 |
+| adjacency edges per listing | median 6.0 |
 | plan area / stated area | median 1.0 (n=18) |
 | carry a 'not to scale' disclaimer | 48% |
-| stage confidence | median 0.497 |
+| stage confidence | median 0.55 |
 
 ### Geometry and layout (stages 3-4) — 30 listings
 
@@ -501,38 +507,38 @@ python -m eval.fill_report               # refreshes every table in this documen
 | ceiling height | median 2.574 m (p10 2.07, p90 2.88) |
 | within 2.3-3.2 m | 82% |
 
-### Assembly (stage 6) — 22 listings
+### Assembly (stage 6) — 25 listings
 
 | | value |
 |---|---|
-| rooms matched per listing | median 5.0 |
-| reconstructed rooms left unmatched | median 0.5 |
+| rooms matched per listing | median 6.0 |
+| reconstructed rooms left unmatched | median 0.0 |
 | plan polygons left unmatched | median 2.0 |
-| cost margin over the runner-up | median 0.037 |
-| polygon fit (IoU after SE(2)) | median 0.517 |
+| cost margin over the runner-up | median 0.017 |
+| polygon fit (IoU after SE(2)) | median 0.56 |
 
-### Scale (stage 7) — 22 listings
-
-| | value |
-|---|---|
-| scale factor applied | median 1.069 (p10 0.77, p90 1.32) |
-| solve quality | median 0.803 |
-| residual RMS | median 14.563% |
-| **self-consistency vs printed dimensions** | median 10.816% (n=13) |
-| rooms within ±10% of their printed size | median 0.5 |
-| cross-model scale disagreement | median 15.63% |
-| constraints rejected as outliers | 8 total |
-
-### Shell (stages 8-9) — 22 listings
+### Scale (stage 7) — 25 listings
 
 | | value |
 |---|---|
-| glTF size | median 5168.0 bytes (max 6912) |
-| triangles | median 64.0 |
-| rooms in the shell | median 5.0 |
+| scale factor applied | median 1.069 (p10 0.81, p90 1.34) |
+| solve quality | median 0.8 |
+| residual RMS | median 11.413% |
+| **self-consistency vs printed dimensions** | median 11.947% (n=11) |
+| rooms within ±10% of their printed size | median 0.333 |
+| cross-model scale disagreement | median 12.95% |
+| constraints rejected as outliers | 10 total |
+
+### Shell (stages 8-9) — 25 listings
+
+| | value |
+|---|---|
+| glTF size | median 26216.0 bytes (max 65772) |
+| triangles | median 484.0 |
+| rooms in the shell | median 8.0 |
 | over the 1 MB budget | 0 |
 
-### Latency (M12) — 159 runs
+### Latency (M12) — 232 runs
 
 | stage | p50 | p95 | max |
 |---|---|---|---|
@@ -541,35 +547,35 @@ python -m eval.fill_report               # refreshes every table in this documen
 | 2-grouping | 0.0 | 0.0 | 0.0 |
 | 3-geometry | 76.996 | 94.794 | 422.039 |
 | 4-layout | 2.244 | 4.089 | 5.082 |
-| 5-plan | 3.811 | 59.062 | 237.997 |
-| 6-assembly | 0.044 | 0.066 | 0.078 |
-| 7-scale | 0.001 | 0.002 | 0.002 |
-| 8-shell | 0.004 | 0.006 | 0.007 |
-| 9-package | 0.001 | 0.002 | 0.002 |
+| 5-plan | 4.382 | 8.754 | 237.997 |
+| 6-assembly | 0.052 | 0.126 | 0.151 |
+| 7-scale | 0.001 | 0.002 | 0.004 |
+| 8-shell | 0.005 | 0.076 | 0.167 |
+| 9-package | 0.001 | 0.005 | 0.009 |
 | **end to end (full runs, n=33)** | **87.627** | 149.084 | — |
 
 ### QA flags, by how many listings raised them
 
 | flag | listings |
 |---|---|
+| `low_assignment_margin` | 25 |
 | `not_to_scale_disclaimer` | 24 |
-| `room_area_disagrees_with_printed` | 20 |
-| `low_assignment_margin` | 20 |
-| `scale_candidates_disagree` | 20 |
-| `no_doors_detected` | 17 |
-| `under_80pct_plausible_ceilings` | 15 |
-| `unmatched_plan_polygons` | 13 |
-| `plan_area_disagrees_with_stated` | 12 |
-| `cross_model_scale_disagreement` | 11 |
-| `rooms_omitted_from_shell` | 11 |
-| `unmatched_reconstructed_rooms` | 11 |
-| `large_regularisation_snap` | 10 |
-| `scale_constraints_disagree` | 9 |
-| `room_dominates_plan` | 8 |
-| `multiple_plan_outlines` | 8 |
+| `room_area_disagrees_with_printed` | 22 |
+| `unmatched_plan_polygons` | 18 |
+| `under_80pct_plausible_ceilings` | 14 |
+| `no_doors_detected` | 12 |
+| `scale_candidates_disagree` | 12 |
+| `cross_model_scale_disagreement` | 9 |
+| `large_regularisation_snap` | 8 |
+| `dropped_1_implausible_regions` | 8 |
+| `unmatched_reconstructed_rooms` | 7 |
+| `scale_constraints_disagree` | 7 |
+| `majority_of_rooms_unphotographed` | 7 |
 | `scale_constraint_rejected` | 7 |
+| `no_room_labels` | 6 |
 | `self_consistency_outside_10pct` | 6 |
-| `poor_polygon_fit` | 4 |
+| `no_plan_scale` | 6 |
+| `dropped_2_implausible_regions` | 4 |
 | `no_room_captions` | 4 |
-| `no_room_labels` | 4 |
+| `poor_polygon_fit` | 3 |
 

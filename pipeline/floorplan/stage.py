@@ -25,6 +25,12 @@ from . import planscale, preprocess, topology, vectorise
 log = logging.getLogger("floorplan.stage")
 
 CEILING_DEFAULT_M = 2.5
+#: What a room can plausibly be, in m². Used only once a scale exists — before that
+#: there is nothing to compare against.
+MIN_ROOM_M2 = 1.2
+MAX_ROOM_M2 = 120.0
+#: ...and no single room is most of a flat.
+MAX_ROOM_SHARE = 0.55
 
 
 def _to_metres(poly_px, ppm: float, origin_px: tuple[float, float], height_px: int):
@@ -75,6 +81,25 @@ def build_plan(image_path: Path, listing: dict, *, engine: str = "raster",
             edited.add(rid)
     if edited:
         vec.rooms = [r for r in vec.rooms if r.area_px > 0]
+
+    # Plausibility filter, applied only once a metric scale exists. A "room" of
+    # 300 m², or one that is 60% of the flat on its own, is the exterior, a garden,
+    # or the sheet's border — not a room. Left in, it dominates the shell and drags
+    # every downstream area comparison.
+    dropped_implausible: list[str] = []
+    if ppm:
+        keep = []
+        total_m2 = sum(r.area_px for r in vec.rooms) / (ppm ** 2)
+        for r in vec.rooms:
+            a = r.area_px / (ppm ** 2)
+            too_big = a > MAX_ROOM_M2 or (total_m2 > 0 and a / total_m2 > MAX_ROOM_SHARE
+                                          and len(vec.rooms) > 2)
+            if a < MIN_ROOM_M2 or too_big:
+                dropped_implausible.append(r.room_id)
+            else:
+                keep.append(r)
+        if keep:
+            vec.rooms = keep
 
     apertures = topology.find_apertures(vec.labels, vec.rooms, ppm)
     tol = max(3.0, (ppm or 50.0) * 0.06)
@@ -145,6 +170,8 @@ def build_plan(image_path: Path, listing: dict, *, engine: str = "raster",
         qa.append("no_doors_detected")
     if edited or ov.get("px_per_metre"):
         qa.append("override_applied")
+    if dropped_implausible:
+        qa.append(f"dropped_{len(dropped_implausible)}_implausible_regions")
     qa += sorted({f for r in rooms_out for f in r["qa_flags"]})
 
     payload = {

@@ -18,16 +18,31 @@ shell is built from the wrong source.** Neither is a research problem.
 ## F1 — Train the plan vectoriser · **large · unblocks everything**
 
 **Evidence.** Every failing G1 criterion traces to a listing where the vectoriser
-returned something that was not a room. Two of the twenty-two plans we rendered
-were colour-filled — the software assumes the darkest, thickest strokes on a page
-are walls, and on those plans the *room fills* are darker than the walls. One
-returned a single polygon for a six-room flat. Another latched onto the wrong
-storey of a maisonette.
+returned something that was not a room. One returned a single polygon for a
+six-room flat. Another latched onto the wrong storey of a maisonette.
 
-**Why the classical engine cannot be patched into this.** It has one global
-assumption about what ink means. A colour-filled plan violates it, a hatched plan
-violates it differently, and a hand-drawn plan violates it a third way. Each
-patch is a new special case, and the special cases interact.
+> **Correction (2026-08-21).** An earlier version of this section said colour-filled
+> plans failed because "the room fills are darker than the walls". That was wrong,
+> and measuring it disproved it. The real cause: the ink detector measured *colour
+> distance from the page*, not *darkness*. A pastel room fill is far from white in
+> colour but nowhere near black — median luminance 213 out of 255 — so it scored as
+> ink just as strongly as a black wall line, and being much larger in area it
+> drowned the walls out. Ink coverage on colour plans measured 41–50% of the page
+> against 12–15% on black-and-white ones. The fix was to threshold on luminance and
+> then split the dark pixels from the mid-tone ones (Otsu), which recovered 6
+> correct rooms on the plan that previously returned 1. That was a real classical
+> patch, and it is now shipped — see the note below on what this means for F1.
+
+**Why the classical engine still cannot carry this alone.** The luminance fix above
+shows some of these failures *are* patchable — that correction alone lifted holdout
+self-consistency from 0.25 to 0.50 pass rate. But the engine still has one global
+assumption about what ink means, and each plan style violates it differently: a
+hatched plan and a hand-drawn plan each need their own special case, and the
+special cases interact. We have since added two more guards (drop implausibly
+sized regions, keep only the largest outline on multi-storey sheets) and each one
+is another hand-written rule about what a room looks like. That is the pattern a
+learned model exists to replace — not because the classical path is worthless, but
+because its rule count grows without bound.
 
 **What to build.** Exactly what ROADMAP §3 Sprint 3 already specifies and Phase 1
 deferred: a RoomFormer-class network predicting room polygons directly.

@@ -1,6 +1,6 @@
 # Eval — full channel, holdout split
 
-17/20 listings scored (3 incomplete) · 2026-08-21T11:03:29+00:00
+17/20 listings scored (3 incomplete) · 2026-08-21T11:03:23+00:00
 
 | metric | median | p90 | coverage | reference | n obs |
 |---|---|---|---|---|---|
@@ -41,3 +41,11 @@
 | `matched_without_a_plan_scale` | 3 |
 
 > No tape-measure ground truth exists for this set. Every number here is plausibility and self-consistency, not accuracy — ROADMAP §0b.
+
+## Batch
+
+0 reprocessed in 0s · 0 failed, 0 partial
+
+## Regression check
+
+No metric regressed against the previous run.

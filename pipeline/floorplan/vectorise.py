@@ -285,7 +285,11 @@ def segment_classical(pi: PlanImage, text: PlanText) -> Vectorisation:
     n_outlines = count_outlines(footprint)
     flags: list[str] = []
     if n_outlines > 1:
+        # A maisonette's sheet draws one outline per storey. Phase 1 builds a single
+        # storey, and building all of them puts two floors on top of each other in
+        # the same plane. Keep the largest and say so.
         flags.append("multiple_plan_outlines")
+        rooms, footprint = _keep_largest_outline(rooms, footprint, labels)
     covered = float((labels > EXTERIOR).sum())
     if footprint.any() and covered < 0.55 * float(footprint.sum()):
         # Most of the building is not in any room. Usually unlabelled circulation
@@ -299,6 +303,22 @@ def segment_classical(pi: PlanImage, text: PlanText) -> Vectorisation:
     return Vectorisation(rooms=rooms, labels=labels, free=free, footprint=footprint,
                          inside=inside, n_outlines=n_outlines, text_erased=n_erased,
                          qa_flags=flags)
+
+
+def _keep_largest_outline(rooms, footprint, labels):
+    """Restrict to the biggest connected outline on the sheet."""
+    lab, n = ndi.label(footprint)
+    if n <= 1:
+        return rooms, footprint
+    sizes = ndi.sum(footprint, lab, range(1, n + 1))
+    keep = int(np.argmax(sizes)) + 1
+    mask = lab == keep
+    out = []
+    for r in rooms:
+        cx, cy = int(r.centroid_px[0]), int(r.centroid_px[1])
+        if 0 <= cy < mask.shape[0] and 0 <= cx < mask.shape[1] and mask[cy, cx]:
+            out.append(r)
+    return (out or rooms), mask
 
 
 def _footprint(labels: np.ndarray, wall_half_px: float) -> np.ndarray:

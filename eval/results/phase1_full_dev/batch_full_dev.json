@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-21T11:03:29+00:00",
+  "generated_at": "2026-08-21T11:03:23+00:00",
   "split": "dev",
   "channel": "full",
   "n_requested": 10,
@@ -1442,5 +1442,13 @@
       "scale": 1.259005
     }
   ],
-  "caveat": "No tape-measure ground truth exists for this set. Every number here is plausibility and self-consistency, not accuracy \u2014 ROADMAP \u00a70b."
+  "caveat": "No tape-measure ground truth exists for this set. Every number here is plausibility and self-consistency, not accuracy \u2014 ROADMAP \u00a70b.",
+  "batch": {
+    "reprocessed": 0,
+    "runs": [],
+    "failed": [],
+    "partial": [],
+    "total_seconds": 0
+  },
+  "regressions": []
 }
