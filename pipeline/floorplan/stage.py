@@ -50,7 +50,12 @@ def build_plan(image_path: Path, listing: dict, *, engine: str = "raster",
     t0 = time.perf_counter()
     pi = preprocess.prepare(image_path)
     text = ocr_mod.read(pi.rgb)
-    vec = vectorise.regularise_all(vectorise.segment(pi, text))
+    # Which listing this is, so the room-finder can look up its predictions.
+    vectorise.set_listing(listing.get("listing_id"))
+    try:
+        vec = vectorise.regularise_all(vectorise.segment(pi, text))
+    finally:
+        vectorise.set_listing(None)
 
     footprint_px = float(vec.footprint.sum()) if vec.footprint is not None else 0.0
     stated = listing.get("floor_area_sqm")
@@ -180,6 +185,7 @@ def build_plan(image_path: Path, listing: dict, *, engine: str = "raster",
         "source_image": str(image_path),
         "image_size_px": [int(w_px), int(h_px)],
         "method": ("learned_vectorise/v1" if "learned_vectoriser" in vec.qa_flags
+                   else "room_finder_vectorise/v1" if "rooms_from_room_finder" in vec.qa_flags
                    else f"{engine}_vectorise/v2"),
         "preprocess": {
             "deskew_deg": round(pi.deskew_deg, 3),

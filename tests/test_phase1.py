@@ -19,6 +19,7 @@ import json
 import math
 import tempfile
 import unittest
+from dataclasses import replace
 from pathlib import Path
 from unittest import mock
 
@@ -702,6 +703,103 @@ class NotebookTest(unittest.TestCase):
             nb = json.loads(path.read_text())
             self.assertEqual(nb["nbformat"], 4, path.name)
             self.assertIn("kernelspec", nb["metadata"], path.name)
+
+
+
+class RoomFinderTest(unittest.TestCase):
+    """Rooms predicted elsewhere, grown to our walls, named from the plan."""
+
+    @staticmethod
+    def _plan_image(w=240, h=200, wall=6):
+        """A two-room flat: outer wall, one partition, a doorway in it."""
+        from pipeline.floorplan.preprocess import PlanImage
+        rgb = np.full((h, w, 3), 255, np.uint8)
+        rgb[:wall], rgb[-wall:], rgb[:, :wall], rgb[:, -wall:] = 0, 0, 0, 0
+        mid = w // 2
+        rgb[:, mid - wall // 2:mid + wall // 2] = 0
+        rgb[h // 2 - 15:h // 2 + 15, mid - wall // 2:mid + wall // 2] = 255  # doorway
+        ink = (rgb[..., 0] < 128).astype(np.uint8)
+        return PlanImage(rgb=rgb, ink=ink, walls=ink, wall_half_px=wall / 2,
+                         deskew_deg=0.0, scale_from_source=1.0, source_size=(w, h))
+
+    def test_to_geometry_applies_the_scale(self):
+        from pipeline.floorplan import roomfinder
+        pi = self._plan_image()
+        pi = replace(pi, scale_from_source=0.5)
+        out = roomfinder.to_geometry([[[0, 0], [100, 0], [100, 80]]], pi)
+        np.testing.assert_allclose(out[0], [[0, 0], [50, 0], [50, 40]])
+
+    def test_to_geometry_applies_the_deskew_too(self):
+        """The plan is straightened before stage 5 works on it; skip that and every
+        outline lands a couple of percent out."""
+        from pipeline.floorplan import roomfinder
+        pi = replace(self._plan_image(), deskew_deg=90.0)
+        h, w = pi.ink.shape
+        centre = np.array([w / 2.0, h / 2.0])
+        out = roomfinder.to_geometry([[list(centre + [10, 0]), list(centre), list(centre - [10, 0])]], pi)
+        # a 90 degree turn about the centre sends +x to -y
+        np.testing.assert_allclose(out[0][0], centre + [0, -10], atol=1e-6)
+        np.testing.assert_allclose(out[0][1], centre, atol=1e-6)
+
+    def test_seeds_skip_classes_that_are_not_rooms(self):
+        from pipeline.floorplan import roomfinder
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "L1.json").write_text(json.dumps({"rooms": [
+                {"polygon_px": [[0, 0], [10, 0], [10, 10]], "label": "Kitchen"},
+                {"polygon_px": [[0, 0], [10, 0], [10, 10]], "label": "outside"},
+                {"polygon_px": [[0, 0], [10, 0], [10, 10]], "label": "unknown"},
+                {"polygon_px": [[0, 0]], "label": "Bath"},          # too few points
+            ]}))
+            seeds, names, meta = roomfinder.seeds_for("L1", self._plan_image(), root)
+        self.assertEqual(len(seeds), 1)
+        self.assertEqual(names, ["kitchen"])
+        self.assertEqual(meta["predicted_rooms"], 4)
+
+    def test_absent_predictions_are_not_an_error(self):
+        from pipeline.floorplan import roomfinder
+        with tempfile.TemporaryDirectory() as tmp:
+            self.assertFalse(roomfinder.available("nobody", Path(tmp)))
+            self.assertEqual(roomfinder.seeds_for("nobody", self._plan_image(), Path(tmp)),
+                             ([], [], {}))
+
+    def test_coarse_seeds_grow_out_to_the_walls(self):
+        """The point of the whole thing: a seed that misses the walls comes back
+        sitting on them."""
+        from pipeline.floorplan import vectorise, wallnet
+        from pipeline.floorplan.ocr import PlanText
+        pi = self._plan_image()
+        h, w = pi.ink.shape
+        # two seeds, deliberately far too small and nowhere near the walls
+        left = [[40, 60], [90, 60], [90, 130], [40, 130]]
+        right = [[150, 60], [200, 60], [200, 130], [150, 130]]
+        v = vectorise.segment_from_room_seeds(pi, PlanText(), [left, right], mask=pi.ink)
+        self.assertIsNotNone(v)
+        self.assertEqual(len(v.rooms), 2)
+        before = wallnet.outline_on_wall([left, right], pi.ink, tol=4)
+        after = wallnet.outline_on_wall([r.polygon_px for r in v.rooms], pi.ink, tol=4)
+        self.assertLess(max(before), 0.2, "the seeds should start off the walls")
+        self.assertGreater(min(after), 0.85, "and finish on them")
+
+    def test_a_printed_name_beats_the_predicted_one(self):
+        from pipeline.floorplan import vectorise
+        from pipeline.floorplan.ocr import PlanText, TextBlock, Word
+        pi = self._plan_image()
+        from pipeline.floorplan.ocr import canonical_label
+        word = Word(text="KITCHEN", conf=90.0, x=45, y=90, w=40, h=10)
+        label, matched = canonical_label(word.text)
+        block = TextBlock(words=[word], label=label, label_text=matched)
+        text = PlanText(blocks=[block])
+        self.assertTrue(block.is_room_caption, "the fixture must be a caption")
+        left = [[40, 60], [90, 60], [90, 130], [40, 130]]
+        right = [[150, 60], [200, 60], [200, 130], [150, 130]]
+        v = vectorise.segment_from_room_seeds(pi, text, [left, right], mask=pi.ink,
+                                              fallback_labels=["bathroom", "bathroom"])
+        named = {r.label: r.seeded_by for r in v.rooms}
+        self.assertIn("kitchen", named, f"the printed name should win, got {named}")
+        self.assertEqual(named["kitchen"], "caption")
+        self.assertEqual(named.get("bathroom"), "room_finder",
+                         "the room with no printed name keeps the predicted type")
 
 if __name__ == "__main__":
     unittest.main()

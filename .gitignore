@@ -38,3 +38,6 @@ out/
 
 # Model weights are fetched, not committed: python -m tools.fetch_wallnet
 models/*.safetensors
+
+# Room predictions imported from a GPU run (tools/import_room_predictions).
+data/room_predictions/

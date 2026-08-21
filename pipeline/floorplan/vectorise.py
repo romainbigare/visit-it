@@ -37,7 +37,7 @@ from skimage.feature import peak_local_max
 from skimage.segmentation import watershed
 
 from ..core import geom
-from . import wallnet
+from . import roomfinder, wallnet
 from .ocr import PlanText, TextBlock
 from .preprocess import PlanImage, count_outlines
 
@@ -212,12 +212,16 @@ def segment_learned(pi: PlanImage, text: PlanText) -> Vectorisation | None:
 def segment(pi: PlanImage, text: PlanText) -> Vectorisation:
     """Read the plan with whichever engine reads *this* plan better.
 
-    Three engines, in order of preference:
+    Four engines, in order of preference:
 
-    1. A full trained plan reader, if one is installed (``learned``). It predicts
-       room polygons directly and needs no help.
-    2. The classical watershed over the ink mask.
-    3. The same watershed over a *wall map from a pretrained net* (``wallnet``)
+    1. A full trained plan reader, if one is installed (``learned``).
+    2. Room polygons predicted elsewhere by a GPU model (``roomfinder``), grown out
+       to the walls and named from the plan's own printed captions. Best of both:
+       measured on the golden set the predictions find the rooms -- open-plan
+       spaces whole, unlabelled WCs included -- and our walls put the corners in
+       the right place.
+    3. The classical watershed over the ink mask.
+    4. The same watershed over a *wall map from a pretrained net* (``wallnet``)
        instead of the ink mask.
 
     2 and 3 differ in one thing only -- what counts as a wall -- and they fail on
@@ -229,6 +233,10 @@ def segment(pi: PlanImage, text: PlanText) -> Vectorisation:
     a judgement made from the plan alone, with no ground truth.
     """
     v = segment_learned(pi, text)
+    if v is not None and v.rooms:
+        return v
+
+    v = segment_from_room_finder(pi, text)
     if v is not None and v.rooms:
         return v
 
@@ -293,6 +301,49 @@ def segment(pi: PlanImage, text: PlanText) -> Vectorisation:
 COVERAGE_TOLERANCE = 0.8
 
 
+def segment_from_room_finder(pi: PlanImage, text: PlanText) -> Vectorisation | None:
+    """Rooms predicted by the GPU model, grown to our walls, named from the plan.
+
+    Returns ``None`` when there is no prediction for this listing, which is the
+    normal case until ``tools.import_room_predictions`` has been run -- so a fresh
+    checkout behaves exactly as it did before.
+    """
+    listing = getattr(pi, "listing_id", None) or _LISTING.get("id")
+    if not listing or not roomfinder.available(listing):
+        return None
+    seeds, names, meta = roomfinder.seeds_for(listing, pi)
+    if not seeds:
+        return None
+    mask = (wallnet.barrier(pi.rgb, pi.ink, text.words, pi.wall_half_px)
+            if wallnet.available() else None)
+    try:
+        v = segment_from_room_seeds(pi, text, seeds, mask=mask, fallback_labels=names)
+    except Exception as e:                                       # noqa: BLE001
+        log.warning("room-finder vectorisation failed, falling back: %s", e)
+        return None
+    if v is None or not v.rooms:
+        return None
+    printed = sum(1 for r in v.rooms if r.seeded_by == "caption")
+    v.qa_flags = list(v.qa_flags) + [
+        "rooms_from_room_finder",
+        f"room_finder_kept_{len(v.rooms)}_of_{meta.get('predicted_rooms', '?')}",
+        f"room_names_printed_{printed}_of_{len(v.rooms)}",
+    ]
+    if mask is None:
+        v.qa_flags.append("room_finder_without_wall_model")
+    return v
+
+
+#: Stage 5 tells the vectoriser which listing it is reading, so the room-finder can
+#: find that listing's predictions. Set by ``stage.build_plan``; a module-level
+#: handoff rather than a signature change so no other engine has to care.
+_LISTING: dict = {}
+
+
+def set_listing(listing_id: str | None) -> None:
+    _LISTING["id"] = listing_id
+
+
 def segment_with_wallnet(pi: PlanImage, text: PlanText,
                          mask: np.ndarray | None = None) -> Vectorisation | None:
     """The classical watershed, but told what a wall is by the pretrained net.
@@ -318,7 +369,7 @@ def segment_with_wallnet(pi: PlanImage, text: PlanText,
 
 def segment_from_room_seeds(pi: PlanImage, text: PlanText,
                             room_seeds: list, mask: np.ndarray | None = None,
-                            labels_for_seeds: list | None = None) -> Vectorisation | None:
+                            fallback_labels: list | None = None) -> Vectorisation | None:
     """Grow rooms somebody else found out to the walls we can see.
 
     Two models, each good at the half the other is bad at. A room-polygon model
@@ -357,6 +408,7 @@ def segment_from_room_seeds(pi: PlanImage, text: PlanText,
     markers[hull == 0] = EXTERIOR
 
     seeds: list[tuple[int, TextBlock | None, tuple[float, float]]] = []
+    order: list[int] = []          # which incoming seed each marker came from
     next_id = EXTERIOR + 1
     for idx, poly in enumerate(room_seeds):
         pts = np.asarray(poly, dtype=np.int32).reshape(-1, 2)
@@ -384,14 +436,14 @@ def segment_from_room_seeds(pi: PlanImage, text: PlanText,
                 continue
         ys, xs = np.nonzero(core)
         markers[core > 0] = next_id
-        block = None
-        if labels_for_seeds and idx < len(labels_for_seeds):
-            block = labels_for_seeds[idx]
-        seeds.append((next_id, block, (float(xs.mean()), float(ys.mean()))))
+        seeds.append((next_id, None, (float(xs.mean()), float(ys.mean()))))
+        order.append(idx)
         next_id += 1
 
     if not seeds:
         return None
+    fallback = [(fallback_labels[i] if fallback_labels and i < len(fallback_labels) else None)
+                for i in order]
 
     markers[~free] = 0
     markers[0, :] = markers[-1, :] = EXTERIOR
@@ -399,9 +451,28 @@ def segment_from_room_seeds(pi: PlanImage, text: PlanText,
     labels = watershed(-dist, markers, mask=free)
     labels[(hull == 0) & (labels > EXTERIOR)] = EXTERIOR
 
-    rooms = _regions_from_labels(labels, seeds)
+    # Their rooms, our names. The seeds knew *where* the rooms are; the plan prints
+    # what they are called and we read it, which is the half we are better at. Do
+    # this after growing rather than before: a coarse seed's edge lands anywhere,
+    # so a caption that falls outside it still falls inside the grown room.
+    seeds = _name_from_captions(labels, seeds, text, fallback)
+
+    rooms = _regions_from_labels(labels, seeds, trusted=True)
     if not rooms:
         return None
+
+    # Where the plan printed no name, fall back to the type the seeds came with.
+    # That is a guess from pixels rather than something the plan says, so the room
+    # carries a flag saying which of the two it got.
+    predicted = {mid: name for (mid, _b, _xy), name in zip(seeds, fallback) if name}
+    for room in rooms:
+        if room.label:
+            continue
+        name = predicted.get(room.mask_label)
+        if name:
+            room.label = name
+            room.seeded_by = "room_finder"
+            room.qa_flags = list(room.qa_flags) + ["label_predicted_not_printed"]
     footprint = _footprint(labels, pi.wall_half_px)
     flags = ["rooms_from_external_seeds"]
     n_outlines = count_outlines(footprint)
@@ -537,9 +608,46 @@ def _footprint(labels: np.ndarray, wall_half_px: float) -> np.ndarray:
                      cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (r + 1, r + 1))).astype(bool)
 
 
+def _name_from_captions(labels: np.ndarray,
+                        seeds: list, text: PlanText,
+                        fallback: list) -> list:
+    """Attach each printed room name to the room it was printed inside.
+
+    A room can hold more than one caption -- "RECEPTION" and "DINING ROOM" printed
+    in one open-plan space -- and the biggest one wins, since a room's own name is
+    set in larger type than the dimensions beneath it. Where no caption landed in
+    a room we fall back to the type the seeds came with, which is a guess from
+    pixels rather than something the plan actually says, so it is marked as such.
+    """
+    h, w = labels.shape
+    best: dict[int, TextBlock] = {}
+    for block in text.blocks:
+        if not block.is_room_caption:
+            continue
+        cx, cy = int(block.cx), int(block.cy)
+        if not (0 <= cy < h and 0 <= cx < w):
+            continue
+        mid = int(labels[cy, cx])
+        if mid <= EXTERIOR:
+            continue
+        x0, y0, x1, y1 = block.box
+        size = abs(x1 - x0) * abs(y1 - y0)
+        prev = best.get(mid)
+        if prev is None:
+            best[mid] = block
+        else:
+            px0, py0, px1, py1 = prev.box
+            if size > abs(px1 - px0) * abs(py1 - py0):
+                best[mid] = block
+    named = []
+    for i, (mid, _old, xy) in enumerate(seeds):
+        named.append((mid, best.get(mid), xy))
+    return named
+
+
 def _regions_from_labels(labels: np.ndarray,
-                         seeds: list[tuple[int, TextBlock | None, tuple[float, float]]]
-                         ) -> list[RoomRegion]:
+                         seeds: list[tuple[int, TextBlock | None, tuple[float, float]]],
+                         trusted: bool = False) -> list[RoomRegion]:
     room_pixels = float((labels > EXTERIOR).sum())
     if room_pixels <= 0:
         return []
@@ -547,7 +655,11 @@ def _regions_from_labels(labels: np.ndarray,
     for idx, (mid, block, seed_xy) in enumerate(seeds):
         mask = (labels == mid).astype(np.uint8)
         area = float(mask.sum())
-        floor = MIN_ROOM_FRAC if block is not None else MIN_UNLABELLED_ROOM_FRAC
+        # The larger floor exists to throw away rooms *guessed* from a distance
+        # peak. A room a model asserted is not that kind of guess, and holding it
+        # to the strict floor drops exactly the WCs and cupboards it is good at.
+        floor = (MIN_ROOM_FRAC if (block is not None or trusted)
+                 else MIN_UNLABELLED_ROOM_FRAC)
         if area < room_pixels * floor:
             continue
         poly = _largest_contour(mask)

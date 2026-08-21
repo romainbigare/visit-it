@@ -216,9 +216,10 @@
           "seeded_by": {
             "enum": [
               "caption",
-              "distance_peak"
+              "distance_peak",
+              "room_finder"
             ],
-            "description": "A caption is a human asserting a room exists; a distance peak is only a hint."
+            "description": "Where the room came from. A caption is the plan asserting a room exists; a distance peak is only a hint; a room finder is a model that predicted the room directly, which is stronger than a hint and weaker than printed text."
           }
         }
       }
