@@ -38,6 +38,17 @@ development were not the numbers.
 > never *accuracy* (ROADMAP §0b). A 2.5 m ceiling is a credible ceiling; we have
 > not established it is the right one.
 
+![One flat, start to finish](images/phase1-one-flat.png)
+
+*The whole chain on one real listing: the plan we were given, the rooms the
+software located on it, the 3D model it built, and standing inside that model.
+The interior is bare white because Phase 1 builds the shape, not the surfaces —
+photographs go on those walls in Phase 2.*
+
+![When it works](images/phase1-when-it-works.png)
+
+![What goes wrong](images/phase1-what-goes-wrong.png)
+
 ---
 
 ## 1. What was built
