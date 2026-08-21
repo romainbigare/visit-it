@@ -237,6 +237,18 @@ class TestApertures(unittest.TestCase):
         self.assertAlmostEqual(door.width_m, 0.9, delta=0.25)
         self.assertAlmostEqual(door.height_m, 2.05, delta=0.3)
 
+    def test_basin_contacts_survive_large_label_values(self):
+        # The pair encoding used to assume labels below 100000; a noisy plan that
+        # produced more basins than that decoded to the wrong pair and silently
+        # dropped every aperture.
+        from pipeline.floorplan.topology import _basin_contacts
+        lab = np.zeros((10, 20), dtype=np.int32)
+        lab[:, :10] = 200_000
+        lab[:, 10:] = 200_001
+        contacts = _basin_contacts(lab)
+        pairs = {pair for pair, _pts in contacts}
+        self.assertIn((200_000, 200_001), pairs)
+
     def test_a_solid_wall_yields_nothing(self):
         rng = np.random.default_rng(4)
         n = 40000
@@ -338,6 +350,25 @@ class TestAssembly(unittest.TestCase):
         ms, unmatched, _, _ = assign(rooms, plan)
         self.assertEqual(ms, [])
         self.assertEqual(unmatched, ["bath"])
+
+    def test_a_pin_beats_a_reject(self):
+        # Both come from a hand-edited override file, so a room really can appear
+        # in each. Without the guard it comes out matched *and* unmatched, and the
+        # shell builder and the scoreboard then disagree about the listing.
+        from pipeline.assembly.stage import assemble
+        layouts = {"listing_id": "t", "rooms": [
+            {"room_id": "kitchen", "room_label": "kitchen", "area_m2": 14.0,
+             "polygon_m": geom.rectangle(4, 3.5), "confidence": 0.8,
+             "room_height_m": 2.5, "qa_flags": [], "apertures": []}]}
+        plan = {"rooms": [
+            {"room_id": "p0", "label": "kitchen", "area_m2": 14.2,
+             "polygon_m": geom.rectangle(4, 3.55), "aperture_ids": [],
+             "confidence": 0.8}]}
+        out = assemble(layouts, plan, {"pin": {"kitchen": "p0"},
+                                       "reject": ["kitchen"]})
+        matched = {m["room_id"] for m in out["matches"]}
+        self.assertIn("kitchen", matched)
+        self.assertNotIn("kitchen", out["unmatched_rooms"])
 
     def test_pose_refinement_finds_the_rotation(self):
         from pipeline.assembly.pose import refine

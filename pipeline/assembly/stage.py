@@ -91,7 +91,10 @@ def assemble(layouts: dict, plan: dict, override: dict | None = None) -> dict:
                                  breakdown=parts[0][0], margin=None, confidence=1.0))
         unmatched_rooms = [r for r in unmatched_rooms if r not in pins]
         unmatched_plans = [p for p in unmatched_plans if p not in taken]
-    unmatched_rooms += sorted(rejected)
+    # A pin wins over a reject. Both come from a hand-edited override file, so a
+    # room can appear in each; without this it comes out matched *and* unmatched,
+    # and the downstream shell builder and scoreboard disagree about the listing.
+    unmatched_rooms += sorted(rejected - set(pins))
     by_id = {r["room_id"]: r for r in rooms}
     plan_by_id = {p["room_id"]: p for p in plan_rooms}
 

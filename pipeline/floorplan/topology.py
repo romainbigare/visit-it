@@ -105,6 +105,11 @@ def _basin_contacts(labels: np.ndarray) -> list[tuple[tuple[int, int], np.ndarra
     """
     h, w = labels.shape
     pair_map = np.zeros((h, w), dtype=np.int64)
+    # Pack a (lo, hi) label pair into one integer so the whole grid can be handled
+    # with array ops. The stride has to exceed any label the watershed can produce,
+    # so it is derived from the data rather than assumed — a fixed 100000 silently
+    # decodes to the wrong pair the day a noisy plan produces more basins than that.
+    stride = int(labels.max()) + 1
     for dy, dx in ((0, 1), (1, 0), (1, 1), (1, -1)):
         ys = slice(max(0, -dy), h - max(0, dy))
         xs = slice(max(0, -dx), w - max(0, dx))
@@ -116,7 +121,7 @@ def _basin_contacts(labels: np.ndarray) -> list[tuple[tuple[int, int], np.ndarra
             continue
         lo = np.minimum(a, b)
         hi = np.maximum(a, b)
-        key = lo.astype(np.int64) * 100000 + hi.astype(np.int64)
+        key = lo.astype(np.int64) * stride + hi.astype(np.int64)
         block = pair_map[ys, xs]
         np.copyto(block, key, where=hit & (block == 0))
         pair_map[ys, xs] = block
@@ -128,7 +133,7 @@ def _basin_contacts(labels: np.ndarray) -> list[tuple[tuple[int, int], np.ndarra
             continue
         m = (pair_map == key)
         lab, n = ndi.label(m, structure=np.ones((3, 3)))
-        u, v = int(key // 100000), int(key % 100000)
+        u, v = int(key // stride), int(key % stride)
         for c in range(1, n + 1):
             ys_, xs_ = np.nonzero(lab == c)
             out.append(((u, v), np.column_stack([ys_, xs_]).astype(float)))

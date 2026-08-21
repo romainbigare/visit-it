@@ -23,6 +23,17 @@ const params = new URLSearchParams(location.search);
 const DEV = params.get("dev") === "1";
 const SCENE_URL = params.get("scene") ?? "./fixtures/scene.json";
 
+/** Scenes exported from real runs, if any. The fixture is always available. */
+interface SceneIndexEntry {
+  listing_id: string;
+  address: string | null;
+  rooms: number;
+  tier: string;
+  confidence: number;
+  qa_flags: number;
+  url: string;
+}
+
 const app = document.getElementById("app") as HTMLDivElement;
 const hud = document.getElementById("hud") as HTMLDivElement;
 const minimapCanvas = document.getElementById("minimap") as HTMLCanvasElement;
@@ -108,11 +119,47 @@ async function load(): Promise<void> {
   orbit.enabled = false;
   orbit.update();
 
+  void buildPicker();
   renderHud();
   const ms = Math.round(performance.now() - t0);
   // G1 budgets first-room-interactive: measured here so it is a number, not a hope.
   setStatus(DEV ? `ready in ${ms} ms · ${scene.shell?.triangles ?? 0} triangles` : "");
   if (!DEV) window.setTimeout(() => setStatus(""), 1200);
+}
+
+async function buildPicker(): Promise<void> {
+  // Best-effort. A build with no exported scenes still works against the fixture,
+  // which is the point of the fixture.
+  let entries: SceneIndexEntry[] = [];
+  try {
+    const res = await fetch("./scenes/index.json");
+    if (res.ok) entries = ((await res.json()) as { scenes: SceneIndexEntry[] }).scenes;
+  } catch {
+    return;
+  }
+  if (!entries.length) return;
+  const el = document.getElementById("picker");
+  if (!el) return;
+  const opts = entries
+    .map((e) => {
+      const sel = SCENE_URL.includes(e.listing_id) ? " selected" : "";
+      const label = `${e.listing_id} · ${e.rooms} rooms · conf ${e.confidence}` +
+        (e.qa_flags ? ` · ${e.qa_flags} flags` : "");
+      return `<option value="${e.url}"${sel}>${label}</option>`;
+    })
+    .join("");
+  const fixSel = SCENE_URL.includes("fixtures") ? " selected" : "";
+  el.innerHTML =
+    `<select id="scene-select">
+       <option value="./fixtures/scene.json"${fixSel}>fixture flat</option>
+       ${opts}
+     </select>`;
+  el.querySelector("select")!.addEventListener("change", (e) => {
+    const v = (e.target as HTMLSelectElement).value;
+    const q = new URLSearchParams(location.search);
+    q.set("scene", v);
+    location.search = q.toString();
+  });
 }
 
 function renderHud(): void {
