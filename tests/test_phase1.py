@@ -637,5 +637,71 @@ class WallLabelTest(unittest.TestCase):
             self.assertEqual(m.shape, (12, 12))
             self.assertFalse(m.any())
 
+
+
+class NotebookTest(unittest.TestCase):
+    """Every notebook has to survive being reconstructed the way a client does.
+
+    The bug this exists to catch: ``nbformat`` stores a cell as one string per
+    line, and every client rebuilds it with ``"".join(source)``. Lines therefore
+    have to carry their own ``\\n``. A generator that splits on newlines and
+    forgets to put them back produces a file that opens without complaint and
+    welds the whole cell onto one line -- ``import sys`` followed by
+    ``out = ...`` arrives as ``import sysout = ...``.
+    """
+
+    NOTEBOOKS = sorted((Path(__file__).resolve().parents[1] / "notebooks").glob("*.ipynb"))
+
+    @staticmethod
+    def _as_ipython(src: str) -> str:
+        """IPython rewrites ``!cmd`` and ``%magic`` into a call at the same
+        indentation, swallowing any backslash continuation into it."""
+        import re
+        out, continuing = [], False
+        for line in src.split("\n"):
+            if continuing:
+                continuing = line.rstrip().endswith("\\")
+                continue
+            if line.lstrip().startswith(("%", "!")):
+                continuing = line.rstrip().endswith("\\")
+                out.append(re.match(r"\s*", line).group(0) + "pass")
+                continue
+            out.append(line)
+        return "\n".join(out)
+
+    def test_there_are_notebooks_to_check(self):
+        self.assertTrue(self.NOTEBOOKS, "no notebooks found — has the path moved?")
+
+    def test_every_line_carries_its_newline(self):
+        for path in self.NOTEBOOKS:
+            nb = json.loads(path.read_text())
+            for i, cell in enumerate(nb["cells"]):
+                src = cell["source"]
+                self.assertIsInstance(src, list, f"{path.name} cell {i}")
+                for j, line in enumerate(src[:-1]):
+                    self.assertTrue(
+                        line.endswith("\n"),
+                        f"{path.name} cell {i} line {j} has no newline — the cell "
+                        f"will arrive as one welded line: {line[:60]!r}")
+
+    def test_every_code_cell_is_valid_python(self):
+        import ast
+        for path in self.NOTEBOOKS:
+            nb = json.loads(path.read_text())
+            for i, cell in enumerate(nb["cells"]):
+                if cell["cell_type"] != "code":
+                    continue
+                body = self._as_ipython("".join(cell["source"]))
+                try:
+                    ast.parse(body)
+                except SyntaxError as exc:
+                    self.fail(f"{path.name} cell {i} does not parse: {exc}")
+
+    def test_metadata_is_what_colab_expects(self):
+        for path in self.NOTEBOOKS:
+            nb = json.loads(path.read_text())
+            self.assertEqual(nb["nbformat"], 4, path.name)
+            self.assertIn("kernelspec", nb["metadata"], path.name)
+
 if __name__ == "__main__":
     unittest.main()
