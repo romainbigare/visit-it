@@ -62,6 +62,24 @@ make sheets           # static contact sheets, zippable
 python -m tools.plan_vs_shell build --out out/review   # plan beside shell, per listing
 ```
 
+## Improving the plan reading
+
+```bash
+python -m tools.annotate_walls              # correct the model's wall reading, in a browser
+python -m tools.annotate_walls --status     # how many plans are done
+python -m tools.annotate_walls --export     # write data/golden/wall_training/
+```
+
+Each plan opens with the wall model's own reading painted on, so the work is scrubbing
+off what is not a wall -- door swings, cabinet runs, dimension lines -- rather than
+tracing an outline cold. A minute or two a plan; twenty is a useful fine-tuning set.
+Then run `notebooks/finetune_wallnet_colab.ipynb` on a Colab GPU and drop the resulting
+`plan_walls.safetensors` into `models/`. `python -m tools.fetch_wallnet --force` puts
+the original back if it turns out worse.
+
+To try the stronger architecture instead, run `notebooks/raster2seq_eval_colab.ipynb`;
+it needs no labels and no training.
+
 The contact sheet is the first thing to open, always. Phase 0's lesson stands: a
 flat grey render scored 12 dB and read as *merely poor* in a results table; only
 opening the PNG showed it was nothing at all.

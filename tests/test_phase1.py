@@ -13,6 +13,7 @@ Two principles behind what is tested and what is not:
 """
 from __future__ import annotations
 
+import base64
 import io
 import json
 import math
@@ -562,6 +563,79 @@ class WallNetTest(unittest.TestCase):
             self.assertFalse(wallnet.available())
             self.assertIsNone(wallnet.barrier(np.zeros((8, 8, 3), np.uint8),
                                               np.zeros((8, 8), np.uint8), []))
+
+
+
+class WallLabelTest(unittest.TestCase):
+    """The annotate-and-fine-tune loop's file handling."""
+
+    def test_export_pairs_masks_with_plans_and_writes_a_manifest(self):
+        from tools import annotate_walls as aw
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            labels, export = tmp / "labels", tmp / "export"
+            labels.mkdir()
+            rgb = np.full((40, 60, 3), 255, np.uint8)
+            rgb[18:22, 5:55] = 0
+            mask = np.zeros((40, 60), np.uint8)
+            mask[18:22, 5:55] = 255
+            from PIL import Image as PILImage
+            PILImage.fromarray(mask).save(labels / "L1.png")
+            with mock.patch.object(aw, "LABEL_DIR", labels), \
+                 mock.patch.object(aw, "EXPORT_DIR", export), \
+                 mock.patch.object(aw, "plan_image", lambda lid, root=None: rgb):
+                manifest = aw.export()
+            self.assertEqual(manifest["count"], 1)
+            entry = manifest["entries"][0]
+            self.assertEqual(entry["listing_id"], "L1")
+            self.assertEqual(entry["size_px"], [60, 40])
+            self.assertAlmostEqual(entry["wall_fraction"], 200 / 2400, places=3)
+            self.assertTrue((export / "images" / "L1.png").exists())
+            self.assertTrue((export / "masks" / "L1.png").exists())
+            back = np.array(PILImage.open(export / "masks" / "L1.png"))
+            self.assertTrue(set(np.unique(back)) <= {0, 255}, "masks stay binary")
+
+    def test_export_resizes_a_mask_that_no_longer_matches_its_plan(self):
+        """A plan re-fetched at a different size must not silently misalign."""
+        from tools import annotate_walls as aw
+        from PIL import Image as PILImage
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            labels, export = tmp / "labels", tmp / "export"
+            labels.mkdir()
+            PILImage.fromarray(np.full((20, 30), 255, np.uint8)).save(labels / "L2.png")
+            rgb = np.full((40, 60, 3), 255, np.uint8)
+            with mock.patch.object(aw, "LABEL_DIR", labels), \
+                 mock.patch.object(aw, "EXPORT_DIR", export), \
+                 mock.patch.object(aw, "plan_image", lambda lid, root=None: rgb):
+                aw.export()
+            self.assertEqual(np.array(PILImage.open(export / "masks" / "L2.png")).shape,
+                             (40, 60))
+
+    def test_saved_mask_round_trips_through_a_data_uri(self):
+        from tools import annotate_walls as aw
+        from PIL import Image as PILImage
+        with tempfile.TemporaryDirectory() as tmp:
+            labels = Path(tmp) / "labels"
+            arr = np.zeros((16, 16), np.uint8)
+            arr[4:12, 4:12] = 255
+            buf = io.BytesIO()
+            PILImage.fromarray(arr).save(buf, "PNG")
+            uri = b"data:image/png;base64," + base64.b64encode(buf.getvalue())
+            app = aw.Annotator.__new__(aw.Annotator)
+            with mock.patch.object(aw, "LABEL_DIR", labels):
+                app.save("L3", uri)
+                back = np.array(PILImage.open(labels / "L3.png"))
+            np.testing.assert_array_equal(back, arr)
+
+    def test_seed_mask_is_blank_when_the_model_is_unavailable(self):
+        from tools import annotate_walls as aw
+        with tempfile.TemporaryDirectory() as tmp:
+            with mock.patch.object(aw, "LABEL_DIR", Path(tmp)), \
+                 mock.patch.object(aw.wallnet, "available", lambda: False):
+                m = aw.seed_mask("L4", np.full((12, 12, 3), 255, np.uint8))
+            self.assertEqual(m.shape, (12, 12))
+            self.assertFalse(m.any())
 
 if __name__ == "__main__":
     unittest.main()

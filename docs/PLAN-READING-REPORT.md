@@ -235,6 +235,48 @@ out as two rooms, because the caption seeding sees two room words in a space wit
 no wall between them. Rooms with neither a caption nor a wall separating them.
 Maisonettes. Those are room *reasoning* problems, not wall *detection* problems.
 
+## 6b. Door swings: the model is inconsistent, and that is the worst case
+
+The wall model is much better at ignoring door swings than the ink threshold was, but it is
+not reliable about it — and a component that is right most of the time without saying which
+times is harder to build on than one that is wrong predictably.
+
+Measured over the swing arcs we could detect automatically:
+
+| what the wall model does to a swing arc | share |
+|---|---|
+| wipes it out completely (<10% of the arc still called wall) | 42% |
+| half-erases it (10–90%) | 50% |
+| leaves it essentially untouched (>90%) | 8% |
+
+**Caveat on that table: it is 12 arcs across 25 plans, and the detector's recall is the
+reason.** A geometric swing finder — fit a circle to each thin ink component, require the
+radius to be a door width in metres (we know the plan's scale), require it to span most of
+a quadrant — is precise but finds almost nothing, because agents draw swings a dozen
+different ways: quarter circles, straight leaf lines, thin light strokes over a colour
+fill, and on some plans not at all. It was written, measured, and deleted rather than
+shipped at 10% recall.
+
+**That failure is the argument for fine-tuning.** Every plan style needs its own rule, the
+rules interact, and there is no end to them. A model that has seen our plans learns the
+distinction once. So:
+
+| | what it is |
+|---|---|
+| `tools/annotate_walls.py` | a browser tool that opens each plan with the model's own reading painted on, so the work is scrubbing off wrong walls rather than tracing right ones — a minute or two per plan |
+| `notebooks/finetune_wallnet_colab.ipynb` | fine-tunes the wall model on those corrections: frozen encoder, low learning rate, 512-pixel crops, augmentation aimed at colour and line-weight variation, held-out plans split by a hash of the listing id |
+
+Twenty to thirty corrected plans is a useful set. The notebook supervises wall-versus-floor
+only — that is all the corrections claim — and keeps the model's four-class head intact, so
+it learns *where* the line between structure and furniture sits without being taught
+anything false about doors and windows.
+
+One honest limitation, stated in the notebook too: the labels are seeded from the model's
+own reading, so they are not independent of it. Somewhere the model is confidently wrong in
+a plausible-looking way is somewhere an annotator is less likely to correct. That is
+acceptable for closing a known gap like door swings, and it is not a substitute for tracing
+a handful of plans from scratch if we ever want a clean measurement.
+
 ## 7. What to do next
 
 **Now, no cost:** `python -m tools.fetch_wallnet` puts the weights in place; without
@@ -246,19 +288,29 @@ the pipeline changed, and no artifact contract moved (AD-4).
 1. **Find the area regression.** Four hypotheses are already eliminated above.
    The next step is a per-room before/after diff in pixels on one listing, which
    will say immediately whether rooms are being clipped, split or dropped.
-2. **Stand Raster2Seq up on Colab** against the same 25 plans, scored the same
-   way. It predicts labelled room polygons directly, so if it holds up it replaces
-   the watershed, the caption seeding *and* the open-plan problem in one move. MIT
-   licence, published CubiCasa5K checkpoint, no training needed to find out.
-3. **Hand-annotate five plans.** Every number in this report is measured against a
-   prediction because there is no ground truth for room outlines. Five carefully
-   traced plans would end the circularity for good, and five is an afternoon.
+2. **Run [`notebooks/raster2seq_eval_colab.ipynb`](../notebooks/raster2seq_eval_colab.ipynb).**
+   It installs Raster2Seq with its two CUDA extensions, pulls the CubiCasa5K
+   checkpoint, runs our 25 plans through it in three preprocessing variants, maps
+   the polygons back into our own pixel coordinates and scores them with the same
+   outline-on-wall metric. If it holds up it replaces the watershed, the caption
+   seeding *and* the open-plan problem in one move, and the wall model leaves the
+   critical path entirely.
+3. **Or close the gap on the model we have** with
+   [`tools/annotate_walls.py`](../tools/annotate_walls.py) and
+   [`notebooks/finetune_wallnet_colab.ipynb`](../notebooks/finetune_wallnet_colab.ipynb).
+   Independent of step 2 and worth doing whichever way that goes, because the
+   corrected plans are a permanent asset.
+4. **Trace five plans from scratch.** Every number in this report is measured
+   against a prediction, because there is no ground truth for room outlines — and
+   the fine-tuning labels in step 3 inherit that, since they are corrections of the
+   model rather than independent tracings. Five carefully traced plans would end
+   the circularity for good, and five is an afternoon.
 
-**Only then, fine-tuning.** The existing Colab notebook
-(`notebooks/train_plan_vectoriser_colab.ipynb`) trains a vectoriser from CubiCasa5K.
-It is worth running *after* the Raster2Seq evaluation, not before — there is no
-point fine-tuning a weaker architecture if a stronger one already works off the
-shelf.
+**Where the older notebook sits now.** `notebooks/train_plan_vectoriser_colab.ipynb`
+trains a room-segmentation vectoriser from CubiCasa5K from scratch. It is superseded
+by both of the above: Raster2Seq is a stronger architecture already trained on the
+same data, and fine-tuning the wall model is far cheaper than training a new one.
+Keep it as the fallback if both of those disappoint, not as the next step.
 
 **Does this kill the project?** No. The reconstruction chain, the scale solve, the
 assembly and the viewer were never the weak link, and the weak link turned out to
