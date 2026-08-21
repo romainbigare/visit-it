@@ -58,6 +58,9 @@ test:
 # --- Phase 1 -----------------------------------------------------------------
 .PHONY: holdout run run-dev score score-plan batch annotate console viewer viewer-build sheets
 
+doctor:                        ## check this box has what the pipeline needs
+	@$(PY) tools/doctor.py
+
 holdout:                       ## freeze the dev/holdout split (once, then verify)
 	$(PY) -m eval.holdout freeze || $(PY) -m eval.holdout verify
 

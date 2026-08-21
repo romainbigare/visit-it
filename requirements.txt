@@ -26,8 +26,12 @@ pytesseract>=0.3.10
 matplotlib>=3.8
 
 # Phase 1 — plan channel, geometry, shell
-scikit-image>=0.22
-shapely>=2.0
-networkx>=3.0
-jsonschema>=4.20
-pygltflib>=1.16
+scikit-image>=0.22        # watershed, distance-transform peaks
+shapely>=2.0              # polygon IoU, unions, shared-wall length
+jsonschema>=4.20          # artifact validation at the stage boundary
+referencing>=0.35         # cross-file $ref resolution in schemas/
+
+# Optional, and NOT needed to run the Phase 1 pipeline:
+#   modal, fastapi   -> modal_app/, the Phase 0 GPU validation harness
+#   gsplat           -> tools/gpu_validate_standalone.py (Phase 2)
+#   playwright       -> pipeline/ingest/zoopla.py browser fallback (blocked anyway)

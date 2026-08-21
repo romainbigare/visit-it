@@ -23,27 +23,99 @@ Automatic 3D reconstruction of flat listings: an unlabelled bag of estate-agent 
 
 Photos alone cannot tell you where rooms sit relative to each other — the floor plan is the spine of the product, and listings without one get a visibly-marked *inferred* arrangement instead. Per-room geometry comes from pointmap foundation models (MapAnything, `-apache` checkpoint), appearance from depth-regularised Gaussian splatting (gsplat) culled against the room's layout polygon, and metric scale from a single global solve anchored to the stated floor area and to the dimensions printed on the plan. Navigation is teleport-between-waypoints because that is the format sparse listing photos can actually support. Every surface carries a provenance tag — photographed, reconstructed, inferred — so that when a room looks wrong you can tell whether you are looking at something real.
 
-## Quick start
+## Try it yourself
+
+Everything below runs on a laptop with no GPU. Budget ~15 minutes of setup, most
+of which is downloads.
+
+### 1. Set up (once)
 
 ```bash
-make setup      # deps (torch CPU) + tesseract
-make vendor     # MoGe-2 source (not on PyPI)
-make data       # auto-fetchable datasets -> $VISITIT_DATA_HOME
-make golden     # rebuild the 30-listing UK golden set
-make holdout    # freeze (or verify) the dev/holdout split
+make setup      # python deps + tesseract
+make vendor     # MoGe-2 source (it isn't on PyPI)
+python -m pipeline.ingest.fetch_media --set data/golden/golden_set.json   # ~87 MB of listing photos
+make doctor     # tells you if anything is still missing, and what to run
 ```
 
-Then run the pipeline:
+`make doctor` is the one to run when something doesn't work — it checks all six
+things that usually go wrong and prints the fix next to each.
+
+The MoGe-2 weights (~1.3 GB) download themselves the first time you run the
+pipeline, into `$HF_HOME`.
+
+### 2. Run one listing
 
 ```bash
-python -m pipeline run 87977241        # one listing, stages 0-9, ~100 s on 4 CPU cores
-python -m pipeline show 87977241       # what it produced, with its QA flags
-make score                             # M1-M5 and the G1 criteria on the dev split
-make console                           # review console: queue, contact sheets, fix actions
-make viewer                            # the shell walkthrough in a browser
+python -m pipeline run 87977241
 ```
 
-Datasets are cached under `$VISITIT_DATA_HOME` (default `~/.cache/visit-it/datasets`), checksummed into `datasets.lock.json`, and resume if interrupted — `make status` reports what a given box has. Pipeline artifacts live under `data/runs/` (or `$VISITIT_RUN_HOME`), content-addressed and versioned, so `--from 6` re-runs the cheap end without touching the expensive one.
+About 90 seconds on four CPU cores, ~80 of which is stage 3 (a GPU makes that
+40× faster). You should see all ten stages report `o`:
+
+```
+OK  87977241  101.7s  0:o 1:o 2:o 3:o 4:o 5:o 6:o 7:o 8:o 9:o  flags=...
+```
+
+Then look at what it made:
+
+```bash
+python -m pipeline show 87977241     # every artifact, its confidence and QA flags
+```
+
+### 3. Walk through the flat
+
+```bash
+python -m tools.export_scene export --all
+cd viewer && npm install && npm run build && npm run preview
+```
+
+Open the URL it prints. The dropdown top-right switches listings. Drag to look
+around, click a room on the minimap to teleport, press **d** for the dollhouse
+view. Add `?dev=1` to the URL to see per-room areas, confidences and QA flags.
+
+If you'd rather not run the pipeline first, `make viewer` starts it against a
+hand-authored example flat with no pipeline involved at all.
+
+### 4. Look at what went wrong
+
+```bash
+make console        # http://127.0.0.1:8080
+```
+
+The queue is ordered by how likely a person is to be needed. Click a listing to
+get its contact sheet — every stage's output on one page, which is the fastest way
+to see *why* a reconstruction is bad rather than *that* it is. The same page lets
+you relabel a mis-read room or drag a room onto a different plan polygon; both
+re-run in seconds.
+
+### 5. Reproduce the numbers
+
+```bash
+make test                                  # 77 unit tests, ~3 s
+python -m tests.perf_budgets               # per-stage latency budgets
+python -m eval.holdout verify              # the frozen split is still sealed
+
+python -m pipeline run --all --split dev   # ~15 min: the 10 development listings
+make score                                 # M1-M5 and the G1 criteria
+python -m eval.phase1_summary              # every table in the Phase 1 report
+```
+
+To reproduce the gate measurement in [`docs/PHASE-1-REPORT.md`](docs/PHASE-1-REPORT.md),
+run `--all` (all 30 listings, ~45 min) then `python -m eval.harness --split holdout`.
+
+### Useful flags
+
+| flag | what it does |
+|---|---|
+| `--from 6` | resume from a stage, reusing what's on disk — skips the 90 s geometry pass |
+| `--only 5-plan` | run exactly one stage |
+| `--max-rooms 4` | cap rooms reconstructed, for a quick look |
+| `--no-triage-model` | skip the image classifier if you don't want the 800 MB download |
+| `--profile instant` | the fast-path bindings and budgets |
+
+Datasets cache under `$VISITIT_DATA_HOME` (default `~/.cache/visit-it/datasets`),
+checksummed into `datasets.lock.json`. Pipeline artifacts live under `data/runs/`
+(or `$VISITIT_RUN_HOME`), content-addressed and versioned.
 
 ## The pipeline
 
