@@ -161,7 +161,62 @@ def _caption_seeds(text: PlanText, hull: np.ndarray) -> list[TextBlock]:
     return out
 
 
+def segment_learned(pi: PlanImage, text: PlanText) -> Vectorisation | None:
+    """Rooms from the trained plan reader, when one is installed.
+
+    Returns ``None`` if there is no checkpoint on this box or if it produced nothing
+    usable, so the caller falls back to the classical engine rather than failing.
+    Labels still come from OCR: the model finds *where* the rooms are, the plan's own
+    text says *what* they are, and the text is the better source for that.
+    """
+    from . import learned
+    if not learned.available():
+        return None
+    try:
+        room_mask, wall_mask = learned.predict(pi.rgb)
+    except Exception as e:  # noqa: BLE001
+        log.warning("learned vectoriser failed, falling back to the classical engine: %s", e)
+        return None
+    masks = learned.rooms_from_prediction(room_mask)
+    if not masks:
+        return None
+
+    labels = np.zeros(room_mask.shape, np.int32)
+    labels[room_mask == 0] = EXTERIOR
+    seeds: list[tuple[int, TextBlock | None, tuple[float, float]]] = []
+    caption_at = {}
+    for b in text.blocks:
+        if b.is_room_caption:
+            caption_at[(int(b.cy), int(b.cx))] = b
+    for i, m in enumerate(masks):
+        mid = EXTERIOR + 1 + i
+        labels[m > 0] = mid
+        # Attach the caption whose centre falls inside this room, if any.
+        block = next((b for (y, x), b in caption_at.items()
+                      if 0 <= y < m.shape[0] and 0 <= x < m.shape[1] and m[y, x]), None)
+        ys, xs = np.nonzero(m)
+        seeds.append((mid, block, (float(xs.mean()), float(ys.mean()))))
+
+    rooms = _regions_from_labels(labels, seeds)
+    footprint = _footprint(labels, pi.wall_half_px)
+    flags = ["learned_vectoriser"]
+    if wall_mask.mean() < 0.005:
+        flags.append("learned_vectoriser_found_few_walls")
+    return Vectorisation(rooms=rooms, labels=labels, free=(room_mask > 0),
+                         footprint=footprint, inside=(room_mask > 0),
+                         n_outlines=count_outlines(footprint), text_erased=0,
+                         qa_flags=flags)
+
+
 def segment(pi: PlanImage, text: PlanText) -> Vectorisation:
+    """Rooms from the trained reader if one is installed, else classically."""
+    v = segment_learned(pi, text)
+    if v is not None and v.rooms:
+        return v
+    return segment_classical(pi, text)
+
+
+def segment_classical(pi: PlanImage, text: PlanText) -> Vectorisation:
     """Watershed the free space, seeded by captions and by unclaimed distance peaks."""
     clean, n_erased = erase_text(pi.ink, text)
     hull = structure_hull(clean)

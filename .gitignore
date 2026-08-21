@@ -31,3 +31,4 @@ data/runs/
 viewer/node_modules/
 viewer/dist/
 viewer/public/scenes/
+models/*.pt

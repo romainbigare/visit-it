@@ -152,7 +152,8 @@ def build_plan(image_path: Path, listing: dict, *, engine: str = "raster",
         "listing_id": listing["listing_id"],
         "source_image": str(image_path),
         "image_size_px": [int(w_px), int(h_px)],
-        "method": f"{engine}_vectorise/v2",
+        "method": ("learned_vectorise/v1" if "learned_vectoriser" in vec.qa_flags
+                   else f"{engine}_vectorise/v2"),
         "preprocess": {
             "deskew_deg": round(pi.deskew_deg, 3),
             "binarise": "modal-background distance",
