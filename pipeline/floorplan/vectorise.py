@@ -124,6 +124,58 @@ def erase_text(ink: np.ndarray, text: PlanText) -> tuple[np.ndarray, int]:
     return out, len(kill)
 
 
+def building_footprint(walls: np.ndarray, wall_half_px: float = 2.0) -> np.ndarray:
+    """What the walls actually enclose, concave bits and all.
+
+    ``structure_hull`` returns a *convex* hull, and the hull of an L-shaped or
+    bay-fronted plan includes the garden in the crook of the L -- measured across
+    the golden set at seven times the real footprint. Rooms are free to grow into
+    that, and they do, as long thin spikes out into the page margin.
+
+    Two ways of finding the real outline, because neither alone survives every
+    plan. Sealing the drawing shut and taking its silhouette works on a plan drawn
+    with heavy walls and fails on a thin-line one, where closing does not connect
+    the outline. Flooding in from the page edge works on a plan whose outer wall is
+    unbroken and fails where an external door or a bay leaves a gap, because the
+    flood pours through it and swallows the building. Take whichever gives the more
+    plausible answer, and fall back to the hull when both look wrong -- being
+    generous is only a missed improvement, being wrong deletes rooms.
+    """
+    h, w = walls.shape
+    page = float(h * w)
+    hull = structure_hull(walls)
+    candidates = []
+
+    k = max(3, int(round(wall_half_px * 6)))
+    closed = cv2.morphologyEx(walls.astype(np.uint8), cv2.MORPH_CLOSE,
+                              np.ones((k, k), np.uint8))
+    lab, n = ndi.label(closed)
+    if n:
+        sizes = ndi.sum(closed, lab, range(1, n + 1))
+        biggest = (lab == (1 + int(np.argmax(sizes))))
+        candidates.append(ndi.binary_fill_holes(biggest).astype(np.uint8))
+
+    seal = max(2, int(round(wall_half_px * 3)))
+    sealed = cv2.morphologyEx(walls.astype(np.uint8), cv2.MORPH_CLOSE,
+                              np.ones((seal, seal), np.uint8))
+    lab2, n2 = ndi.label(sealed == 0)
+    if n2:
+        border = np.concatenate([lab2[0], lab2[-1], lab2[:, 0], lab2[:, -1]])
+        outside = set(np.unique(border).tolist()) - {0}
+        inside = (~np.isin(lab2, list(outside))) & (lab2 > 0)
+        candidates.append(ndi.binary_fill_holes(inside | (sealed > 0)).astype(np.uint8))
+
+    # A footprint has to be smaller than the hull -- that is the whole point -- but
+    # not so small that it has clearly lost the building.
+    hull_area = float(hull.sum()) or page
+    usable = [c for c in candidates
+              if 0.25 * hull_area <= float(c.sum()) <= 1.01 * hull_area
+              and float(c.sum()) / page > 0.02]
+    if not usable:
+        return hull
+    return min(usable, key=lambda c: float(c.sum()))
+
+
 def structure_hull(clean_ink: np.ndarray) -> np.ndarray:
     """Convex hull of the big ink components — i.e. of the building.
 
@@ -367,9 +419,24 @@ def segment_with_wallnet(pi: PlanImage, text: PlanText,
     return v
 
 
+#: How far inside a predicted room its starting point is pulled, as a fraction of
+#: the room's own inscribed radius. A coarse polygon's edge routinely lands on -- or
+#: past -- the wall, and a starting point touching a wall lets the room grow straight
+#: through it into its neighbour. Swept in ``notebooks/tuning_modal.ipynb``.
+SEED_CORE_FRACTION = 0.45
+
+#: Keep rooms inside what the walls actually enclose, rather than inside the convex
+#: hull of the drawing. The hull of an L-shaped or bay-fronted plan includes the
+#: garden in the crook of the L -- measured at 7x the real footprint -- and rooms
+#: grow into it as long spikes. Off by default until the notebook says it helps.
+CONFINE_TO_FOOTPRINT = False
+
+
 def segment_from_room_seeds(pi: PlanImage, text: PlanText,
                             room_seeds: list, mask: np.ndarray | None = None,
-                            fallback_labels: list | None = None) -> Vectorisation | None:
+                            fallback_labels: list | None = None, *,
+                            seed_core: float | None = None,
+                            confine: bool | None = None) -> Vectorisation | None:
     """Grow rooms somebody else found out to the walls we can see.
 
     Two models, each good at the half the other is bad at. A room-polygon model
@@ -396,7 +463,8 @@ def segment_from_room_seeds(pi: PlanImage, text: PlanText,
     if mask is None or not mask.any():
         mask, _ = erase_text(pi.ink, text)
 
-    hull = structure_hull(mask)
+    want_confine = CONFINE_TO_FOOTPRINT if confine is None else confine
+    hull = building_footprint(mask, pi.wall_half_px) if want_confine else structure_hull(mask)
     free = (mask == 0) & (hull > 0)
     free = ndi.binary_opening(free, np.ones((3, 3)))
     h, w = free.shape
@@ -422,7 +490,8 @@ def segment_from_room_seeds(pi: PlanImage, text: PlanText,
         keep = filled & free.astype(np.uint8)
         if keep.any():
             room_dist = cv2.distanceTransform(keep, cv2.DIST_L2, 5)
-            core = (room_dist >= max(2.0, 0.45 * float(room_dist.max()))).astype(np.uint8)
+            frac = SEED_CORE_FRACTION if seed_core is None else seed_core
+            core = (room_dist >= max(2.0, frac * float(room_dist.max()))).astype(np.uint8)
         else:
             core = np.zeros((h, w), np.uint8)
         if not core.any():

@@ -77,6 +77,20 @@ Then run `notebooks/finetune_wallnet_colab.ipynb` on a Colab GPU and drop the re
 `plan_walls.safetensors` into `models/`. `python -m tools.fetch_wallnet --force` puts
 the original back if it turns out worse.
 
+### Using the room-finder
+
+```bash
+python -m tools.import_room_predictions results.zip --list
+python -m tools.import_room_predictions results.zip --reading <name>
+python -m pipeline run <ids> --from 5     # stage 5 picks them up automatically
+python -m tools.import_room_predictions --clear   # back to the ink/wall reading
+```
+
+`results.zip` comes from `notebooks/plan_reading_modal.ipynb`. With predictions in place
+stage 5 reports `method: room_finder_vectorise/v1` and flags how many of the rooms got
+their name from the plan rather than from the model. `notebooks/tuning_modal.ipynb` sweeps
+the two settings that govern how the predicted rooms are grown.
+
 Before doing any of that, run `notebooks/plan_reading_modal.ipynb` on a Modal GPU. It
 tries six changes one at a time -- including pairing our wall model with a second model
 that finds rooms directly -- and measures every one on the same 25 plans. It needs no
