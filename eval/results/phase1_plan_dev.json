@@ -1,0 +1,347 @@
+{
+  "generated_at": "2026-08-21T01:03:52+00:00",
+  "split": "dev",
+  "channel": "plan",
+  "n_requested": 10,
+  "summary": {
+    "listings": 10,
+    "complete": 5,
+    "incomplete": 5,
+    "metrics": {
+      "M1": {
+        "name": "plan total area error",
+        "unit": "%",
+        "reference": "stated",
+        "listings_with_value": 5,
+        "coverage": 1.0,
+        "median": 14.128,
+        "mean": 72.83,
+        "p90": 198.573,
+        "observations": 5
+      },
+      "M2": {
+        "name": "plan per-room area error",
+        "unit": "%",
+        "reference": "printed",
+        "listings_with_value": 3,
+        "coverage": 0.6,
+        "median": 15.44,
+        "mean": 45.512,
+        "p90": 90.659,
+        "observations": 7
+      }
+    },
+    "qa_flags": {
+      "not_to_scale_disclaimer": 3,
+      "room_area_disagrees_with_printed": 2,
+      "scale_candidates_disagree": 2,
+      "large_regularisation_snap": 1,
+      "multiple_plan_outlines": 1,
+      "no_room_captions": 1,
+      "no_room_labels": 1,
+      "no_doors_detected": 1,
+      "room_dominates_plan": 1,
+      "plan_area_disagrees_with_stated": 1
+    }
+  },
+  "latency": {
+    "metric": "M12",
+    "profile": "all",
+    "n_runs": 23,
+    "caveat": null,
+    "end_to_end": {
+      "p50": 90.137,
+      "p95": 318.145,
+      "mean": 124.952
+    },
+    "stages": {
+      "0-triage": {
+        "n": 17,
+        "p50": 4.396,
+        "p95": 12.86,
+        "max": 117.885
+      },
+      "1-conditioning": {
+        "n": 17,
+        "p50": 0.0,
+        "p95": 0.0,
+        "max": 0.0
+      },
+      "2-grouping": {
+        "n": 17,
+        "p50": 0.0,
+        "p95": 0.0,
+        "max": 0.0
+      },
+      "3-geometry": {
+        "n": 17,
+        "p50": 78.902,
+        "p95": 168.996,
+        "max": 422.039
+      },
+      "4-layout": {
+        "n": 20,
+        "p50": 2.348,
+        "p95": 5.005,
+        "max": 5.082
+      },
+      "5-plan": {
+        "n": 22,
+        "p50": 3.886,
+        "p95": 140.692,
+        "max": 237.997
+      },
+      "6-assembly": {
+        "n": 18,
+        "p50": 0.033,
+        "p95": 0.066,
+        "max": 0.071
+      },
+      "7-scale": {
+        "n": 18,
+        "p50": 0.001,
+        "p95": 0.001,
+        "max": 0.002
+      },
+      "8-shell": {
+        "n": 18,
+        "p50": 0.004,
+        "p95": 0.006,
+        "max": 0.006
+      },
+      "9-package": {
+        "n": 18,
+        "p50": 0.001,
+        "p95": 0.002,
+        "max": 0.002
+      }
+    }
+  },
+  "listings": [
+    {
+      "listing_id": "175050533",
+      "complete": false,
+      "channel": "plan",
+      "missing_stages": [
+        "5-plan"
+      ]
+    },
+    {
+      "listing_id": "175050626",
+      "complete": true,
+      "channel": "plan",
+      "metrics": {
+        "M1": {
+          "id": "M1",
+          "name": "plan total area error",
+          "value": 0.0,
+          "unit": "%",
+          "reference": "stated",
+          "n": 1,
+          "detail": {}
+        },
+        "M2": {
+          "id": "M2",
+          "name": "plan per-room area error",
+          "value": null,
+          "unit": "%",
+          "reference": "printed",
+          "n": 0,
+          "detail": {
+            "within_10pct_frac": null
+          }
+        }
+      },
+      "px_per_metre": 166.6519,
+      "scale_source": "stated_area",
+      "n_rooms": 17,
+      "n_labelled": 0,
+      "confidence": 0.3,
+      "qa_flags": [
+        "large_regularisation_snap",
+        "multiple_plan_outlines",
+        "no_room_captions",
+        "no_room_labels"
+      ]
+    },
+    {
+      "listing_id": "87977241",
+      "complete": true,
+      "channel": "plan",
+      "metrics": {
+        "M1": {
+          "id": "M1",
+          "name": "plan total area error",
+          "value": 14.1278,
+          "unit": "%",
+          "reference": "printed",
+          "n": 1,
+          "detail": {}
+        },
+        "M2": {
+          "id": "M2",
+          "name": "plan per-room area error",
+          "value": 11.6332,
+          "unit": "%",
+          "reference": "printed",
+          "n": 4,
+          "detail": {
+            "within_10pct_frac": 0.5
+          }
+        }
+      },
+      "px_per_metre": 153.652,
+      "scale_source": "printed_dimensions",
+      "n_rooms": 5,
+      "n_labelled": 5,
+      "confidence": 0.85,
+      "qa_flags": [
+        "no_doors_detected",
+        "not_to_scale_disclaimer",
+        "room_area_disagrees_with_printed"
+      ]
+    },
+    {
+      "listing_id": "90594978",
+      "complete": true,
+      "channel": "plan",
+      "metrics": {
+        "M1": {
+          "id": "M1",
+          "name": "plan total area error",
+          "value": 292.82,
+          "unit": "%",
+          "reference": "printed",
+          "n": 1,
+          "detail": {}
+        },
+        "M2": {
+          "id": "M2",
+          "name": "plan per-room area error",
+          "value": 109.4639,
+          "unit": "%",
+          "reference": "printed",
+          "n": 2,
+          "detail": {
+            "within_10pct_frac": 0.0
+          }
+        }
+      },
+      "px_per_metre": 32.3565,
+      "scale_source": "printed_dimensions",
+      "n_rooms": 7,
+      "n_labelled": 7,
+      "confidence": 0.65,
+      "qa_flags": [
+        "not_to_scale_disclaimer",
+        "room_area_disagrees_with_printed",
+        "scale_candidates_disagree"
+      ]
+    },
+    {
+      "listing_id": "91428111",
+      "complete": true,
+      "channel": "plan",
+      "metrics": {
+        "M1": {
+          "id": "M1",
+          "name": "plan total area error",
+          "value": 0.0,
+          "unit": "%",
+          "reference": "stated",
+          "n": 1,
+          "detail": {}
+        },
+        "M2": {
+          "id": "M2",
+          "name": "plan per-room area error",
+          "value": null,
+          "unit": "%",
+          "reference": "printed",
+          "n": 0,
+          "detail": {
+            "within_10pct_frac": null
+          }
+        }
+      },
+      "px_per_metre": 50.3623,
+      "scale_source": "stated_area",
+      "n_rooms": 2,
+      "n_labelled": 1,
+      "confidence": 0.475,
+      "qa_flags": [
+        "room_dominates_plan"
+      ]
+    },
+    {
+      "listing_id": "91511466",
+      "complete": false,
+      "channel": "plan",
+      "missing_stages": [
+        "5-plan"
+      ]
+    },
+    {
+      "listing_id": "91558374",
+      "complete": false,
+      "channel": "plan",
+      "missing_stages": [
+        "5-plan"
+      ]
+    },
+    {
+      "listing_id": "91958238",
+      "complete": false,
+      "channel": "plan",
+      "missing_stages": [
+        "5-plan"
+      ]
+    },
+    {
+      "listing_id": "92098362",
+      "complete": true,
+      "channel": "plan",
+      "metrics": {
+        "M1": {
+          "id": "M1",
+          "name": "plan total area error",
+          "value": 57.2021,
+          "unit": "%",
+          "reference": "printed",
+          "n": 1,
+          "detail": {}
+        },
+        "M2": {
+          "id": "M2",
+          "name": "plan per-room area error",
+          "value": 15.4398,
+          "unit": "%",
+          "reference": "printed",
+          "n": 1,
+          "detail": {
+            "within_10pct_frac": 0.0
+          }
+        }
+      },
+      "px_per_metre": 74.209,
+      "scale_source": "printed_dimensions",
+      "n_rooms": 6,
+      "n_labelled": 6,
+      "confidence": 0.53,
+      "qa_flags": [
+        "not_to_scale_disclaimer",
+        "plan_area_disagrees_with_stated",
+        "scale_candidates_disagree"
+      ]
+    },
+    {
+      "listing_id": "92182410",
+      "complete": false,
+      "channel": "plan",
+      "missing_stages": [
+        "5-plan"
+      ]
+    }
+  ],
+  "caveat": "No tape-measure ground truth exists for this set. Every number here is plausibility and self-consistency, not accuracy \u2014 ROADMAP \u00a70b."
+}

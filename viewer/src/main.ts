@@ -119,7 +119,6 @@ async function load(): Promise<void> {
   orbit.enabled = false;
   orbit.update();
 
-  void buildPicker();
   renderHud();
   const ms = Math.round(performance.now() - t0);
   // G1 budgets first-room-interactive: measured here so it is a number, not a hope.
@@ -266,9 +265,17 @@ function frame(now: number): void {
   renderer.render(scene3, mode === "dollhouse" ? dollCamera : camera);
 }
 
+// The picker is built independently of the scene load. A listing whose pipeline
+// run did not reach stage 9 has no scene.json, and that is exactly the moment you
+// want to be able to pick a different one — a picker that only appears on success
+// is missing when it is needed.
+void buildPicker();
+
 load()
   .then(() => requestAnimationFrame(frame))
   .catch((e: unknown) => {
     console.error(e);
-    setStatus(`Could not load the scene: ${e instanceof Error ? e.message : String(e)}`, "error");
+    setStatus(
+      `Could not load this scene: ${e instanceof Error ? e.message : String(e)}. ` +
+      `The listing may not have reached stage 9 — pick another above.`, "error");
   });
