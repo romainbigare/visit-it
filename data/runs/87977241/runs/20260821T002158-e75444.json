@@ -1,0 +1,138 @@
+{
+  "run_id": "20260821T002158-e75444",
+  "listing_id": "87977241",
+  "profile": "standard",
+  "started_at": "2026-08-21T00:21:58+00:00",
+  "finished_at": "2026-08-21T00:23:40+00:00",
+  "code_version": "877e73a",
+  "from_stage": "3-geometry",
+  "stages": [
+    {
+      "stage": "3-geometry",
+      "status": "ok",
+      "attempts": 1,
+      "seconds": 94.136,
+      "budget_s": 50.0,
+      "over_budget": true,
+      "artifact": "geometry.json",
+      "artifact_sha256": "0b0d4c0084bffae46199c8d656b15a2420debf8fe94a15db75d4c1e2eef736b0",
+      "confidence": 0.8,
+      "qa_flags": [
+        "geometry_engine_fallback"
+      ],
+      "error": null,
+      "engine": "moge2"
+    },
+    {
+      "stage": "4-layout",
+      "status": "ok",
+      "attempts": 1,
+      "seconds": 1.996,
+      "budget_s": 20.0,
+      "over_budget": false,
+      "artifact": "layouts.json",
+      "artifact_sha256": "a165b816730b826d9f5c2e0e2356588f37d34e305f786c5adf18a14c47abf92a",
+      "confidence": 0.7,
+      "qa_flags": [
+        "ceiling_implausible",
+        "ceiling_outside_2.3_3.2m",
+        "monocular_single_view"
+      ],
+      "error": null,
+      "engine": "moge2"
+    },
+    {
+      "stage": "5-plan",
+      "status": "ok",
+      "attempts": 1,
+      "seconds": 3.811,
+      "budget_s": 30.0,
+      "over_budget": false,
+      "artifact": "plan.json",
+      "artifact_sha256": "c8c0fb6eb9b6afa36d2b917e6f41e21c7ad5805e544b0771237dcc0a9e931016",
+      "confidence": 0.85,
+      "qa_flags": [
+        "no_doors_detected",
+        "not_to_scale_disclaimer",
+        "room_area_disagrees_with_printed"
+      ],
+      "error": null,
+      "engine": "raster"
+    },
+    {
+      "stage": "6-assembly",
+      "status": "ok",
+      "attempts": 1,
+      "seconds": 0.055,
+      "budget_s": 6.0,
+      "over_budget": false,
+      "artifact": "assembly.json",
+      "artifact_sha256": "8d3582b6a3005778cca8ed646ea0624eb2898981e08f671444e8670843820166",
+      "confidence": 0.438,
+      "qa_flags": [
+        "low_assignment_margin"
+      ],
+      "error": null,
+      "engine": "hungarian_se2"
+    },
+    {
+      "stage": "7-scale",
+      "status": "ok",
+      "attempts": 1,
+      "seconds": 0.001,
+      "budget_s": 4.0,
+      "over_budget": false,
+      "artifact": "scale.json",
+      "artifact_sha256": "ac3d40fcd68b8fd871cfcf28344a4d7360ca0f76bf61d403adc05b631e8122a8",
+      "confidence": 0.938,
+      "qa_flags": [],
+      "error": null,
+      "engine": "wls_log"
+    },
+    {
+      "stage": "8-shell",
+      "status": "ok",
+      "attempts": 1,
+      "seconds": 0.005,
+      "budget_s": 16.0,
+      "over_budget": false,
+      "artifact": "shell.json",
+      "artifact_sha256": "d0e992f123644e67f720dc2c91e9ebf771ce90d533e5a8296dfad25e8361f718",
+      "confidence": 0.406,
+      "qa_flags": [],
+      "error": null,
+      "engine": "extrude"
+    },
+    {
+      "stage": "9-package",
+      "status": "ok",
+      "attempts": 1,
+      "seconds": 0.001,
+      "budget_s": 8.0,
+      "over_budget": false,
+      "artifact": "scene.json",
+      "artifact_sha256": "8e8a98ae4b88fe7a374eff276fd2f5c20eaf625e07b6dfa3f93977085f88fc33",
+      "confidence": 0.658,
+      "qa_flags": [
+        "low_assignment_margin",
+        "no_doors_detected",
+        "not_to_scale_disclaimer",
+        "room_area_disagrees_with_printed"
+      ],
+      "error": null,
+      "engine": "package"
+    }
+  ],
+  "status": "ok",
+  "total_seconds": 101.711,
+  "qa_flags": [
+    "ceiling_implausible",
+    "ceiling_outside_2.3_3.2m",
+    "geometry_engine_fallback",
+    "low_assignment_margin",
+    "monocular_single_view",
+    "no_doors_detected",
+    "not_to_scale_disclaimer",
+    "room_area_disagrees_with_printed"
+  ]
+}

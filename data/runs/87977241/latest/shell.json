@@ -1,0 +1,265 @@
+{
+  "schema": "shell/v1",
+  "listing_id": "87977241",
+  "scale_applied": 1.067526,
+  "rooms": [
+    {
+      "room_id": "bathroom",
+      "plan_room_id": "p1",
+      "label": "reception",
+      "polygon_m": [
+        [
+          6.268,
+          9.812
+        ],
+        [
+          3.826,
+          9.812
+        ],
+        [
+          3.826,
+          7.985
+        ],
+        [
+          6.268,
+          7.985
+        ]
+      ],
+      "centroid_m": [
+        5.047,
+        8.898
+      ],
+      "height_m": 2.611,
+      "area_m2": 4.462,
+      "provenance": "inferred",
+      "confidence": 0.072,
+      "aperture_ids": [
+        "a0"
+      ]
+    },
+    {
+      "room_id": "bedroom_0",
+      "plan_room_id": "p3",
+      "label": "bedroom",
+      "polygon_m": [
+        [
+          2.989,
+          5.78
+        ],
+        [
+          2.989,
+          2.776
+        ],
+        [
+          6.827,
+          2.776
+        ],
+        [
+          6.827,
+          5.78
+        ]
+      ],
+      "centroid_m": [
+        4.908,
+        4.278
+      ],
+      "height_m": 2.715,
+      "area_m2": 11.533,
+      "provenance": "inferred",
+      "confidence": 0.524,
+      "aperture_ids": []
+    },
+    {
+      "room_id": "bedroom_1",
+      "plan_room_id": "p4",
+      "label": "bedroom",
+      "polygon_m": [
+        [
+          2.797,
+          0.028
+        ],
+        [
+          6.705,
+          0.028
+        ],
+        [
+          6.705,
+          2.82
+        ],
+        [
+          2.797,
+          2.82
+        ]
+      ],
+      "centroid_m": [
+        4.751,
+        1.424
+      ],
+      "height_m": 2.57,
+      "area_m2": 10.91,
+      "provenance": "inferred",
+      "confidence": 0.529,
+      "aperture_ids": []
+    },
+    {
+      "room_id": "kitchen",
+      "plan_room_id": "p0",
+      "label": "kitchen",
+      "polygon_m": [
+        [
+          3.67,
+          9.843
+        ],
+        [
+          0.068,
+          9.843
+        ],
+        [
+          0.068,
+          5.993
+        ],
+        [
+          3.67,
+          5.993
+        ]
+      ],
+      "centroid_m": [
+        1.869,
+        7.918
+      ],
+      "height_m": 2.611,
+      "area_m2": 13.87,
+      "provenance": "inferred",
+      "confidence": 0.78,
+      "aperture_ids": []
+    },
+    {
+      "room_id": "living_room",
+      "plan_room_id": "p2",
+      "label": "dining_room",
+      "polygon_m": [
+        [
+          6.723,
+          5.164
+        ],
+        [
+          7.09,
+          8.656
+        ],
+        [
+          3.55,
+          9.028
+        ],
+        [
+          3.183,
+          5.536
+        ]
+      ],
+      "centroid_m": [
+        5.137,
+        7.096
+      ],
+      "height_m": 2.627,
+      "area_m2": 12.501,
+      "provenance": "inferred",
+      "confidence": 0.126,
+      "aperture_ids": [
+        "a0"
+      ]
+    }
+  ],
+  "omitted_rooms": [],
+  "glb": {
+    "uri": "shell.glb",
+    "bytes": 4768,
+    "triangles": 62,
+    "budget_bytes": 1048576,
+    "within_budget": true
+  },
+  "footprint_m": [
+    [
+      6.705,
+      0.028
+    ],
+    [
+      6.705,
+      2.776
+    ],
+    [
+      6.827,
+      2.776
+    ],
+    [
+      6.827,
+      5.78
+    ],
+    [
+      6.787739977090492,
+      5.78
+    ],
+    [
+      7.09,
+      8.656
+    ],
+    [
+      6.268,
+      8.74237966101695
+    ],
+    [
+      6.268,
+      9.812
+    ],
+    [
+      3.826,
+      9.812
+    ],
+    [
+      3.826,
+      8.998996610169492
+    ],
+    [
+      3.67,
+      9.015389830508475
+    ],
+    [
+      3.67,
+      9.843
+    ],
+    [
+      0.068,
+      9.843
+    ],
+    [
+      0.068,
+      5.993
+    ],
+    [
+      3.231029495990836,
+      5.993
+    ],
+    [
+      3.208643757159221,
+      5.78
+    ],
+    [
+      2.989,
+      5.78
+    ],
+    [
+      2.989,
+      2.82
+    ],
+    [
+      2.797,
+      2.82
+    ],
+    [
+      2.797,
+      0.028
+    ]
+  ],
+  "total_area_m2": 53.276,
+  "confidence": 0.406,
+  "qa_flags": [],
+  "timing_s": 0.005
+}

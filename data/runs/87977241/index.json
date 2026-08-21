@@ -1,0 +1,116 @@
+{
+  "listing_id": "87977241",
+  "stages": {
+    "0-triage": [
+      {
+        "version": 1,
+        "sha256": "8f41d582d3398a866ee952da55b44a76c0b0af72d4e3b174bca46afdb05bc6fb",
+        "written_at": "2026-08-21T00:18:38+00:00",
+        "run_id": "20260821T001826-c9ef5e",
+        "seen_count": 1
+      }
+    ],
+    "1-conditioning": [
+      {
+        "version": 1,
+        "sha256": "e77d5d51c0c40830bf2a4dba7e115589f118144ddf27c4056af2b729452de98e",
+        "written_at": "2026-08-21T00:18:38+00:00",
+        "run_id": "20260821T001826-c9ef5e",
+        "seen_count": 1
+      }
+    ],
+    "2-grouping": [
+      {
+        "version": 1,
+        "sha256": "9d9f8b85a67eb3eefe72d17ecbb498e140ab047b1f26a3ac68daaedcc5f02d90",
+        "written_at": "2026-08-21T00:18:38+00:00",
+        "run_id": "20260821T001826-c9ef5e",
+        "seen_count": 1
+      }
+    ],
+    "3-geometry": [
+      {
+        "version": 1,
+        "sha256": "8bb449a0a44d247d8f3a704b67f107ab9ac8cf68ce4498af0c8b546f11253ab1",
+        "written_at": "2026-08-21T00:19:56+00:00",
+        "run_id": "20260821T001826-c9ef5e",
+        "seen_count": 1
+      },
+      {
+        "version": 2,
+        "sha256": "b90371da442bd181479be0094383732f87a5c80209079f2bf10411cda6abadda",
+        "written_at": "2026-08-21T00:20:52+00:00",
+        "run_id": "20260821T001826-c9ef5e",
+        "seen_count": 1
+      },
+      {
+        "version": 3,
+        "sha256": "0b0d4c0084bffae46199c8d656b15a2420debf8fe94a15db75d4c1e2eef736b0",
+        "written_at": "2026-08-21T00:23:33+00:00",
+        "run_id": "20260821T002158-e75444",
+        "seen_count": 1
+      }
+    ],
+    "5-plan": [
+      {
+        "version": 1,
+        "sha256": "9a471bad16d5cb208d20f0430aa9057bb78748c429399b0de11895631b05bd76",
+        "written_at": "2026-08-21T00:20:56+00:00",
+        "run_id": "20260821T001826-c9ef5e",
+        "seen_count": 1
+      },
+      {
+        "version": 2,
+        "sha256": "c8c0fb6eb9b6afa36d2b917e6f41e21c7ad5805e544b0771237dcc0a9e931016",
+        "written_at": "2026-08-21T00:23:40+00:00",
+        "run_id": "20260821T002158-e75444",
+        "seen_count": 1
+      }
+    ],
+    "4-layout": [
+      {
+        "version": 1,
+        "sha256": "a165b816730b826d9f5c2e0e2356588f37d34e305f786c5adf18a14c47abf92a",
+        "written_at": "2026-08-21T00:23:35+00:00",
+        "run_id": "20260821T002158-e75444",
+        "seen_count": 1
+      }
+    ],
+    "6-assembly": [
+      {
+        "version": 1,
+        "sha256": "8d3582b6a3005778cca8ed646ea0624eb2898981e08f671444e8670843820166",
+        "written_at": "2026-08-21T00:23:40+00:00",
+        "run_id": "20260821T002158-e75444",
+        "seen_count": 1
+      }
+    ],
+    "7-scale": [
+      {
+        "version": 1,
+        "sha256": "ac3d40fcd68b8fd871cfcf28344a4d7360ca0f76bf61d403adc05b631e8122a8",
+        "written_at": "2026-08-21T00:23:40+00:00",
+        "run_id": "20260821T002158-e75444",
+        "seen_count": 1
+      }
+    ],
+    "8-shell": [
+      {
+        "version": 1,
+        "sha256": "d0e992f123644e67f720dc2c91e9ebf771ce90d533e5a8296dfad25e8361f718",
+        "written_at": "2026-08-21T00:23:40+00:00",
+        "run_id": "20260821T002158-e75444",
+        "seen_count": 1
+      }
+    ],
+    "9-package": [
+      {
+        "version": 1,
+        "sha256": "8e8a98ae4b88fe7a374eff276fd2f5c20eaf625e07b6dfa3f93977085f88fc33",
+        "written_at": "2026-08-21T00:23:40+00:00",
+        "run_id": "20260821T002158-e75444",
+        "seen_count": 1
+      }
+    ]
+  }
+}

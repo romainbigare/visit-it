@@ -1,0 +1,252 @@
+{
+  "schema": "assembly/v1",
+  "listing_id": "87977241",
+  "method": "plan",
+  "matches": [
+    {
+      "room_id": "bathroom",
+      "plan_room_id": "p1",
+      "cost": 0.6667,
+      "cost_breakdown": {
+        "room_type": 0.34,
+        "area_ratio": 0.12247,
+        "aspect": 0.10133,
+        "apertures": 0.03333,
+        "confidence": 0.06952
+      },
+      "margin": 0.0171,
+      "pose_se2": {
+        "tx_m": 5.0347,
+        "ty_m": 8.43,
+        "theta_deg": 178.999,
+        "flip": false
+      },
+      "fit_iou": 0.6884,
+      "confidence": 0.072,
+      "edited_by_human": false,
+      "alternatives": [
+        {
+          "plan_room_id": "p2",
+          "cost": 0.6838
+        },
+        {
+          "plan_room_id": "p3",
+          "cost": 0.7803
+        },
+        {
+          "plan_room_id": "p4",
+          "cost": 0.7814
+        }
+      ]
+    },
+    {
+      "room_id": "bedroom_0",
+      "plan_room_id": "p3",
+      "cost": 0.0974,
+      "cost_breakdown": {
+        "room_type": 0.0,
+        "area_ratio": 0.00264,
+        "aspect": 0.05256,
+        "apertures": 0.03,
+        "confidence": 0.01216
+      },
+      "margin": 0.003,
+      "pose_se2": {
+        "tx_m": 7.3914,
+        "ty_m": 4.2318,
+        "theta_deg": 201.999,
+        "flip": false
+      },
+      "fit_iou": 0.8324,
+      "confidence": 0.524,
+      "edited_by_human": false,
+      "alternatives": [
+        {
+          "plan_room_id": "p4",
+          "cost": 0.1004
+        },
+        {
+          "plan_room_id": "p0",
+          "cost": 0.5003
+        },
+        {
+          "plan_room_id": "p2",
+          "cost": 0.5176
+        }
+      ]
+    },
+    {
+      "room_id": "bedroom_1",
+      "plan_room_id": "p4",
+      "cost": 0.0868,
+      "cost_breakdown": {
+        "room_type": 0.0,
+        "area_ratio": 0.01655,
+        "aspect": 0.02995,
+        "apertures": 0.03,
+        "confidence": 0.01032
+      },
+      "margin": 0.0008,
+      "pose_se2": {
+        "tx_m": 6.8176,
+        "ty_m": 1.914,
+        "theta_deg": 323.0,
+        "flip": false
+      },
+      "fit_iou": 0.8733,
+      "confidence": 0.529,
+      "edited_by_human": false,
+      "alternatives": [
+        {
+          "plan_room_id": "p3",
+          "cost": 0.0877
+        },
+        {
+          "plan_room_id": "p2",
+          "cost": 0.5113
+        },
+        {
+          "plan_room_id": "p0",
+          "cost": 0.5433
+        }
+      ]
+    },
+    {
+      "room_id": "kitchen",
+      "plan_room_id": "p0",
+      "cost": 0.0751,
+      "cost_breakdown": {
+        "room_type": 0.0,
+        "area_ratio": 0.01291,
+        "aspect": 0.0146,
+        "apertures": 0.03,
+        "confidence": 0.0176
+      },
+      "margin": 0.3264,
+      "pose_se2": {
+        "tx_m": 4.106,
+        "ty_m": 7.8287,
+        "theta_deg": 175.0,
+        "flip": false
+      },
+      "fit_iou": 0.8208,
+      "confidence": 0.937,
+      "edited_by_human": false,
+      "alternatives": [
+        {
+          "plan_room_id": "p2",
+          "cost": 0.4015
+        },
+        {
+          "plan_room_id": "p3",
+          "cost": 0.5592
+        },
+        {
+          "plan_room_id": "p4",
+          "cost": 0.5623
+        }
+      ]
+    },
+    {
+      "room_id": "living_room",
+      "plan_room_id": "p2",
+      "cost": 0.3175,
+      "cost_breakdown": {
+        "room_type": 0.051,
+        "area_ratio": 0.15932,
+        "aspect": 0.06352,
+        "apertures": 0.03333,
+        "confidence": 0.01032
+      },
+      "margin": -0.1307,
+      "pose_se2": {
+        "tx_m": 7.1405,
+        "ty_m": 6.8259,
+        "theta_deg": 32.001,
+        "flip": false
+      },
+      "fit_iou": 0.6538,
+      "confidence": 0.126,
+      "edited_by_human": false,
+      "alternatives": [
+        {
+          "plan_room_id": "p0",
+          "cost": 0.1868
+        },
+        {
+          "plan_room_id": "p1",
+          "cost": 0.5033
+        },
+        {
+          "plan_room_id": "p3",
+          "cost": 0.5262
+        }
+      ]
+    }
+  ],
+  "unmatched_rooms": [],
+  "unmatched_plan_rooms": [],
+  "cost_matrix": {
+    "rooms": [
+      "bathroom",
+      "bedroom_0",
+      "bedroom_1",
+      "kitchen",
+      "living_room"
+    ],
+    "plan_rooms": [
+      "p0",
+      "p1",
+      "p2",
+      "p3",
+      "p4"
+    ],
+    "cost": [
+      [
+        0.8121,
+        0.6667,
+        0.6838,
+        0.7803,
+        0.7814
+      ],
+      [
+        0.5003,
+        0.7374,
+        0.5176,
+        0.0974,
+        0.1004
+      ],
+      [
+        0.5433,
+        0.6907,
+        0.5113,
+        0.0877,
+        0.0868
+      ],
+      [
+        0.0751,
+        0.8502,
+        0.4015,
+        0.5592,
+        0.5623
+      ],
+      [
+        0.1868,
+        0.5033,
+        0.3175,
+        0.5262,
+        0.5292
+      ]
+    ]
+  },
+  "refinement": {
+    "iterations": 2,
+    "mean_iou_before": 0.7054,
+    "mean_iou_after": 0.7737
+  },
+  "confidence": 0.438,
+  "qa_flags": [
+    "low_assignment_margin"
+  ],
+  "timing_s": 0.054
+}

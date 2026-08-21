@@ -1,0 +1,66 @@
+{
+  "schema": "groups/v1",
+  "listing_id": "87977241",
+  "groups": [
+    {
+      "group_id": "bathroom",
+      "room_label": "bathroom",
+      "image_ids": [
+        "i005"
+      ],
+      "confidence": 0.7,
+      "singleton": true
+    },
+    {
+      "group_id": "bedroom_0",
+      "room_label": "bedroom",
+      "image_ids": [
+        "i004"
+      ],
+      "confidence": 0.45,
+      "singleton": true
+    },
+    {
+      "group_id": "bedroom_1",
+      "room_label": "bedroom",
+      "image_ids": [
+        "i000"
+      ],
+      "confidence": 0.45,
+      "singleton": true
+    },
+    {
+      "group_id": "kitchen",
+      "room_label": "kitchen",
+      "image_ids": [
+        "i007",
+        "i003"
+      ],
+      "confidence": 0.7,
+      "singleton": false
+    },
+    {
+      "group_id": "living_room",
+      "room_label": "living_room",
+      "image_ids": [
+        "i006",
+        "i002"
+      ],
+      "confidence": 0.7,
+      "singleton": false
+    }
+  ],
+  "adjudication_log": [
+    {
+      "label": "bedroom",
+      "n_images": 2,
+      "decision": "split_per_image",
+      "reason": "multiple rooms may share this label and pairwise verification is a Sprint 7 deliverable"
+    }
+  ],
+  "confidence": 0.6,
+  "qa_flags": [
+    "label_only_grouping"
+  ],
+  "timing_s": 0.0
+}

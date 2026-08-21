@@ -1,0 +1,126 @@
+{
+  "schema": "geometry/v1",
+  "listing_id": "87977241",
+  "engine": "moge2",
+  "engine_chain": "fell back from mapanything to moge2",
+  "rooms": [
+    {
+      "room_id": "bathroom",
+      "room_label": "bathroom",
+      "engine": "moge2",
+      "n_views": 1,
+      "n_points": 177664,
+      "fov_x_deg": 103.44,
+      "fov_y_deg": 81.32,
+      "metric": true,
+      "geometry_uri": "rooms/bathroom/geometry.npz",
+      "image_ids": [
+        "i005"
+      ],
+      "seconds": 30.599,
+      "notes": {
+        "image": "data/golden/media/87977241/photo_005.jpeg",
+        "px": [
+          512,
+          347
+        ]
+      }
+    },
+    {
+      "room_id": "bedroom_0",
+      "room_label": "bedroom",
+      "engine": "moge2",
+      "n_views": 1,
+      "n_points": 178176,
+      "fov_x_deg": 104.25,
+      "fov_y_deg": 82.3,
+      "metric": true,
+      "geometry_uri": "rooms/bedroom_0/geometry.npz",
+      "image_ids": [
+        "i004"
+      ],
+      "seconds": 16.769,
+      "notes": {
+        "image": "data/golden/media/87977241/photo_004.jpeg",
+        "px": [
+          512,
+          348
+        ]
+      }
+    },
+    {
+      "room_id": "bedroom_1",
+      "room_label": "bedroom",
+      "engine": "moge2",
+      "n_views": 1,
+      "n_points": 175104,
+      "fov_x_deg": 101.27,
+      "fov_y_deg": 78.31,
+      "metric": true,
+      "geometry_uri": "rooms/bedroom_1/geometry.npz",
+      "image_ids": [
+        "i000"
+      ],
+      "seconds": 15.469,
+      "notes": {
+        "image": "data/golden/media/87977241/photo_000.jpeg",
+        "px": [
+          512,
+          342
+        ]
+      }
+    },
+    {
+      "room_id": "kitchen",
+      "room_label": "kitchen",
+      "engine": "moge2",
+      "n_views": 1,
+      "n_points": 175104,
+      "fov_x_deg": 97.26,
+      "fov_y_deg": 74.36,
+      "metric": true,
+      "geometry_uri": "rooms/kitchen/geometry.npz",
+      "image_ids": [
+        "i007",
+        "i003"
+      ],
+      "seconds": 14.986,
+      "notes": {
+        "image": "data/golden/media/87977241/photo_007.jpeg",
+        "px": [
+          512,
+          342
+        ]
+      }
+    },
+    {
+      "room_id": "living_room",
+      "room_label": "living_room",
+      "engine": "moge2",
+      "n_views": 1,
+      "n_points": 175104,
+      "fov_x_deg": 102.02,
+      "fov_y_deg": 79.05,
+      "metric": true,
+      "geometry_uri": "rooms/living_room/geometry.npz",
+      "image_ids": [
+        "i006",
+        "i002"
+      ],
+      "seconds": 15.869,
+      "notes": {
+        "image": "data/golden/media/87977241/photo_006.jpeg",
+        "px": [
+          512,
+          342
+        ]
+      }
+    }
+  ],
+  "median_fov_x_deg": 102.02,
+  "confidence": 0.8,
+  "qa_flags": [
+    "geometry_engine_fallback"
+  ],
+  "timing_s": 94.136
+}

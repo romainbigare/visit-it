@@ -1,0 +1,168 @@
+{
+  "run_id": "20260821T001826-c9ef5e",
+  "listing_id": "87977241",
+  "profile": "standard",
+  "started_at": "2026-08-21T00:18:26+00:00",
+  "finished_at": "2026-08-21T00:20:56+00:00",
+  "code_version": "877e73a",
+  "from_stage": "0-triage",
+  "stages": [
+    {
+      "stage": "0-triage",
+      "status": "ok",
+      "attempts": 1,
+      "seconds": 9.497,
+      "budget_s": 20.0,
+      "over_budget": false,
+      "artifact": "manifest.json",
+      "artifact_sha256": "8f41d582d3398a866ee952da55b44a76c0b0af72d4e3b174bca46afdb05bc6fb",
+      "confidence": 0.9,
+      "qa_flags": [
+        "adjudicated_to_floorplan_1"
+      ],
+      "error": null,
+      "engine": "google/siglip-base-patch16-224"
+    },
+    {
+      "stage": "1-conditioning",
+      "status": "ok",
+      "attempts": 1,
+      "seconds": 0.0,
+      "budget_s": 16.0,
+      "over_budget": false,
+      "artifact": "calibration.json",
+      "artifact_sha256": "e77d5d51c0c40830bf2a4dba7e115589f118144ddf27c4056af2b729452de98e",
+      "confidence": 0.4,
+      "qa_flags": [],
+      "error": null,
+      "engine": "phase0_fov_prior"
+    },
+    {
+      "stage": "2-grouping",
+      "status": "ok",
+      "attempts": 1,
+      "seconds": 0.0,
+      "budget_s": 20.0,
+      "over_budget": false,
+      "artifact": "groups.json",
+      "artifact_sha256": "9d9f8b85a67eb3eefe72d17ecbb498e140ab047b1f26a3ac68daaedcc5f02d90",
+      "confidence": 0.6,
+      "qa_flags": [
+        "label_only_grouping"
+      ],
+      "error": null,
+      "engine": "label_grouping"
+    },
+    {
+      "stage": "3-geometry",
+      "status": "failed",
+      "attempts": 2,
+      "seconds": 0.0,
+      "budget_s": 50.0,
+      "over_budget": false,
+      "artifact": null,
+      "artifact_sha256": null,
+      "confidence": null,
+      "qa_flags": [],
+      "error": "FileNotFoundError: [Errno 2] No such file or directory: 'data/runs/87977241/latest/rooms/bathroom/geometry.npz'",
+      "engine": null
+    },
+    {
+      "stage": "4-layout",
+      "status": "skipped",
+      "attempts": 1,
+      "seconds": 0.0,
+      "budget_s": null,
+      "over_budget": false,
+      "artifact": null,
+      "artifact_sha256": null,
+      "confidence": null,
+      "qa_flags": [],
+      "error": "upstream 3-geometry unavailable",
+      "engine": null
+    },
+    {
+      "stage": "5-plan",
+      "status": "ok",
+      "attempts": 1,
+      "seconds": 3.943,
+      "budget_s": 30.0,
+      "over_budget": false,
+      "artifact": "plan.json",
+      "artifact_sha256": "9a471bad16d5cb208d20f0430aa9057bb78748c429399b0de11895631b05bd76",
+      "confidence": 0.85,
+      "qa_flags": [
+        "no_doors_detected",
+        "not_to_scale_disclaimer",
+        "room_area_disagrees_with_printed"
+      ],
+      "error": null,
+      "engine": "raster"
+    },
+    {
+      "stage": "6-assembly",
+      "status": "skipped",
+      "attempts": 1,
+      "seconds": 0.0,
+      "budget_s": null,
+      "over_budget": false,
+      "artifact": null,
+      "artifact_sha256": null,
+      "confidence": null,
+      "qa_flags": [],
+      "error": "upstream 4-layout unavailable",
+      "engine": null
+    },
+    {
+      "stage": "7-scale",
+      "status": "skipped",
+      "attempts": 1,
+      "seconds": 0.0,
+      "budget_s": null,
+      "over_budget": false,
+      "artifact": null,
+      "artifact_sha256": null,
+      "confidence": null,
+      "qa_flags": [],
+      "error": "upstream 4-layout, 6-assembly unavailable",
+      "engine": null
+    },
+    {
+      "stage": "8-shell",
+      "status": "skipped",
+      "attempts": 1,
+      "seconds": 0.0,
+      "budget_s": null,
+      "over_budget": false,
+      "artifact": null,
+      "artifact_sha256": null,
+      "confidence": null,
+      "qa_flags": [],
+      "error": "upstream 6-assembly, 7-scale unavailable",
+      "engine": null
+    },
+    {
+      "stage": "9-package",
+      "status": "skipped",
+      "attempts": 1,
+      "seconds": 0.0,
+      "budget_s": null,
+      "over_budget": false,
+      "artifact": null,
+      "artifact_sha256": null,
+      "confidence": null,
+      "qa_flags": [],
+      "error": "upstream 8-shell unavailable",
+      "engine": null
+    }
+  ],
+  "status": "partial",
+  "total_seconds": 149.084,
+  "qa_flags": [
+    "adjudicated_to_floorplan_1",
+    "label_only_grouping",
+    "no_doors_detected",
+    "not_to_scale_disclaimer",
+    "room_area_disagrees_with_printed"
+  ]
+}

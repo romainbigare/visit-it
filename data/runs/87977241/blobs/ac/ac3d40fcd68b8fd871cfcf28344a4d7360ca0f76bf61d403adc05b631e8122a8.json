@@ -1,0 +1,148 @@
+{
+  "schema": "scale/v1",
+  "listing_id": "87977241",
+  "scale": 1.067526,
+  "log_scale": 0.065344,
+  "sigma_log": 0.027927,
+  "constraints": [
+    {
+      "kind": "plan_room_area",
+      "detail": "p3<-bedroom_0",
+      "target": 10.4636,
+      "observed": 10.1201,
+      "power": 2,
+      "weight": 3.0,
+      "residual_log": -0.09731,
+      "residual_pct": 4.986,
+      "source": "plan_ocr",
+      "used": true
+    },
+    {
+      "kind": "plan_room_area",
+      "detail": "p4<-bedroom_1",
+      "target": 10.4636,
+      "observed": 9.5733,
+      "power": 2,
+      "weight": 3.0,
+      "residual_log": -0.04176,
+      "residual_pct": 2.11,
+      "source": "plan_ocr",
+      "used": true
+    },
+    {
+      "kind": "plan_room_area",
+      "detail": "p0<-kitchen",
+      "target": 14.4936,
+      "observed": 12.171,
+      "power": 2,
+      "weight": 3.0,
+      "residual_log": 0.04396,
+      "residual_pct": 2.222,
+      "source": "plan_ocr",
+      "used": true
+    },
+    {
+      "kind": "plan_room_area",
+      "detail": "p2<-living_room",
+      "target": 13.167,
+      "observed": 10.9699,
+      "power": 2,
+      "weight": 3.0,
+      "residual_log": 0.05187,
+      "residual_pct": 2.627,
+      "source": "plan_ocr",
+      "used": true
+    },
+    {
+      "kind": "plan_total_area",
+      "detail": "footprint vs sum of rooms",
+      "target": 53.61,
+      "observed": 46.7496,
+      "power": 2,
+      "weight": 0.8,
+      "residual_log": 0.00624,
+      "residual_pct": 0.313,
+      "source": "plan_vectorisation",
+      "used": true
+    },
+    {
+      "kind": "stated_area",
+      "detail": "listing floor area",
+      "target": 62.0,
+      "observed": 46.7496,
+      "power": 2,
+      "weight": 0.9,
+      "residual_log": 0.15164,
+      "residual_pct": 7.877,
+      "source": "sizings:sqm",
+      "used": true
+    },
+    {
+      "kind": "ceiling_height",
+      "detail": "median room height",
+      "target": 2.55,
+      "observed": 2.4455,
+      "power": 1,
+      "weight": 1.0,
+      "residual_log": -0.0235,
+      "residual_pct": 2.378,
+      "source": "uk_prior",
+      "used": true
+    }
+  ],
+  "residual_rms_pct": 7.793,
+  "quality": 0.938,
+  "plausibility": {
+    "n_rooms": 5,
+    "ceiling_plausible_frac": 0.8,
+    "median_ceiling_m": 2.611,
+    "max_extent_m": 3.908,
+    "any_room_over_12m": false
+  },
+  "self_consistency": {
+    "n_rooms_checked": 4,
+    "median_abs_pct": 4.678,
+    "within_10pct_frac": 0.75,
+    "per_room": [
+      {
+        "detail": "p3<-bedroom_0",
+        "printed_m2": 10.464,
+        "reconstructed_m2": 11.533,
+        "error_pct": 10.22,
+        "used": true
+      },
+      {
+        "detail": "p4<-bedroom_1",
+        "printed_m2": 10.464,
+        "reconstructed_m2": 10.91,
+        "error_pct": 4.26,
+        "used": true
+      },
+      {
+        "detail": "p0<-kitchen",
+        "printed_m2": 14.494,
+        "reconstructed_m2": 13.87,
+        "error_pct": -4.3,
+        "used": true
+      },
+      {
+        "detail": "p2<-living_room",
+        "printed_m2": 13.167,
+        "reconstructed_m2": 12.501,
+        "error_pct": -5.05,
+        "used": true
+      }
+    ]
+  },
+  "cross_check": {
+    "estimates": {
+      "plan_channel": 1.0623,
+      "photo_channel": 1.0427
+    },
+    "max_disagreement_pct": 1.85,
+    "within_15pct": true
+  },
+  "confidence": 0.938,
+  "qa_flags": [],
+  "timing_s": 0.001
+}

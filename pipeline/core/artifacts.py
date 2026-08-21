@@ -211,7 +211,11 @@ class ArtifactStore:
         dest.parent.mkdir(parents=True, exist_ok=True)
         if not dest.exists():
             dest.write_bytes(data)
-        (self.latest / name).write_bytes(data)
+        # Binary names carry a path ("rooms/<id>/geometry.npz"), so the convenience
+        # copy needs its directories made.
+        convenience = self.latest / name
+        convenience.parent.mkdir(parents=True, exist_ok=True)
+        convenience.write_bytes(data)
         return {"name": name, "sha256": sha, "bytes": len(data),
                 "uri": name, "path": str(dest)}
 
