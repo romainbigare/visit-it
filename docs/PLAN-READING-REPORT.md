@@ -279,7 +279,7 @@ a handful of plans from scratch if we ever want a clean measurement.
 
 ## 6c. Raster2Seq: what it is good at, and the one thing holding it back
 
-Run on our plans (`notebooks/plan_reading_colab.ipynb`) it does what the wall model
+Run on our plans (`notebooks/plan_reading_modal.ipynb`) it does what the wall model
 cannot: it predicts **which rooms exist, what type each is, and how they fit together**,
 directly, with no captions read. Open-plan spaces stay whole. Unlabelled WCs, cupboards and
 hallways are found. That is the half of the problem our watershed has always guessed at.
@@ -326,6 +326,35 @@ more — growing a room until it meets a wall puts its edge on a wall, which is 
 this metric asks for, so read that last row as "the mechanism works", not as a head-to-head
 result. The real number comes from the notebook, on real predictions.
 
+### The score has a blind spot, and three attempts to close it failed
+
+Outline-on-wall asks whether a room's edge lies on a wall. **A room that has ballooned out
+past the outer wall still has its edge on a wall — the outside of one — so it scores well
+while being obviously wrong to the eye.** It shows up as long triangular spikes running out
+into the page margin, and it is visible on most plans in the set once you look for it.
+
+The cause is `structure_hull`: rooms are allowed to grow anywhere inside the **convex hull**
+of the drawing, and a convex hull of an L-shaped or bay-fronted building includes the garden
+in the crook of the L. Measured across the set, the hull is on average **7× the building's
+real footprint**.
+
+Three ways to measure the spill automatically, all tried, none usable yet:
+
+| attempt | why it failed |
+|---|---|
+| flood-fill inward from the page edge to find what the walls enclose | the outer wall has gaps at every external door and bay, so the flood leaks and the "footprint" comes out at 5% of the page |
+| close the ink into a silhouette and fill it | works on some plans (78% of room area inside on one), collapses to 7% on a thin-line drawing where closing does not connect the outline |
+| overlap between rooms | comes back at 100% on all 25 — the watershed produces disjoint regions by construction, so the spikes never overlap, they just cover blank page |
+
+So the number in every table on this page is measuring something real but incomplete, and
+`notebooks/plan_reading_modal.ipynb` says so where it reports it. **Until this is closed,
+the four-panel pictures are the arbiter, not the score.**
+
+Fixing the *cause* is the more useful move than measuring the symptom: replace the convex
+hull with a real footprint, and the rooms have nowhere to spill to. That needs a footprint
+method that survives a gappy outer wall, which is exactly what the three attempts above
+failed at — so it is a real piece of work, not a tweak.
+
 ### The two models are complementary, not competing
 
 | | Raster2Seq | the wall model |
@@ -350,7 +379,7 @@ That is an integration of three things we have, not new research.
 ### Ranked
 
 All six are implemented and measured, one per section, in
-[`notebooks/plan_reading_colab.ipynb`](../notebooks/plan_reading_colab.ipynb).
+[`notebooks/plan_reading_modal.ipynb`](../notebooks/plan_reading_modal.ipynb).
 
 | | what | effort | what it buys |
 |---|---|---|---|

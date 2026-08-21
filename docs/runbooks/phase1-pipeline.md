@@ -77,7 +77,7 @@ Then run `notebooks/finetune_wallnet_colab.ipynb` on a Colab GPU and drop the re
 `plan_walls.safetensors` into `models/`. `python -m tools.fetch_wallnet --force` puts
 the original back if it turns out worse.
 
-Before doing any of that, run `notebooks/plan_reading_colab.ipynb` on a Colab GPU. It
+Before doing any of that, run `notebooks/plan_reading_modal.ipynb` on a Modal GPU. It
 tries six changes one at a time -- including pairing our wall model with a second model
 that finds rooms directly -- and measures every one on the same 25 plans. It needs no
 labels and no training, and it says which change to keep.
