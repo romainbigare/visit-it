@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://visit-it.internal/schemas/layout.json",
+  "title": "Stage 4 — room structure (one per room)",
+  "description": "Floor/ceiling/wall planes and the room polygon, in the room's own frame. Metres, but only up to the global scalar that stage 7 solves — `scale_applied` says whether that has happened yet.",
+  "type": "object",
+  "required": ["schema", "listing_id", "room_id", "polygon_m", "area_m2", "approximate", "confidence", "qa_flags"],
+  "properties": {
+    "schema": {"const": "layout/v1"},
+    "listing_id": {"type": "string"},
+    "room_id": {"type": "string"},
+    "room_label": {"oneOf": [{"$ref": "common.json#/$defs/room_label"}, {"type": "null"}]},
+    "engine": {"type": "string", "description": "mapanything | moge2 | colmap | synthetic"},
+    "n_views": {"type": "integer", "minimum": 0},
+    "up_axis": {"$ref": "common.json#/$defs/point3"},
+    "floor_h_m": {"type": ["number", "null"]},
+    "ceiling_h_m": {"type": ["number", "null"]},
+    "room_height_m": {"type": ["number", "null"]},
+    "polygon_m": {"$ref": "common.json#/$defs/polygon2"},
+    "area_m2": {"type": "number", "minimum": 0},
+    "extent_m": {"$ref": "common.json#/$defs/point2"},
+    "orientation_deg": {"type": "number", "description": "Dominant wall direction after Atlanta-world regularisation, degrees CCW from +x."},
+    "walls": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["normal", "offset_m"],
+        "properties": {
+          "normal": {"$ref": "common.json#/$defs/point2"},
+          "offset_m": {"type": "number"},
+          "inlier_frac": {"type": "number"},
+          "length_m": {"type": "number"},
+          "direction_index": {"type": "integer", "description": "Which Atlanta-world direction this wall snapped to."}
+        }
+      }
+    },
+    "apertures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["type"],
+        "properties": {
+          "aperture_id": {"type": "string"},
+          "type": {"enum": ["door", "window", "opening"]},
+          "centre_m": {"$ref": "common.json#/$defs/point3"},
+          "width_m": {"type": ["number", "null"]},
+          "height_m": {"type": ["number", "null"]},
+          "wall_index": {"type": ["integer", "null"]},
+          "confidence": {"$ref": "common.json#/$defs/confidence"},
+          "source": {"type": "string"}
+        }
+      }
+    },
+    "regularisation": {
+      "type": "object",
+      "properties": {
+        "model": {"enum": ["atlanta", "manhattan", "none"]},
+        "n_directions": {"type": "integer"},
+        "directions_deg": {"type": "array", "items": {"type": "number"}},
+        "snap_residual_deg": {"type": "number"},
+        "residual_m": {"type": "number"}
+      },
+      "description": "Atlanta world = a vertical up plus several horizontal wall directions, unlike Manhattan's exactly two. UK period stock (haussmannien-equivalent bay windows, angled returns) is not Manhattan."
+    },
+    "clipping": {
+      "type": "object",
+      "properties": {
+        "points_total": {"type": "integer"},
+        "points_kept": {"type": "integer"},
+        "reasons": {"type": "array", "items": {"type": "string"}}
+      },
+      "description": "Phase 0 saw 10-16 m horizontal extents on glazed city apartments — content seen through the windows. This records what got cut."
+    },
+    "scale_applied": {"type": "boolean", "default": false},
+    "approximate": {"type": "boolean", "description": "True when the polygon is a fallback (cuboid, or monocular single view) rather than a fitted footprint."},
+    "confidence": {"$ref": "common.json#/$defs/confidence"},
+    "qa_flags": {"$ref": "common.json#/$defs/qa_flags"},
+    "timing_s": {"$ref": "common.json#/$defs/timing_s"}
+  }
+}

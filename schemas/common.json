@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://visit-it.internal/schemas/common.json",
+  "title": "Shared definitions",
+  "description": "Types every artifact reuses. ARCHITECTURE §3: confidence and QA flags are not optional extras — they are how a listing gets routed to review instead of silently shipping wrong.",
+  "$defs": {
+    "confidence": {
+      "type": "number", "minimum": 0, "maximum": 1,
+      "description": "Stage's own belief in its output. Comparable within a stage, not across stages."
+    },
+    "qa_flags": {
+      "type": "array", "items": {"type": "string"}, "uniqueItems": true,
+      "description": "Machine-readable reasons a human might want to look. Free-form strings on purpose: a new failure mode should be flaggable the day it is seen, not the day the schema is bumped."
+    },
+    "provenance": {
+      "enum": ["photographed", "reconstructed", "inferred", "generated"],
+      "description": "AD-15. Kept for debuggability: a viewer that renders invented geometry identically to measured geometry is one we cannot debug."
+    },
+    "point2": {"type": "array", "items": {"type": "number"}, "minItems": 2, "maxItems": 2},
+    "point3": {"type": "array", "items": {"type": "number"}, "minItems": 3, "maxItems": 3},
+    "polygon2": {
+      "type": "array", "items": {"$ref": "#/$defs/point2"}, "minItems": 3,
+      "description": "Closed ring, first point NOT repeated, counter-clockwise."
+    },
+    "timing_s": {"type": "number", "minimum": 0, "description": "M12. Wall clock for this stage, seconds."},
+    "room_label": {
+      "enum": ["living_room", "bedroom", "kitchen", "bathroom", "dining_room",
+               "hallway", "reception", "study", "utility", "wc", "storage",
+               "balcony", "garden", "other_room", "unknown"]
+    }
+  }
+}

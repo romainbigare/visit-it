@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://visit-it.internal/schemas/manifest.json",
+  "title": "Stage 0 — triage manifest",
+  "type": "object",
+  "required": ["schema", "listing_id", "images", "listing", "confidence", "qa_flags"],
+  "properties": {
+    "schema": {"const": "manifest/v1"},
+    "listing_id": {"type": "string"},
+    "images": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["image_id", "path", "type", "provenance"],
+        "properties": {
+          "image_id": {"type": "string"},
+          "path": {"type": "string"},
+          "type": {"enum": ["interior", "exterior", "floorplan", "epc", "map", "other"]},
+          "type_confidence": {"$ref": "common.json#/$defs/confidence"},
+          "room_label": {"oneOf": [{"$ref": "common.json#/$defs/room_label"}, {"type": "null"}]},
+          "room_confidence": {"type": ["number", "null"]},
+          "phash": {"type": ["string", "null"]},
+          "quality_flags": {"$ref": "common.json#/$defs/qa_flags"},
+          "provenance": {"enum": ["scraped", "self_captured", "partner_granted"]},
+          "width": {"type": ["integer", "null"]},
+          "height": {"type": ["integer", "null"]}
+        }
+      }
+    },
+    "plans": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["image_id", "path"],
+        "properties": {
+          "image_id": {"type": "string"},
+          "path": {"type": "string"},
+          "max_side_px": {"type": ["integer", "null"]}
+        }
+      },
+      "description": "Plan assets, largest first. Phase 0 found ~half of plans carry a 'not to scale' disclaimer, so resolution is the thing that decides whether OCR works."
+    },
+    "listing": {
+      "type": "object",
+      "properties": {
+        "advertised_area_m2": {"type": ["number", "null"]},
+        "area_source": {"type": ["string", "null"]},
+        "room_count": {"type": ["integer", "null"]},
+        "bedrooms": {"type": ["integer", "null"]},
+        "bathrooms": {"type": ["integer", "null"]},
+        "floor": {"type": ["string", "null"]},
+        "source_text_refs": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "confidence": {"$ref": "common.json#/$defs/confidence"},
+    "qa_flags": {"$ref": "common.json#/$defs/qa_flags"},
+    "timing_s": {"$ref": "common.json#/$defs/timing_s"}
+  }
+}

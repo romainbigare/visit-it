@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://visit-it.internal/schemas/calibration.json",
+  "title": "Stage 1 — conditioning and intrinsics",
+  "description": "Phase 0's most consequential finding lives here: estate agents shoot at a median 98.6 degrees horizontal FOV, and depth without intrinsics is not geometry (AD-5).",
+  "type": "object",
+  "required": ["schema", "listing_id", "images", "qa_flags"],
+  "properties": {
+    "schema": {"const": "calibration/v1"},
+    "listing_id": {"type": "string"},
+    "images": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["image_id", "fov_x_deg"],
+        "properties": {
+          "image_id": {"type": "string"},
+          "fov_x_deg": {"type": "number", "exclusiveMinimum": 0, "maximum": 180},
+          "fov_y_deg": {"type": ["number", "null"]},
+          "intrinsics": {"type": ["array", "null"], "items": {"type": "array"}},
+          "engine": {"type": "string"},
+          "agreement": {"type": ["number", "null"], "description": "Cross-engine intrinsics agreement. Disagreement is the report §4.2 perspective-correction gate."},
+          "quality_flags": {"$ref": "common.json#/$defs/qa_flags"}
+        }
+      }
+    },
+    "confidence": {"$ref": "common.json#/$defs/confidence"},
+    "qa_flags": {"$ref": "common.json#/$defs/qa_flags"},
+    "timing_s": {"$ref": "common.json#/$defs/timing_s"}
+  }
+}

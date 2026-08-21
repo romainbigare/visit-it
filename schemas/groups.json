@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://visit-it.internal/schemas/groups.json",
+  "title": "Stage 2 — room groups",
+  "type": "object",
+  "required": ["schema", "listing_id", "groups", "qa_flags"],
+  "properties": {
+    "schema": {"const": "groups/v1"},
+    "listing_id": {"type": "string"},
+    "groups": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["group_id", "image_ids"],
+        "properties": {
+          "group_id": {"type": "string"},
+          "room_label": {"oneOf": [{"$ref": "common.json#/$defs/room_label"}, {"type": "null"}]},
+          "image_ids": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+          "confidence": {"$ref": "common.json#/$defs/confidence"},
+          "singleton": {"type": "boolean"},
+          "match_scores": {"type": "array", "items": {"type": "object"}}
+        }
+      }
+    },
+    "adjudication_log": {"type": "array", "items": {"type": "object"}},
+    "confidence": {"$ref": "common.json#/$defs/confidence"},
+    "qa_flags": {"$ref": "common.json#/$defs/qa_flags"},
+    "timing_s": {"$ref": "common.json#/$defs/timing_s"}
+  }
+}

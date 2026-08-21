@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://visit-it.internal/schemas/scene.json",
+  "title": "Stage 9 — packaged scene (the viewer's only input)",
+  "description": "Everything the viewer needs and nothing it does not. Note `advertised_area_m2`: ARCHITECTURE §5 says the viewer never displays a surface area other than the advertised figure — the model is scaled TO it, we do not publish a competing measurement.",
+  "type": "object",
+  "required": ["schema", "listing_id", "tier", "rooms", "waypoints", "units"],
+  "properties": {
+    "schema": {"const": "scene/v1"},
+    "listing_id": {"type": "string"},
+    "generated_at": {"type": "string"},
+    "tier": {"enum": ["A", "B"], "description": "A = plan-anchored arrangement (real). B = inferred arrangement (marked as such in the render)."},
+    "units": {"const": "metres"},
+    "profile": {"enum": ["instant", "standard", "premium"]},
+    "advertised_area_m2": {"type": ["number", "null"]},
+    "address": {"type": ["string", "null"]},
+    "shell": {
+      "type": ["object", "null"],
+      "properties": {
+        "uri": {"type": "string"},
+        "bytes": {"type": "integer"},
+        "triangles": {"type": "integer"},
+        "sha256": {"type": "string"}
+      }
+    },
+    "rooms": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["room_id", "polygon_m", "provenance"],
+        "properties": {
+          "room_id": {"type": "string"},
+          "label": {"oneOf": [{"$ref": "common.json#/$defs/room_label"}, {"type": "null"}]},
+          "display_name": {"type": "string"},
+          "polygon_m": {"$ref": "common.json#/$defs/polygon2"},
+          "centroid_m": {"$ref": "common.json#/$defs/point2"},
+          "height_m": {"type": "number"},
+          "area_m2": {"type": ["number", "null"]},
+          "provenance": {"$ref": "common.json#/$defs/provenance"},
+          "confidence": {"$ref": "common.json#/$defs/confidence"},
+          "photo_ids": {"type": "array", "items": {"type": "string"}},
+          "splats": {"type": ["object", "null"], "description": "Null in Phase 1. Phase 2 fills it."}
+        }
+      }
+    },
+    "waypoints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["waypoint_id", "position_m"],
+        "properties": {
+          "waypoint_id": {"type": "string"},
+          "room_id": {"type": ["string", "null"]},
+          "position_m": {"$ref": "common.json#/$defs/point3"},
+          "look_deg": {"type": "number"},
+          "kind": {"enum": ["room_centre", "doorway", "photo_pose"]},
+          "label": {"type": "string"}
+        }
+      }
+    },
+    "waypoint_edges": {
+      "type": "array",
+      "items": {"type": "array", "items": {"type": "string"}, "minItems": 2, "maxItems": 2}
+    },
+    "minimap": {
+      "type": "object",
+      "properties": {
+        "bounds_m": {"type": "array", "items": {"$ref": "common.json#/$defs/point2"}, "minItems": 2, "maxItems": 2},
+        "footprint_m": {"oneOf": [{"$ref": "common.json#/$defs/polygon2"}, {"type": "null"}]}
+      }
+    },
+    "provenance_legend": {"type": "object", "additionalProperties": {"type": "string"}},
+    "confidence": {"$ref": "common.json#/$defs/confidence"},
+    "qa_flags": {"$ref": "common.json#/$defs/qa_flags"},
+    "timing_s": {"$ref": "common.json#/$defs/timing_s"}
+  }
+}

@@ -1,0 +1,408 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://visit-it.internal/schemas/plan.json",
+  "title": "Stage 5 \u2014 plan channel",
+  "description": "The spine of the product (AD-2). Photographs contain zero signal about inter-room placement; this artifact is where the arrangement actually comes from.",
+  "type": "object",
+  "required": [
+    "schema",
+    "listing_id",
+    "rooms",
+    "adjacency",
+    "confidence",
+    "qa_flags"
+  ],
+  "properties": {
+    "schema": {
+      "const": "plan/v1"
+    },
+    "listing_id": {
+      "type": "string"
+    },
+    "source_image": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "image_size_px": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "integer"
+      },
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "method": {
+      "type": "string"
+    },
+    "preprocess": {
+      "type": "object",
+      "properties": {
+        "deskew_deg": {
+          "type": "number"
+        },
+        "binarise": {
+          "type": "string"
+        },
+        "upscaled_to_px": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "border_cropped_px": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "px_per_metre": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "scale_source": {
+      "enum": [
+        "printed_dimensions",
+        "printed_area",
+        "stated_area",
+        "scale_ratio",
+        "none"
+      ]
+    },
+    "scale_candidates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "source",
+          "px_per_metre"
+        ],
+        "properties": {
+          "source": {
+            "type": "string"
+          },
+          "px_per_metre": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "weight": {
+            "type": "number"
+          },
+          "detail": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Kept even when unused. When two candidates disagree by more than a few percent, that IS the QA signal."
+    },
+    "rooms": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "room_id",
+          "polygon_px",
+          "area_px"
+        ],
+        "properties": {
+          "room_id": {
+            "type": "string"
+          },
+          "label": {
+            "oneOf": [
+              {
+                "$ref": "common.json#/$defs/room_label"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "label_text": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The literal OCR string, before mapping to a canonical label."
+          },
+          "label_confidence": {
+            "type": "number"
+          },
+          "polygon_px": {
+            "$ref": "common.json#/$defs/polygon2"
+          },
+          "polygon_m": {
+            "oneOf": [
+              {
+                "$ref": "common.json#/$defs/polygon2"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "area_px": {
+            "type": "number"
+          },
+          "area_m2": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "ocr_area_m2": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Area printed on the plan for this room, when one is."
+          },
+          "ocr_dims_m": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "number"
+            }
+          },
+          "centroid_px": {
+            "$ref": "common.json#/$defs/point2"
+          },
+          "centroid_m": {
+            "oneOf": [
+              {
+                "$ref": "common.json#/$defs/point2"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "extent_m": {
+            "oneOf": [
+              {
+                "$ref": "common.json#/$defs/point2"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "aperture_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "confidence": {
+            "$ref": "common.json#/$defs/confidence"
+          },
+          "edited_by_human": {
+            "type": "boolean",
+            "default": false
+          },
+          "qa_flags": {
+            "$ref": "common.json#/$defs/qa_flags"
+          },
+          "seeded_by": {
+            "enum": [
+              "caption",
+              "distance_peak"
+            ],
+            "description": "A caption is a human asserting a room exists; a distance peak is only a hint."
+          }
+        }
+      }
+    },
+    "adjacency": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "a",
+          "b"
+        ],
+        "properties": {
+          "a": {
+            "type": "string"
+          },
+          "b": {
+            "type": "string"
+          },
+          "shared_wall_m": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "door": {
+            "type": "boolean"
+          },
+          "door_position_m": {
+            "oneOf": [
+              {
+                "$ref": "common.json#/$defs/point2"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "confidence": {
+            "$ref": "common.json#/$defs/confidence"
+          }
+        }
+      }
+    },
+    "apertures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "aperture_id",
+          "type"
+        ],
+        "properties": {
+          "aperture_id": {
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "door",
+              "window",
+              "opening"
+            ]
+          },
+          "position_px": {
+            "$ref": "common.json#/$defs/point2"
+          },
+          "position_m": {
+            "oneOf": [
+              {
+                "$ref": "common.json#/$defs/point2"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "width_m": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "rooms": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "confidence": {
+            "$ref": "common.json#/$defs/confidence"
+          }
+        }
+      }
+    },
+    "ocr": {
+      "type": "object",
+      "properties": {
+        "raw_text": {
+          "type": "string"
+        },
+        "room_labels": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "areas_sqm": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "dims_m": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        },
+        "total_area_m2": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "scale_ratio": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "not_to_scale": {
+          "type": "boolean"
+        },
+        "boxes": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          },
+          "description": "Word boxes, needed to attach a label or a dimension to the right room."
+        }
+      }
+    },
+    "totals": {
+      "type": "object",
+      "properties": {
+        "plan_area_m2": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "stated_area_m2": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "area_ratio": {
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      }
+    },
+    "non_manhattan": {
+      "type": "boolean",
+      "default": false
+    },
+    "approximate": {
+      "type": "boolean",
+      "default": false
+    },
+    "confidence": {
+      "$ref": "common.json#/$defs/confidence"
+    },
+    "qa_flags": {
+      "$ref": "common.json#/$defs/qa_flags"
+    },
+    "timing_s": {
+      "$ref": "common.json#/$defs/timing_s"
+    }
+  }
+}

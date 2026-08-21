@@ -24,3 +24,10 @@ pytesseract>=0.3.10
 
 # Figures
 matplotlib>=3.8
+
+# Phase 1 — plan channel, geometry, shell
+scikit-image>=0.22
+shapely>=2.0
+networkx>=3.0
+jsonschema>=4.20
+pygltflib>=1.16

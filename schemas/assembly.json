@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://visit-it.internal/schemas/assembly.json",
+  "title": "Stage 6 — assembly",
+  "description": "The wrong-but-confident stage. Every match records its full cost breakdown and its margin over the runner-up, because when this is wrong the output still looks like a flat.",
+  "type": "object",
+  "required": ["schema", "listing_id", "method", "matches", "confidence", "qa_flags"],
+  "properties": {
+    "schema": {"const": "assembly/v1"},
+    "listing_id": {"type": "string"},
+    "method": {"enum": ["plan", "doorway_chain", "inferred"]},
+    "matches": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["room_id", "plan_room_id", "cost"],
+        "properties": {
+          "room_id": {"type": "string"},
+          "plan_room_id": {"type": "string"},
+          "cost": {"type": "number"},
+          "cost_breakdown": {
+            "type": "object",
+            "additionalProperties": {"type": "number"},
+            "description": "Named terms, each already weighted. Sums to `cost`."
+          },
+          "margin": {"type": ["number", "null"], "description": "Cost gap to this room's next-best polygon. A small margin is the honest signal that the assignment is a coin flip."},
+          "pose_se2": {
+            "type": "object",
+            "properties": {
+              "tx_m": {"type": "number"},
+              "ty_m": {"type": "number"},
+              "theta_deg": {"type": "number"},
+              "flip": {"type": "boolean"}
+            }
+          },
+          "fit_iou": {"type": ["number", "null"]},
+          "confidence": {"$ref": "common.json#/$defs/confidence"},
+          "edited_by_human": {"type": "boolean", "default": false}
+        }
+      }
+    },
+    "unmatched_rooms": {"type": "array", "items": {"type": "string"}},
+    "unmatched_plan_rooms": {"type": "array", "items": {"type": "string"}},
+    "cost_matrix": {
+      "type": ["object", "null"],
+      "description": "Full room x polygon cost matrix, kept for the review console's assignment-nudge UI."
+    },
+    "refinement": {
+      "type": "object",
+      "properties": {
+        "iterations": {"type": "integer"},
+        "mean_iou_before": {"type": "number"},
+        "mean_iou_after": {"type": "number"}
+      }
+    },
+    "confidence": {"$ref": "common.json#/$defs/confidence"},
+    "qa_flags": {"$ref": "common.json#/$defs/qa_flags"},
+    "timing_s": {"$ref": "common.json#/$defs/timing_s"}
+  }
+}

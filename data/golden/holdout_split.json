@@ -1,0 +1,76 @@
+{
+  "version": "v1",
+  "key": "visit-it/holdout/v1",
+  "frozen_at": "2026-08-20T23:31:01+00:00",
+  "n_listings": 30,
+  "n_dev": 10,
+  "n_holdout": 20,
+  "holdout_with_plan": 16,
+  "dev_with_plan": 8,
+  "strata": {
+    "noplan/250-450k": {
+      "total": 1,
+      "holdout": 1
+    },
+    "noplan/450-750k": {
+      "total": 1,
+      "holdout": 1
+    },
+    "noplan/750-infk": {
+      "total": 4,
+      "holdout": 2
+    },
+    "plan/0-250k": {
+      "total": 4,
+      "holdout": 2
+    },
+    "plan/250-450k": {
+      "total": 7,
+      "holdout": 5
+    },
+    "plan/450-750k": {
+      "total": 6,
+      "holdout": 4
+    },
+    "plan/750-infk": {
+      "total": 7,
+      "holdout": 5
+    }
+  },
+  "dev": [
+    "175050533",
+    "175050626",
+    "87977241",
+    "90594978",
+    "91428111",
+    "91511466",
+    "91558374",
+    "91958238",
+    "92098362",
+    "92182410"
+  ],
+  "holdout": [
+    "159886049",
+    "161130452",
+    "166489172",
+    "169576625",
+    "170816573",
+    "172018976",
+    "172441955",
+    "174055022",
+    "87781278",
+    "89229111",
+    "90150621",
+    "90211176",
+    "91094415",
+    "91642188",
+    "91798662",
+    "91850037",
+    "91953234",
+    "91968666",
+    "92121960",
+    "92181366"
+  ],
+  "seal": "f6e3e3b2b4de4042f23127a76d1a56761235983cdcce6e91fc2076522fec70dd",
+  "rule": "The holdout is measured at gates only. No tuning, no threshold picking, no failure inspection on these listings. ROADMAP \u00a72, \u00a73."
+}

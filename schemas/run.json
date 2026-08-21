@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://visit-it.internal/schemas/run.json",
+  "title": "Run ledger record",
+  "description": "One row per pipeline run. This is where M12 (latency) and the re-run history live.",
+  "type": "object",
+  "required": ["run_id", "listing_id", "profile", "started_at", "stages", "status"],
+  "properties": {
+    "run_id": {"type": "string"},
+    "listing_id": {"type": "string"},
+    "profile": {"enum": ["instant", "standard", "premium"]},
+    "started_at": {"type": "string"},
+    "finished_at": {"type": ["string", "null"]},
+    "code_version": {"type": ["string", "null"]},
+    "from_stage": {"type": ["string", "null"]},
+    "stages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["stage", "status"],
+        "properties": {
+          "stage": {"type": "string"},
+          "status": {"enum": ["ok", "failed", "skipped", "cached"]},
+          "attempts": {"type": "integer"},
+          "seconds": {"type": "number"},
+          "budget_s": {"type": ["number", "null"]},
+          "over_budget": {"type": "boolean"},
+          "artifact": {"type": ["string", "null"]},
+          "artifact_sha256": {"type": ["string", "null"]},
+          "confidence": {"type": ["number", "null"]},
+          "qa_flags": {"$ref": "common.json#/$defs/qa_flags"},
+          "error": {"type": ["string", "null"]},
+          "engine": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "status": {"enum": ["ok", "failed", "partial"]},
+    "total_seconds": {"type": "number"},
+    "qa_flags": {"$ref": "common.json#/$defs/qa_flags"}
+  }
+}
