@@ -58,7 +58,7 @@ def _plan_features(plan: dict) -> list[dict]:
     return out
 
 
-def assemble(layouts: dict, plan: dict) -> dict:
+def assemble(layouts: dict, plan: dict, override: dict | None = None) -> dict:
     t0 = time.perf_counter()
     rooms = _room_features(layouts)
     plan_rooms = _plan_features(plan)
@@ -66,7 +66,32 @@ def assemble(layouts: dict, plan: dict) -> dict:
     if not plan_rooms:
         qa.append("plan_has_no_metric_polygons")
 
-    matches, unmatched_rooms, unmatched_plans, cost = assign(rooms, plan_rooms)
+    # A reviewer's pin is not a hint — it is the answer. Pinned rooms and their
+    # polygons come out of the assignment problem entirely, so the solver spends
+    # its freedom on what is actually still in doubt.
+    ov = override or {}
+    pins: dict[str, str] = dict(ov.get("pin") or {})
+    rejected = set(ov.get("reject") or [])
+    free_rooms = [r for r in rooms if r["room_id"] not in pins and r["room_id"] not in rejected]
+    taken = set(pins.values())
+    free_plans = [p for p in plan_rooms if p["room_id"] not in taken]
+
+    matches, unmatched_rooms, unmatched_plans, cost = assign(free_rooms, free_plans)
+    if pins:
+        qa.append("override_applied")
+        from .matching import Match, build_cost_matrix
+        room_by_id = {r["room_id"]: r for r in rooms}
+        plan_by_id_all = {p["room_id"]: p for p in plan_rooms}
+        for rid, pid in pins.items():
+            r, p = room_by_id.get(rid), plan_by_id_all.get(pid)
+            if not r or not p:
+                continue
+            c, parts = build_cost_matrix([r], [p])
+            matches.append(Match(room_id=rid, plan_room_id=pid, cost=round(float(c[0][0]), 4),
+                                 breakdown=parts[0][0], margin=None, confidence=1.0))
+        unmatched_rooms = [r for r in unmatched_rooms if r not in pins]
+        unmatched_plans = [p for p in unmatched_plans if p not in taken]
+    unmatched_rooms += sorted(rejected)
     by_id = {r["room_id"]: r for r in rooms}
     plan_by_id = {p["room_id"]: p for p in plan_rooms}
 
@@ -81,7 +106,8 @@ def assemble(layouts: dict, plan: dict) -> dict:
         out.append({
             "room_id": m.room_id, "plan_room_id": m.plan_room_id, "cost": m.cost,
             "cost_breakdown": m.breakdown, "margin": m.margin, "pose_se2": p,
-            "fit_iou": iou, "confidence": m.confidence, "edited_by_human": False,
+            "fit_iou": iou, "confidence": m.confidence,
+            "edited_by_human": m.room_id in pins,
             "alternatives": [{"plan_room_id": a, "cost": c} for a, c in m.alternatives],
         })
 
@@ -130,4 +156,5 @@ def run(ctx: StageContext) -> StageResult:
         return StageResult(payload={}, skipped=True,
                            skip_reason="plan has no metric scale, so its polygons "
                                        "cannot be matched against metric rooms")
-    return StageResult(payload=assemble(layouts, plan), engine="hungarian_se2")
+    ov = (ctx.options.get("overrides") or {}).get("assembly")
+    return StageResult(payload=assemble(layouts, plan, ov), engine="hungarian_se2")

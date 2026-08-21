@@ -39,7 +39,8 @@ def _to_metres(poly_px, ppm: float, origin_px: tuple[float, float], height_px: i
             for x, y in poly_px]
 
 
-def build_plan(image_path: Path, listing: dict, *, engine: str = "raster") -> dict:
+def build_plan(image_path: Path, listing: dict, *, engine: str = "raster",
+               override: dict | None = None) -> dict:
     t0 = time.perf_counter()
     pi = preprocess.prepare(image_path)
     text = ocr_mod.read(pi.rgb)
@@ -50,6 +51,30 @@ def build_plan(image_path: Path, listing: dict, *, engine: str = "raster") -> di
     best, cands, per_room_scale, disagreement = planscale.solve(
         vec.rooms, footprint_px, text.total_area_m2, stated, text.scale_ratio)
     ppm = best.px_per_metre if best else None
+
+    ov = override or {}
+    edited: set[str] = set()
+    if ov.get("px_per_metre"):
+        ppm = float(ov["px_per_metre"])
+        best = planscale.ScaleCandidate("printed_dimensions", ppm, 6.0, "set by a reviewer")
+        cands = cands + [best]
+        disagreement = None
+    for rid, patch in (ov.get("rooms") or {}).items():
+        for r in vec.rooms:
+            if r.room_id != rid:
+                continue
+            if "label" in patch:
+                r.label = patch["label"]
+                r.label_confidence = 1.0
+            if "polygon_px" in patch:
+                r.polygon_px = [[float(x), float(y)] for x, y in patch["polygon_px"]]
+                r.area_px = geom.area(r.polygon_px)
+                r.centroid_px = geom.centroid(r.polygon_px)
+            if "drop" in patch and patch["drop"]:
+                r.area_px = 0.0
+            edited.add(rid)
+    if edited:
+        vec.rooms = [r for r in vec.rooms if r.area_px > 0]
 
     apertures = topology.find_apertures(vec.labels, vec.rooms, ppm)
     tol = max(3.0, (ppm or 50.0) * 0.06)
@@ -96,9 +121,10 @@ def build_plan(image_path: Path, listing: dict, *, engine: str = "raster") -> di
             "centroid_m": (_to_metres([r.centroid_px], ppm, origin, h_px)[0] if ppm else None),
             "extent_m": ([round(long_px / ppm, 3), round(short_px / ppm, 3)] if ppm else None),
             "aperture_ids": ap_by_room.get(r.room_id, []),
-            "confidence": conf,
+            "confidence": 1.0 if r.room_id in edited else conf,
             "qa_flags": sorted(set(flags)),
-            "edited_by_human": False,
+            "seeded_by": r.seeded_by,
+            "edited_by_human": r.room_id in edited,
         })
 
     plan_area_m2 = round(footprint_px / ppm ** 2, 2) if ppm else None
@@ -117,6 +143,8 @@ def build_plan(image_path: Path, listing: dict, *, engine: str = "raster") -> di
         qa.append("no_room_labels")
     if not any(a.kind == "door" for a in apertures):
         qa.append("no_doors_detected")
+    if edited or ov.get("px_per_metre"):
+        qa.append("override_applied")
     qa += sorted({f for r in rooms_out for f in r["qa_flags"]})
 
     payload = {
@@ -252,5 +280,6 @@ def run(ctx: StageContext) -> StageResult:
         return StageResult(payload={}, skipped=True,
                            skip_reason="listing has no floor-plan asset (Tier B, Phase 3)")
     engine = ctx.profile.engine("5-plan", "raster")
-    payload = build_plan(path, ctx.listing, engine=engine)
+    payload = build_plan(path, ctx.listing, engine=engine,
+                         override=(ctx.options.get("overrides") or {}).get("plan"))
     return StageResult(payload=payload, engine=engine)

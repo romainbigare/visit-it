@@ -1,7 +1,7 @@
 {
   "schema": "scene/v1",
   "listing_id": "87977241",
-  "generated_at": "2026-08-21T00:26:46+00:00",
+  "generated_at": "2026-08-21T00:41:45+00:00",
   "tier": "A",
   "units": "metres",
   "profile": "standard",
@@ -197,7 +197,7 @@
         8.898,
         1.55
       ],
-      "look_deg": -162.86,
+      "look_deg": 36.82,
       "kind": "room_centre",
       "label": "Reception"
     },
@@ -209,7 +209,7 @@
         4.278,
         1.55
       ],
-      "look_deg": -93.15,
+      "look_deg": 141.95,
       "kind": "room_centre",
       "label": "Bedroom"
     },
@@ -221,7 +221,7 @@
         1.424,
         1.55
       ],
-      "look_deg": 86.85,
+      "look_deg": -144.46,
       "kind": "room_centre",
       "label": "Bedroom"
     },
@@ -233,7 +233,7 @@
         7.918,
         1.55
       ],
-      "look_deg": 17.14,
+      "look_deg": 46.91,
       "kind": "room_centre",
       "label": "Kitchen"
     },
@@ -245,7 +245,7 @@
         7.096,
         1.55
       ],
-      "look_deg": -94.65,
+      "look_deg": -141.4,
       "kind": "room_centre",
       "label": "Dining room"
     },
@@ -265,7 +265,7 @@
   "waypoint_edges": [
     [
       "w_bedroom_0",
-      "w_bedroom_1"
+      "w_living_room"
     ],
     [
       "w_bathroom",
@@ -276,12 +276,12 @@
       "w_living_room"
     ],
     [
-      "w_bedroom_0",
-      "w_living_room"
-    ],
-    [
       "w_a0",
       "w_bathroom"
+    ],
+    [
+      "w_bedroom_0",
+      "w_bedroom_1"
     ]
   ],
   "minimap": {
@@ -417,5 +417,5 @@
     "not_to_scale_disclaimer",
     "room_area_disagrees_with_printed"
   ],
-  "timing_s": 0.001
+  "timing_s": 0.0
 }

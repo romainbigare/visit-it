@@ -20,7 +20,7 @@ import numpy as np
 
 from ..core import geom
 from ..core.stages import StageContext, StageResult, register_stage
-from . import planes
+from . import apertures, planes
 
 log = logging.getLogger("layout.stage")
 
@@ -44,6 +44,8 @@ def layout_from_points(points: np.ndarray, confidence: np.ndarray | None,
     poly = planes.footprint_polygon(kept[:, :2], dirs)
     poly = geom.ensure_ccw(poly)
     walls = planes.fit_walls(kept[:, :2], poly)
+    aps = (apertures.detect(kept, poly, lo, hi)
+           if (lo is not None and hi is not None) else [])
     area = geom.area(poly)
     long_m, short_m, orient_deg = geom.oriented_extent(poly)
 
@@ -66,6 +68,8 @@ def layout_from_points(points: np.ndarray, confidence: np.ndarray | None,
         qa.append("walls_largely_unobserved")
     if n_views < 2:
         qa.append("monocular_single_view")
+    if not aps:
+        qa.append("no_apertures_detected")
 
     approximate = n_views < 2 or "walls_largely_unobserved" in qa
     conf = _confidence(height, area, walls, n_views, qa)
@@ -86,7 +90,7 @@ def layout_from_points(points: np.ndarray, confidence: np.ndarray | None,
         "extent_m": [round(long_m, 4), round(short_m, 4)],
         "orientation_deg": round(float(dirs[0]), 3),
         "walls": walls,
-        "apertures": [],                        # stage 4b (photo apertures) fills these
+        "apertures": [a.to_dict(i) for i, a in enumerate(aps)],
         "regularisation": {
             "model": "atlanta",
             "n_directions": len(dirs),

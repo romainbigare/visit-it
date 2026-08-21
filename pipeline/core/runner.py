@@ -55,8 +55,19 @@ def run_listing(listing: dict, *, profile: str = "standard", from_stage: str | N
     rec = RunRecord(run_id=run_id, listing_id=listing_id, profile=prof.name,
                     started_at=_now(), code_version=code_version(),
                     from_stage=wanted[0] if wanted else None)
+    opts = dict(options or {})
+    # Human corrections survive a re-run, so a listing a reviewer fixed stays fixed
+    # when the nightly batch reprocesses it.
+    from .overrides import load as load_overrides
+    stored = load_overrides(listing_id, store_root)
+    if stored:
+        opts.setdefault("overrides", stored)
+        rec_flags = ["override_applied"]
+    else:
+        rec_flags = []
     ctx = StageContext(listing_id=listing_id, listing=listing, store=store, profile=prof,
-                       golden_root=golden_root, options=options or {})
+                       golden_root=golden_root, options=opts)
+    rec.qa_flags = rec_flags
 
     blocked: set[str] = set()
     t_run = time.perf_counter()

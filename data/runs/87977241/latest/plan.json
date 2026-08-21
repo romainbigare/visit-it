@@ -252,6 +252,7 @@
       "aperture_ids": [],
       "confidence": 0.989,
       "qa_flags": [],
+      "seeded_by": "caption",
       "edited_by_human": false
     },
     {
@@ -356,6 +357,7 @@
       ],
       "confidence": 0.841,
       "qa_flags": [],
+      "seeded_by": "caption",
       "edited_by_human": false
     },
     {
@@ -529,6 +531,7 @@
       "qa_flags": [
         "room_area_disagrees_with_printed"
       ],
+      "seeded_by": "caption",
       "edited_by_human": false
     },
     {
@@ -730,6 +733,7 @@
       "aperture_ids": [],
       "confidence": 0.99,
       "qa_flags": [],
+      "seeded_by": "caption",
       "edited_by_human": false
     },
     {
@@ -915,6 +919,7 @@
       "aperture_ids": [],
       "confidence": 0.985,
       "qa_flags": [],
+      "seeded_by": "caption",
       "edited_by_human": false
     }
   ],
@@ -1515,5 +1520,5 @@
     "not_to_scale_disclaimer",
     "room_area_disagrees_with_printed"
   ],
-  "timing_s": 3.617
+  "timing_s": 237.992
 }

@@ -88,6 +88,13 @@
         "written_at": "2026-08-21T00:26:46+00:00",
         "run_id": "20260821T002505-704759",
         "seen_count": 1
+      },
+      {
+        "version": 4,
+        "sha256": "22559fc64fc09eee1d479b93736d8bef1ede2fefb74556d32b1709e2560caed1",
+        "written_at": "2026-08-21T00:41:45+00:00",
+        "run_id": "20260821T003747-477979",
+        "seen_count": 1
       }
     ],
     "4-layout": [
@@ -120,6 +127,20 @@
         "written_at": "2026-08-21T00:26:46+00:00",
         "run_id": "20260821T002505-704759",
         "seen_count": 1
+      },
+      {
+        "version": 3,
+        "sha256": "232ab29016a723d09537b5f0dc9a44e7831bc8f03d2ddcd5c22dd3c2c8c963d7",
+        "written_at": "2026-08-21T00:37:30+00:00",
+        "run_id": "20260821T003728-93ab89",
+        "seen_count": 1
+      },
+      {
+        "version": 4,
+        "sha256": "8d3582b6a3005778cca8ed646ea0624eb2898981e08f671444e8670843820166",
+        "written_at": "2026-08-21T00:41:45+00:00",
+        "run_id": "20260821T003747-477979",
+        "seen_count": 1
       }
     ],
     "7-scale": [
@@ -130,6 +151,20 @@
         "run_id": "20260821T002158-e75444",
         "seen_count": 2,
         "last_seen_at": "2026-08-21T00:26:46+00:00"
+      },
+      {
+        "version": 2,
+        "sha256": "b7689ce1f56f8a6db63b37f04c8aefc3eb6d253329d722ce51bc09dc1bd6c207",
+        "written_at": "2026-08-21T00:37:30+00:00",
+        "run_id": "20260821T003728-93ab89",
+        "seen_count": 1
+      },
+      {
+        "version": 3,
+        "sha256": "ac3d40fcd68b8fd871cfcf28344a4d7360ca0f76bf61d403adc05b631e8122a8",
+        "written_at": "2026-08-21T00:41:45+00:00",
+        "run_id": "20260821T003747-477979",
+        "seen_count": 1
       }
     ],
     "8-shell": [
@@ -146,6 +181,20 @@
         "written_at": "2026-08-21T00:26:46+00:00",
         "run_id": "20260821T002505-704759",
         "seen_count": 1
+      },
+      {
+        "version": 3,
+        "sha256": "241bcc569b293f93c8e4c4ca8ef85ed16bd841f41e9fddad6a0ecfcd8fdaed24",
+        "written_at": "2026-08-21T00:37:30+00:00",
+        "run_id": "20260821T003728-93ab89",
+        "seen_count": 1
+      },
+      {
+        "version": 4,
+        "sha256": "5c436fbfc3f04ecf170482941d11b2a1dcffc1cdca69124c2ced93ed1fecc8f4",
+        "written_at": "2026-08-21T00:41:45+00:00",
+        "run_id": "20260821T003747-477979",
+        "seen_count": 1
       }
     ],
     "9-package": [
@@ -161,6 +210,20 @@
         "sha256": "d78c3880d052adaa0e9be874b59395755731037dd18923d215720af133b21e47",
         "written_at": "2026-08-21T00:26:47+00:00",
         "run_id": "20260821T002505-704759",
+        "seen_count": 1
+      },
+      {
+        "version": 3,
+        "sha256": "4102574c4317d7803ffe5be670b8cacb95dda396f1199576e657fe2b6079149d",
+        "written_at": "2026-08-21T00:37:30+00:00",
+        "run_id": "20260821T003728-93ab89",
+        "seen_count": 1
+      },
+      {
+        "version": 4,
+        "sha256": "04ce2c6dc569eda14c29b951b78dd53637b3c634905743ea60326ab97398b440",
+        "written_at": "2026-08-21T00:41:45+00:00",
+        "run_id": "20260821T003747-477979",
         "seen_count": 1
       }
     ]

@@ -248,5 +248,5 @@
   "qa_flags": [
     "low_assignment_margin"
   ],
-  "timing_s": 0.055
+  "timing_s": 0.054
 }
