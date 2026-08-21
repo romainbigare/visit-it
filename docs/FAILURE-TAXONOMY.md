@@ -1,0 +1,31 @@
+# Failure taxonomy
+
+A standing rule of every sprint (ROADMAP §6): **a failure mode goes in here the
+second time it is seen.** The value is not the list — it is that the top of the
+list is what the next sprint burns down, and that every entry names the QA flag
+that detects it, so "how often does this happen" is a query rather than an
+argument.
+
+Entries are ordered by how much they cost, not by how interesting they are.
+
+| # | Failure | Seen in | Detected by | Mitigation | Status |
+|---|---|---|---|---|---|
+| F1 | **Room type confusions drive wrong assignments.** hall↔bedroom and dining↔living are the leaders the report predicted; on our set the live one is a photo-channel room with no matching plan polygon at all (a bathroom photographed, no bathroom polygon vectorised) being forced into whatever polygon is left. | Assembly, most listings with ≥5 rooms | `low_assignment_margin`, per-match `margin` and `confidence` | Label affinity costs make the *expected* confusions cheap; a match above cost 0.72 is refused rather than forced; the assignment-nudge UI fixes the rest in seconds | Mitigated, not solved |
+| F2 | **Small rooms are not vectorised.** Bathrooms, WCs, hallways and cupboards are often unlabelled on the plan and too small for a distance-transform peak to survive the size floor, so they never become polygons — and then the photo-channel room for them has nowhere to go, which causes F1. | Plan channel, ~most listings | `unclaimed_interior_area`, and the gap between `plan_area_m2` and `stated_area_m2` | Lower the unlabelled-room floor once we can tell a cupboard from a segmentation sliver; the learned vectoriser is the real answer | Open — the largest single source of error |
+| F3 | **Monocular polygons are rectangles.** One ultra-wide photo does not support a concave footprint, so stage 4 returns the oriented bounding box. A room with an alcove comes out as its bounding box, which inflates its area by 10-20%. | Every room, Phase 1 by design | `monocular_single_view`, `approximate: true` | Stage 4 v2 (S8): plane fitting on multi-view pointmaps. The artifact contract does not change | Open by design — closes in Phase 2 |
+| F4 | **Window content becomes room.** Pointmap models return geometry for what is *through* the glass; Phase 0 measured 10-16 m "rooms" on glazed city apartments. | Stage 4, glazed flats | `clipping.reasons`, `room_over_12m_across` | Radial + height clipping before any wall fitting, reported per room | Fixed |
+| F5 | **OCR drops the decimal point.** "5.8m" is read as "58m". A single mangled caption is a 10× error in one scale constraint. | Plan OCR, several listings | `scale_constraint_rejected` on the stage-7 residuals | A guarded repair (only when the raw reading is implausible and the repaired one is not), plus MAD-based outlier rejection in the scale solve so one bad constraint cannot move the flat | Fixed |
+| F6 | **OCR reads the imperial line as metric.** UK plans print `3.96 x 3.66` above `13'0 x 12'0`; tesseract sometimes returns only the second, and `13.0 x 12.0` is a plausible-looking metric room. | Plan OCR | `room_area_disagrees_with_printed` | Candidate scoring demotes readings next to a foot mark and promotes ones next to an `m`; a demoted-only reading is reinterpreted *as feet* rather than discarded | Fixed |
+| F7 | **Greyscale-plus-alpha plans read as black.** A PNG in `LA` mode converted straight to RGB composites onto black, and every threshold downstream inverts. | Plan preprocessing, review console thumbnails | Visible instantly in the contact sheet; silent otherwise | Alpha is composited onto white on load, everywhere an image is opened | Fixed |
+| F8 | **Two storeys on one sheet.** A maisonette's plan draws one outline per floor. Phase 1 builds a single storey. | Plan channel, maisonettes | `multiple_plan_outlines` | Largest outline kept, flagged. Multi-storey is out of Phase 1 scope | Known limitation |
+| F9 | **"Up" is ambiguous in a symmetric room.** Normal-PCA on a cloud with as much wall as floor gives an arbitrary leading eigenvector, and the room comes out rotated onto its side — a 2.4 m ceiling and a 4 m one look equally plausible in a table. | Stage 4, first implementation | `ceiling_outside_2.3_3.2m` | "Up" is now the direction under which the cloud stratifies into two dense layers, nudged by the camera's own up. Median area error on known rooms fell from ~7% to 1.3% | Fixed |
+| F10 | **A stage produces a plausible artifact from broken input.** The expensive kind of bug: the failure surfaces three stages later wearing a disguise. | Runner design | — | The DAG skips dependents of a failed stage rather than feeding them garbage; schema validation runs at the stage boundary and does not retry, because a malformed artifact is a code bug | Fixed by construction |
+| F12 | **A dual-name room is split into two polygons.** "RECEPTION / DINING ROOM" is one space with two room words in its caption. The clustering guard that stops two adjacent rooms' captions merging on dense plans splits it, and the watershed then gives each half a basin. | Plan channel, dual-purpose reception rooms | `unmatched_plan_polygons`, and a plan room count above the flat's actual room count | The guard already allows tight merges (the words in a slashed name nearly touch); the residual cases are where OCR loses the slash. Annotations record both halves as acceptable answers so a correct arrangement is not marked wrong | Partly mitigated |
+| F11 | **A flat grey render scores 12 dB and reads as "merely poor".** Phase 0. Numbers hide it; pictures do not. | Phase 0, stage 8 | — | The contact sheet renders every stage's output. This is why it exists | Fixed by construction |
+
+## What is not here
+
+Failure modes the roadmap expects that we have not seen yet, because the stage
+that produces them is a Phase 2 deliverable: splat floaters, mirror double-rooms,
+virtual-staging objects breaking multi-view consistency, grouping errors that
+survive to render. They will be added when they are seen twice, not before.

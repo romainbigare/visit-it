@@ -70,7 +70,14 @@ def blank(listing_id: str) -> dict:
         "method": "human",
         "rooms": [],          # [{plan_room_id, label, area_m2, method}]
         "adjacency": [],      # [[plan_room_id, plan_room_id]]
-        "assignment": {},     # {reconstructed_room_id: plan_room_id | null}
+        # {reconstructed_room_id: plan_room_id | [acceptable ids] | null}
+        # A list means the answer is genuinely ambiguous — two identical bedrooms,
+        # or one room drawn as two polygons because its caption reads
+        # "RECEPTION / DINING ROOM". Forcing one answer there would mark a correct
+        # arrangement wrong, which is a worse error than the one it prevents.
+        # null means "no polygon for this room exists", and the correct behaviour
+        # is to leave it unmatched.
+        "assignment": {},
         "notes": "",
     }
 
@@ -122,6 +129,15 @@ def derive(golden: Path, store_root: Path | None = None, overwrite: bool = False
         save(golden, lid, payload)
         made += 1
     return {"derived": made, "kept_human": skipped, "no_plan_artifact": no_plan}
+
+
+def is_correct(truth, got: str | None) -> bool:
+    """Does ``got`` satisfy this annotation? Handles ambiguity and 'no polygon'."""
+    if truth is None:
+        return got is None
+    if isinstance(truth, list):
+        return got in truth
+    return got == truth
 
 
 def status(golden: Path) -> dict:

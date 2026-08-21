@@ -1,0 +1,84 @@
+name: ci
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install (CPU wheels — no GPU needed for the unit suite)
+        run: |
+          python -m pip install --quiet torch torchvision \
+            --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --quiet -r requirements.txt
+          sudo apt-get update -qq && sudo apt-get install -y -qq tesseract-ocr
+      - name: Unit tests
+        run: python -m unittest discover -s tests -q
+      - name: The frozen split is still frozen
+        # The seal is a checksum over the split itself. If someone edits the file,
+        # every gate measurement taken before that edit becomes uncomparable, so
+        # this failing is a real problem and not a lint.
+        run: python -m eval.holdout verify
+      - name: Artifact schemas parse and cross-reference
+        run: |
+          python - <<'PY'
+          import json, glob
+          from pipeline.core.artifacts import _validator
+          for p in sorted(glob.glob("schemas/*.json")):
+              json.loads(open(p).read())
+              name = p.split("/")[-1]
+              if name != "common.json":
+                  _validator(name)          # builds the registry, resolves every $ref
+          print("schemas ok")
+          PY
+
+  perf:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: |
+          python -m pip install --quiet torch torchvision \
+            --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --quiet -r requirements.txt
+      - name: Per-stage latency budgets
+        # ROADMAP §6 rule 7: a PR that pushes a stage over its budget needs an
+        # explicit waiver in the description. This is what notices.
+        run: python -m tests.perf_budgets
+
+  viewer:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: viewer
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: viewer/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run build
+      - name: Shell payload budget
+        # ARCHITECTURE §6 caps the shell at 1 MB. The budget that gets eaten
+        # silently is the one nobody checks.
+        run: node -e "
+          const fs=require('fs');
+          const f='public/fixtures/shell.glb';
+          if(!fs.existsSync(f)){console.log('no fixture shell; skipping');process.exit(0)}
+          const n=fs.statSync(f).size;
+          if(n>1048576){console.error('shell '+n+' bytes over the 1 MB budget');process.exit(1)}
+          console.log('shell '+n+' bytes, within budget');"

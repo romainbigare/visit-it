@@ -170,17 +170,18 @@ def m5_assignment(assembly: dict, annotation: dict | None) -> Metric:
     """
     if not annotation or not annotation.get("assignment"):
         return Metric("M5", "assignment accuracy", None, "%", "annotated", 0)
+    from .annotations import is_correct
     truth = annotation["assignment"]
     got = {m["room_id"]: m["plan_room_id"] for m in assembly.get("matches", [])}
-    checked = [(k, v) for k, v in truth.items() if k in got or v is not None]
+    checked = list(truth.items())
     if not checked:
         return Metric("M5", "assignment accuracy", None, "%", "annotated", 0)
-    correct = sum(1 for k, v in checked if got.get(k) == v)
+    correct = sum(1 for k, v in checked if is_correct(v, got.get(k)))
     return Metric("M5", "assignment accuracy", 100 * correct / len(checked), "%",
                   "annotated", len(checked),
                   {"correct": correct, "total": len(checked),
                    "wrong": [{"room_id": k, "expected": v, "got": got.get(k)}
-                             for k, v in checked if got.get(k) != v]})
+                             for k, v in checked if not is_correct(v, got.get(k))]})
 
 
 # --------------------------------------------------------------------------
@@ -222,10 +223,11 @@ def g1_criteria(scale: dict, layouts: dict, shell: dict, assembly: dict,
     # answer; without one we report the shell-vs-plan IoU as supporting evidence
     # and leave the criterion unjudged rather than passing it on a proxy.
     if annotation and annotation.get("assignment"):
+        from .annotations import is_correct
         truth = annotation["assignment"]
         got = {m["room_id"]: m["plan_room_id"] for m in assembly.get("matches", [])}
-        checked = [(k, v) for k, v in truth.items()]
-        correct = sum(1 for k, v in checked if got.get(k) == v)
+        checked = list(truth.items())
+        correct = sum(1 for k, v in checked if is_correct(v, got.get(k)))
         frac_ok = correct / len(checked) if checked else None
         out["arrangement"] = {"passed": (frac_ok is not None and frac_ok >= 0.7),
                               "value": frac_ok, "threshold": 0.7,

@@ -55,6 +55,42 @@ validate:
 test:
 	$(PY) -m unittest discover -s tests -q
 
+# --- Phase 1 -----------------------------------------------------------------
+.PHONY: holdout run run-dev score score-plan batch annotate console viewer viewer-build sheets
+
+holdout:                       ## freeze the dev/holdout split (once, then verify)
+	$(PY) -m eval.holdout freeze || $(PY) -m eval.holdout verify
+
+run:                           ## one listing end to end: make run LISTING=87977241
+	$(PY) -m pipeline run $(LISTING) --profile $(or $(PROFILE),standard)
+
+run-dev:                       ## the whole dev split
+	$(PY) -m pipeline run --all --split dev
+
+score:                         ## M1-M5 + the G1 criteria on the dev split
+	$(PY) -m eval.harness --split dev
+
+score-plan:                    ## the plan channel on its own (isolates C from B)
+	$(PY) -m eval.harness --split dev --channel plan
+
+batch:                         ## reprocess + score + regression check (nightly)
+	$(PY) -m eval.batch --split dev --check
+
+annotate:                      ## seed annotations from each plan's printed text
+	$(PY) -m eval.annotations derive && $(PY) -m eval.annotations status
+
+sheets:                        ## contact sheets for every listing that has run
+	$(PY) -m tools.build_sheets
+
+console:                       ## the review console
+	$(PY) -m services.review.server --port 8080
+
+viewer:                        ## the viewer, against the hand-authored fixture
+	$(PY) -m tools.export_scene fixture && cd viewer && npm install && npm run dev
+
+viewer-build:
+	$(PY) -m tools.export_scene export --all && cd viewer && npm run build
+
 clean-cache:
 	rm -rf $(VISITIT_DATA_HOME)/_archives
 
