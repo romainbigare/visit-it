@@ -254,8 +254,8 @@ def render(d: dict) -> str:
     A("| stage | p50 | p95 | max |\n|---|---|---|---|")
     for st, v in lat["stages"].items():
         A(f"| {st} | {v['p50']} | {v['p95']} | {v['max']} |")
-    A(f"| **end to end** | **{lat['end_to_end']['p50']}** | "
-      f"{lat['end_to_end']['p95']} | — |")
+    fr = lat["end_to_end_full_runs"]
+    A(f"| **end to end (full runs, n={fr['n']})** | **{fr['p50']}** | {fr['p95']} | — |")
 
     A("\n### QA flags, by how many listings raised them\n\n| flag | listings |\n|---|---|")
     for f, n in list(d["qa_flags"].items())[:20]:

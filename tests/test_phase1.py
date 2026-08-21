@@ -311,6 +311,31 @@ class TestScaleSolve(unittest.TestCase):
                        Constraint("ceiling_height", 2.55, 2.51, 1, "h")])
         self.assertGreater(quality(mixed, 3), quality(one_kind, 1))
 
+    def test_an_implausible_printed_area_makes_no_constraint(self):
+        # The single largest source of bad scale in Phase 1: OCR turning
+        # "4.04 x 2.59" into "1.2 x 1.08" gives two individually-plausible sides
+        # and a 1.3 m2 bedroom, which then drags the whole flat.
+        from pipeline.scale.stage import _printed_area
+        self.assertIsNone(_printed_area({"ocr_dims_m": [1.2, 1.08], "area_m2": 10.4}),
+                          "a 1.3 m2 room area should never become a constraint")
+        self.assertIsNone(_printed_area({"ocr_area_m2": 91.3, "area_m2": 10.7}),
+                          "a printed area 8x the drawn polygon is not that room")
+        self.assertAlmostEqual(
+            _printed_area({"ocr_dims_m": [4.04, 2.59], "area_m2": 10.1}), 10.46, places=2)
+
+    def test_grossly_disagreeing_scale_candidates_defer_to_the_area(self):
+        # A stated floor area can be a little wrong. It cannot be 3x wrong, so when
+        # the printed dimensions imply a 3x different scale, they were misread.
+        from pipeline.floorplan.planscale import ScaleCandidate, choose
+        dims = ScaleCandidate("printed_dimensions", 325.0, 3.0, "misread")
+        area = ScaleCandidate("stated_area", 105.0, 1.5, "listing")
+        best, _d = choose([dims, area])
+        self.assertEqual(best.source, "stated_area")
+        # ...and a mild disagreement still lets the printed dimensions win.
+        close = ScaleCandidate("stated_area", 142.0, 1.5, "listing")
+        best, _d = choose([ScaleCandidate("printed_dimensions", 153.0, 3.0, "ok"), close])
+        self.assertEqual(best.source, "printed_dimensions")
+
     def test_no_constraints_is_scale_one_not_a_crash(self):
         sol = solve([])
         self.assertEqual(sol.scale, 1.0)

@@ -1,5 +1,3 @@
-<!-- GENERATED from PHASE-1-REPORT.template.md by `python -m eval.fill_report`.
-     Edit the template, not this file. -->
 # Phase 1 — the measurable shell
 
 **Period:** 20–21 August 2026 · **Market:** UK · **Compute:** 4-vCPU sandbox, no GPU
@@ -100,13 +98,7 @@ Measured on the frozen holdout — sealed before any tuning, seal verified in CI
 Coverage is reported next to every number, because a pass rate over four listings
 and over fourteen are different claims.
 
-| criterion | holdout | dev | judged (holdout) | verdict |
-|---|---|---|---|---|
-| Self-consistency (±10% vs printed dimensions) | 0.14 pass · median 14.3 | 0.67 pass | 7/14 | **fails** |
-| Plausibility (≥80% ceilings 2.3–3.2 m, none >12 m) | 0.21 pass · median 0.67 | 0.38 pass | 14/14 | **fails** |
-| Arrangement (≥70% of rooms in the right polygon) | 0.5 pass · median 0.67 | 1.0 pass | 4/14 | **not judged** (coverage) |
-| Cross-model scale agreement (within 15%) | 0.46 pass · median 16.72 | 0.5 pass | 13/14 | **fails** |
-| Shell within the 1 MB budget | 1.0 pass · median 5526.0 | 1.0 pass | 14/14 | **passes** |
+<!--G1_TABLE-->
 
 > **A caveat that belongs at the top, not in a footnote.** Two bugs in the scale
 > constraints (§4) were found by *inspecting holdout failures* after the first
@@ -127,15 +119,7 @@ This is the criterion the roadmap leans on hardest, because it needs no external
 measurement: the listing supplies both the reconstruction and the number it has to
 agree with.
 
-| | value |
-|---|---|
-| median per-room area error against the printed dimensions | **10.82%** over 13 listings |
-| p90 across listings | 84.45% |
-| listings whose median is inside ±10% | 0.14 of 7 judged |
-| rooms inside ±10% of their own printed size | median 0.5 |
-| scale-solve residual RMS | median 14.56% |
-| scale constraints rejected as outliers | 8 across all listings |
-
+<!--SELF_CONSISTENCY-->
 
 The mechanism is sound and the failures are localised. Stage 7 solves **one**
 global scalar by weighted least squares **in log space**, so areas (which scale as
@@ -165,14 +149,7 @@ absurdly wider than it is tall — and **reports no height rather than a confide
 wrong one**. Outdoor spaces are excluded entirely; a balcony has no ceiling to be
 plausible about.
 
-| | value |
-|---|---|
-| ceiling height, where reported | median 2.57 m (p10 2.07, p90 2.88) |
-| rooms within 2.3–3.2 m | **82.0%** of 105 |
-| rooms where we refused to report a height | 66 (`floor_ceiling_gap_too_small` 37, `ceiling_or_floor_barely_observed` 27, `no_floor_ceiling_found` 2) |
-| listings meeting the ≥80% bar | 0.21 of 14 judged |
-| any room over 12 m across | none |
-
+<!--PLAUSIBILITY-->
 
 Refusing raised the *room-level* figure to 82% in band. It did not rescue the
 *listing-level* criterion, because refusing to answer for the bathrooms leaves many
@@ -189,11 +166,7 @@ The plan channel scales pixels by what the plan prints; the photo channel scales
 metres by the ceiling prior and, where apertures are found, by the 2.04 m door
 height. Two methods sharing no model and no input.
 
-| | value |
-|---|---|
-| disagreement between the plan-channel and photo-channel estimates | median **15.63%** (p90 26.68%) over 21 listings |
-| listings within 15% | 0.46 of 13 judged |
-
+<!--CROSS_MODEL-->
 
 The median disagreement is 16.7% — just outside the bar, which is the signature of
 a systematic offset rather than noise. The most likely source is F3: every Phase 1
@@ -211,14 +184,7 @@ annotated by eye, with the vectorised polygons overlaid on each plan, recording
 genuine ambiguity as a set of acceptable answers and omitting rooms whose truth is
 indeterminate rather than guessing.
 
-| | value |
-|---|---|
-| holdout listings with arrangement truth | 4 of 14 scored |
-| annotation coverage of plan-bearing listings | 29.0% |
-| rooms placed in an acceptable polygon (M5) | median 66.67% over 21 rooms |
-| listings meeting the ≥70% bar | 0.5 |
-| shell-vs-plan footprint IoU (supporting evidence, not the criterion) | median 0.37 |
-
+<!--ARRANGEMENT-->
 
 **We are not claiming this criterion either way.** Four annotated holdout listings
 is not a measurement. What the annotations do show, consistently, is that *when the
@@ -300,21 +266,7 @@ someone will try it again.
 
 ## 5. Cost and latency
 
-Measured over 159 runs on four CPU cores, no GPU.
-
-| stage | p50 (s) | p95 (s) | share of the run |
-|---|---|---|---|
-| 0-triage | 4.396 | 10.037 | 5% |
-| 1-conditioning | 0.0 | 0.0 | 0% |
-| 2-grouping | 0.0 | 0.0 | 0% |
-| 3-geometry | 76.996 | 94.794 | 88% |
-| 4-layout | 2.244 | 4.089 | 3% |
-| 5-plan | 3.811 | 59.062 | 4% |
-| 6-assembly | 0.044 | 0.066 | 0% |
-| 7-scale | 0.001 | 0.002 | 0% |
-| 8-shell | 0.004 | 0.006 | 0% |
-| 9-package | 0.001 | 0.002 | 0% |
-| **end to end (full runs, n=33)** | **87.627** | 149.084 | 100% |
+<!--LATENCY-->
 Stage 3 is 85–95% of the wall clock on a full run and all of it is GPU work being
 done on a CPU. Phase 0 measured MoGe-2 at 0.364 s/image on a free T4 against 14.4 s
 on four CPU cores — a 39× speedup — which puts a GPU listing at a handful of
@@ -350,17 +302,7 @@ clean pre-fix reading and the post-fix one.
 
 ## 7. Gate G1 — honest assessment
 
-| criterion | status |
-|---|---|
-| ≥30 listings processed end to end | 30/30 run; 22 reached the shell |
-| Holdout frozen before any tuning | sealed, and the seal is checked in CI |
-| Self-consistency within ±10% | 0.14 of 7 judged |
-| Plausibility: ≥80% ceilings 2.3–3.2 m, none over 12 m | 0.21 of 14 judged |
-| Arrangement: ≥70% of rooms in the right polygon | 4 listings annotated — not enough coverage to judge the gate |
-| Cross-model scale within 15% | 0.46 of 13 judged |
-| Shell loads under 2 s desktop | median 5168.0 bytes, 0 over the 1 MB budget; measured load under 100 ms in the headless browser |
-| Eval harness running with a recorded baseline | M1–M5 + the G1 criteria, plan-channel isolation, nightly batch with regression alerts |
-| Latency instrumented per stage (M12) | end to end p50 87.627 s on CPU; budgets asserted in CI |
+<!--G1_ASSESSMENT-->
 
 **Not passed.** One criterion of five.
 
@@ -447,109 +389,4 @@ python -m eval.harness --split dev       # M1-M5 and the G1 criteria
 python -m eval.fill_report               # refreshes every table in this document
 ```
 
-30/30 listings have been run (24 carry a floor plan). Split: 10 dev / 20 holdout (16 of the holdout carry a plan).
-
-
-### Stage completion
-
-| stage | ok | partial/skipped | failed |
-|---|---|---|---|
-| 6-assembly | 22 | 8 | 0 |
-| 7-scale | 22 | 8 | 0 |
-| 8-shell | 22 | 8 | 0 |
-| 9-package | 22 | 8 | 0 |
-
-### Plan channel (stage 5) — 25 listings
-
-| | value |
-|---|---|
-| scale source | printed_dimensions 12, stated_area 8, none 3, printed_area 2 |
-| rooms found per listing | median 7.0 (p10 2.4, p90 16.0) |
-| rooms carrying a label | 63% |
-| doors found per listing | median 1.0 |
-| adjacency edges per listing | median 3.0 |
-| plan area / stated area | median 1.0 (n=18) |
-| carry a 'not to scale' disclaimer | 48% |
-| stage confidence | median 0.497 |
-
-### Geometry and layout (stages 3-4) — 30 listings
-
-| | value |
-|---|---|
-| rooms reporting a ceiling height | 105 |
-| rooms where we refused to report one | 66 (floor_ceiling_gap_too_small 37, ceiling_or_floor_barely_observed 27, no_floor_ceiling_found 2) |
-| ceiling height | median 2.574 m (p10 2.07, p90 2.88) |
-| within 2.3-3.2 m | 82% |
-
-### Assembly (stage 6) — 22 listings
-
-| | value |
-|---|---|
-| rooms matched per listing | median 5.0 |
-| reconstructed rooms left unmatched | median 0.5 |
-| plan polygons left unmatched | median 2.0 |
-| cost margin over the runner-up | median 0.037 |
-| polygon fit (IoU after SE(2)) | median 0.517 |
-
-### Scale (stage 7) — 22 listings
-
-| | value |
-|---|---|
-| scale factor applied | median 1.069 (p10 0.77, p90 1.32) |
-| solve quality | median 0.803 |
-| residual RMS | median 14.563% |
-| **self-consistency vs printed dimensions** | median 10.816% (n=13) |
-| rooms within ±10% of their printed size | median 0.5 |
-| cross-model scale disagreement | median 15.63% |
-| constraints rejected as outliers | 8 total |
-
-### Shell (stages 8-9) — 22 listings
-
-| | value |
-|---|---|
-| glTF size | median 5168.0 bytes (max 6912) |
-| triangles | median 64.0 |
-| rooms in the shell | median 5.0 |
-| over the 1 MB budget | 0 |
-
-### Latency (M12) — 159 runs
-
-| stage | p50 | p95 | max |
-|---|---|---|---|
-| 0-triage | 4.396 | 10.037 | 117.885 |
-| 1-conditioning | 0.0 | 0.0 | 0.0 |
-| 2-grouping | 0.0 | 0.0 | 0.0 |
-| 3-geometry | 76.996 | 94.794 | 422.039 |
-| 4-layout | 2.244 | 4.089 | 5.082 |
-| 5-plan | 3.811 | 59.062 | 237.997 |
-| 6-assembly | 0.044 | 0.066 | 0.078 |
-| 7-scale | 0.001 | 0.002 | 0.002 |
-| 8-shell | 0.004 | 0.006 | 0.007 |
-| 9-package | 0.001 | 0.002 | 0.002 |
-| **end to end (full runs, n=33)** | **87.627** | 149.084 | — |
-
-### QA flags, by how many listings raised them
-
-| flag | listings |
-|---|---|
-| `not_to_scale_disclaimer` | 24 |
-| `room_area_disagrees_with_printed` | 20 |
-| `low_assignment_margin` | 20 |
-| `scale_candidates_disagree` | 20 |
-| `no_doors_detected` | 17 |
-| `under_80pct_plausible_ceilings` | 15 |
-| `unmatched_plan_polygons` | 13 |
-| `plan_area_disagrees_with_stated` | 12 |
-| `cross_model_scale_disagreement` | 11 |
-| `rooms_omitted_from_shell` | 11 |
-| `unmatched_reconstructed_rooms` | 11 |
-| `large_regularisation_snap` | 10 |
-| `scale_constraints_disagree` | 9 |
-| `room_dominates_plan` | 8 |
-| `multiple_plan_outlines` | 8 |
-| `scale_constraint_rejected` | 7 |
-| `self_consistency_outside_10pct` | 6 |
-| `poor_polygon_fit` | 4 |
-| `no_room_captions` | 4 |
-| `no_room_labels` | 4 |
-
+<!--APPENDIX-->

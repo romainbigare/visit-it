@@ -40,9 +40,12 @@ def g1_table(reports: dict[str, dict]) -> str:
         h = reports["holdout"]["summary"].get("g1", {}).get(key, {})
         d = reports["dev"]["summary"].get("g1", {}).get(key, {})
         judged = h.get("listings_judged", 0)
+        total = judged + h.get("listings_unjudged", 0)
         rate = h.get("pass_rate")
-        if judged == 0:
-            verdict = "**not judged**"
+        if judged == 0 or (total and judged < total * 0.5):
+            # A pass rate over a third of the listings is not a gate measurement.
+            # Reporting it as "marginal" would let coverage masquerade as evidence.
+            verdict = "**not judged** (coverage)"
         elif rate is not None and rate >= 0.7:
             verdict = "**passes**"
         elif rate is not None and rate >= 0.5:
@@ -132,12 +135,13 @@ def latency_block(s: dict) -> str:
     lines = [f"Measured over {lat['n_runs']} runs on four CPU cores, no GPU.\n",
              "| stage | p50 (s) | p95 (s) | share of the run |",
              "|---|---|---|---|"]
-    total = lat["end_to_end"]["p50"] or 1.0
+    total = lat["end_to_end_full_runs"]["p50"] or 1.0
     for st, v in lat["stages"].items():
         share = 100 * (v["p50"] or 0) / total
         lines.append(f"| {st} | {v['p50']} | {v['p95']} | {share:.0f}% |")
-    lines.append(f"| **end to end** | **{lat['end_to_end']['p50']}** | "
-                 f"{lat['end_to_end']['p95']} | 100% |")
+    fr = lat["end_to_end_full_runs"]
+    lines.append(f"| **end to end (full runs, n={fr['n']})** | **{fr['p50']}** | "
+                 f"{fr['p95']} | 100% |")
     if lat.get("caveat"):
         lines.append(f"\n> {lat['caveat']}")
     return "\n".join(lines)
@@ -171,7 +175,7 @@ def assessment_block(s: dict, reports: dict) -> str:
          "M1–M5 + the G1 criteria, plan-channel isolation, nightly batch with "
          "regression alerts"),
         ("Latency instrumented per stage (M12)",
-         f"end to end p50 {s['latency']['end_to_end']['p50']} s on CPU; budgets "
+         f"end to end p50 {s['latency']['end_to_end_full_runs']['p50']} s on CPU; budgets "
          f"asserted in CI"),
     ]
     lines = ["| criterion | status |", "|---|---|"]
@@ -185,6 +189,11 @@ def main(argv=None) -> int:
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--golden", type=Path, default=Path("data/golden"))
     ap.add_argument("--store", type=Path, default=None)
+    # The template holds the prose and the markers; the report is generated from
+    # it. Filling in place would consume the markers and make the report
+    # regenerable exactly once, which is the same as not being regenerable.
+    ap.add_argument("--template", type=Path,
+                    default=Path("docs/PHASE-1-REPORT.template.md"))
     ap.add_argument("--report", type=Path, default=Path("docs/PHASE-1-REPORT.md"))
     a = ap.parse_args(argv)
 
@@ -199,7 +208,7 @@ def main(argv=None) -> int:
     (out / "phase1_summary.md").write_text(phase1_summary.render(s))
     (out / "phase1_summary.json").write_text(json.dumps(s, indent=2) + "\n")
 
-    text = a.report.read_text()
+    text = a.template.read_text()
     blocks = {
         "G1_TABLE": g1_table(reports),
         "SELF_CONSISTENCY": self_consistency_block(s, reports),
@@ -210,10 +219,16 @@ def main(argv=None) -> int:
         "G1_ASSESSMENT": assessment_block(s, reports),
         "APPENDIX": phase1_summary.render(s),
     }
+    left = []
     for mark, body in blocks.items():
+        if f"<!--{mark}-->" not in text:
+            left.append(mark)
         text = text.replace(f"<!--{mark}-->", body)
-    a.report.write_text(text)
-    print(f"filled {len(blocks)} blocks into {a.report}")
+    a.report.write_text(
+        "<!-- GENERATED from PHASE-1-REPORT.template.md by `python -m eval.fill_report`.\n"
+        "     Edit the template, not this file. -->\n" + text)
+    print(f"filled {len(blocks) - len(left)} blocks into {a.report}"
+          + (f"; template is missing markers for {', '.join(left)}" if left else ""))
     return 0
 
 

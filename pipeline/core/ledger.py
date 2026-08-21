@@ -88,6 +88,7 @@ def latency_report(root: Path | None = None, profile: str | None = None) -> dict
     root = root or data_root()
     per_stage: dict[str, list[float]] = {}
     totals: list[float] = []
+    full_totals: list[float] = []
     runs = 0
     for listing_dir in sorted(root.glob("*/runs")) if root.exists() else []:
         for p in listing_dir.glob("*.json"):
@@ -96,6 +97,11 @@ def latency_report(root: Path | None = None, profile: str | None = None) -> dict
                 continue
             runs += 1
             totals.append(r.get("total_seconds", 0.0))
+            # Partial re-runs (--from 6) dominate the ledger once anyone starts
+            # iterating, and mixing them into the end-to-end figure reports a
+            # three-second pipeline that has never once run end to end.
+            if r.get("from_stage") in (None, "0-triage"):
+                full_totals.append(r.get("total_seconds", 0.0))
             for s in r.get("stages", []):
                 if s.get("status") in ("ok", "cached"):
                     per_stage.setdefault(s["stage"], []).append(s.get("seconds", 0.0))
@@ -113,8 +119,13 @@ def latency_report(root: Path | None = None, profile: str | None = None) -> dict
         "n_runs": runs,
         "caveat": ("percentiles over fewer than 20 runs are indicative only"
                    if runs < 20 else None),
-        "end_to_end": {"p50": pct(totals, 0.5), "p95": pct(totals, 0.95),
-                       "mean": round(statistics.fmean(totals), 3) if totals else None},
+        "end_to_end_full_runs": {
+            "n": len(full_totals), "p50": pct(full_totals, 0.5),
+            "p95": pct(full_totals, 0.95),
+            "mean": round(statistics.fmean(full_totals), 3) if full_totals else None},
+        "end_to_end_all_runs": {
+            "n": len(totals), "p50": pct(totals, 0.5), "p95": pct(totals, 0.95),
+            "note": "includes partial re-runs, which is why it is lower"},
         "stages": {
             s: {"n": len(v), "p50": pct(v, 0.5), "p95": pct(v, 0.95),
                 "max": round(max(v), 3)}

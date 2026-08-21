@@ -28,6 +28,38 @@ from .solve import CEILING_PRIOR_M, DOOR_HEIGHT_M, Constraint, Solution, quality
 log = logging.getLogger("scale.stage")
 
 
+#: A room's printed area has to be a room-sized number. Guarding the individual
+#: sides is not enough: OCR that turns "4.04 x 2.59" into "1.2 x 1.08" produces two
+#: individually-plausible sides and a 1.3 m² bedroom, which then drags the whole
+#: flat's scale. Measured on the golden set, this was the single largest source of
+#: bad scale in Phase 1.
+ROOM_AREA_PLAUSIBLE_M2 = (1.5, 120.0)
+
+
+def _printed_area(plan_room: dict) -> float | None:
+    """The area the plan prints for this room, if it is believable.
+
+    Two guards, and the second matters more than the first. A printed size that
+    contradicts the polygon *drawn on the same plan* by more than a factor of two
+    is not a measurement of that room — it is OCR that has attached the wrong
+    caption, or misread it. Building a scale constraint from it is worse than
+    having no constraint, because the solver has no way to tell.
+    """
+    printed = None
+    if plan_room.get("ocr_dims_m") and len(plan_room["ocr_dims_m"]) == 2:
+        printed = plan_room["ocr_dims_m"][0] * plan_room["ocr_dims_m"][1]
+    elif plan_room.get("ocr_area_m2"):
+        printed = plan_room["ocr_area_m2"]
+    if not printed or not (ROOM_AREA_PLAUSIBLE_M2[0] <= printed <= ROOM_AREA_PLAUSIBLE_M2[1]):
+        return None
+    drawn = plan_room.get("area_m2")
+    if drawn and drawn > 0:
+        ratio = max(printed / drawn, drawn / printed)
+        if ratio > 2.0:
+            return None
+    return printed
+
+
 def build_constraints(layouts: dict, plan: dict | None, manifest: dict | None,
                       assembly: dict | None) -> list[Constraint]:
     cs: list[Constraint] = []
@@ -43,11 +75,7 @@ def build_constraints(layouts: dict, plan: dict | None, manifest: dict | None,
             p = plan_by_id.get(m["plan_room_id"])
             if not r or not p:
                 continue
-            printed = None
-            if p.get("ocr_dims_m") and len(p["ocr_dims_m"]) == 2:
-                printed = p["ocr_dims_m"][0] * p["ocr_dims_m"][1]
-            elif p.get("ocr_area_m2"):
-                printed = p["ocr_area_m2"]
+            printed = _printed_area(p)
             if printed and r.get("area_m2"):
                 cs.append(Constraint("plan_room_area", printed, r["area_m2"], 2,
                                      detail=f"{m['plan_room_id']}<-{m['room_id']}",

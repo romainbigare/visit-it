@@ -89,16 +89,36 @@ def from_area(total_px: float, area_m2: float | None, source: str,
     return ScaleCandidate(source, ppm, weight, f"{area_m2:.1f} m² over {total_px:.0f} px²")
 
 
+#: Above this, two candidates are not disagreeing about a detail — one of them is
+#: reading something that is not a room dimension.
+GROSS_DISAGREEMENT = 1.8
+
+
 def choose(candidates: list[ScaleCandidate]) -> tuple[ScaleCandidate | None, float | None]:
     """Pick by rank, then by weight. Returns ``(winner, max_disagreement_pct)``.
 
     We deliberately do *not* average the candidates. They measure different
     things — printed dimensions measure the drawing, a stated area measures the
     flat including its walls — and averaging them hides which one we trusted.
+
+    But rank is a tiebreak among *plausible* candidates, not a licence to ignore
+    the evidence. When the top-ranked candidate disagrees with a whole-flat area
+    by more than a factor of 1.8, it is not measuring the same building: a stated
+    floor area can be a little wrong, it cannot be 3x wrong. In that case the
+    area-derived candidate wins, and the QA flag says the plan's printed
+    dimensions were not believed.
     """
     if not candidates:
         return None, None
-    best = max(candidates, key=lambda c: (SOURCE_RANK.get(c.source, 0), c.weight))
+    ranked = sorted(candidates, key=lambda c: (-SOURCE_RANK.get(c.source, 0), -c.weight))
+    best = ranked[0]
+    area_based = [c for c in candidates if c.source in ("printed_area", "stated_area")]
+    if best.source == "printed_dimensions" and area_based:
+        sanity = max(area_based, key=lambda c: (SOURCE_RANK.get(c.source, 0), c.weight))
+        ratio = max(best.px_per_metre / sanity.px_per_metre,
+                    sanity.px_per_metre / best.px_per_metre)
+        if ratio > GROSS_DISAGREEMENT:
+            best = sanity
     vals = [c.px_per_metre for c in candidates]
     disagreement = (100 * (max(vals) - min(vals)) / max(vals)) if len(vals) > 1 else None
     return best, disagreement

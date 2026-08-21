@@ -8,6 +8,13 @@
     "holdout_with_plan": 16
   },
   "stage_completion": {
+    "4-layout": {
+      "ok": 30
+    },
+    "5-plan": {
+      "ok": 25,
+      "skipped": 5
+    },
     "6-assembly": {
       "ok": 22,
       "skipped": 8
@@ -28,10 +35,10 @@
   "plan_channel": {
     "listings": 25,
     "scale_source": {
-      "printed_dimensions": 12,
-      "stated_area": 8,
+      "printed_dimensions": 15,
+      "stated_area": 6,
       "none": 3,
-      "printed_area": 2
+      "printed_area": 1
     },
     "rooms_per_listing": {
       "n": 25,
@@ -46,7 +53,7 @@
     "doors_per_listing": {
       "n": 25,
       "median": 1.0,
-      "mean": 2.8,
+      "mean": 2.76,
       "p10": 0.0,
       "p90": 8.6,
       "min": 0,
@@ -63,8 +70,8 @@
     },
     "confidence": {
       "n": 25,
-      "median": 0.497,
-      "mean": 0.54,
+      "median": 0.5,
+      "mean": 0.545,
       "p10": 0.32,
       "p90": 0.82,
       "min": 0.277,
@@ -72,11 +79,11 @@
     },
     "area_ratio_vs_stated": {
       "n": 18,
-      "median": 1.0,
-      "mean": 0.95,
-      "p10": 0.5,
+      "median": 0.99,
+      "mean": 0.852,
+      "p10": 0.34,
       "p90": 1.24,
-      "min": 0.428,
+      "min": 0.105,
       "max": 1.874
     },
     "not_to_scale_fraction": 0.48,
@@ -223,14 +230,14 @@
       },
       {
         "listing_id": "90594978",
-        "scale_source": "printed_area",
-        "px_per_metre": 64.1297,
+        "scale_source": "printed_dimensions",
+        "px_per_metre": 32.3565,
         "n_rooms": 7,
         "n_labelled": 7,
         "n_doors": 1,
         "n_adjacency": 5,
-        "confidence": 0.57,
-        "plan_area_m2": 207.8,
+        "confidence": 0.65,
+        "plan_area_m2": 816.28,
         "stated_area_m2": null,
         "area_ratio": null,
         "not_to_scale": true
@@ -279,16 +286,16 @@
       },
       {
         "listing_id": "91968666",
-        "scale_source": "stated_area",
-        "px_per_metre": 105.4521,
+        "scale_source": "printed_dimensions",
+        "px_per_metre": 325.185,
         "n_rooms": 8,
         "n_labelled": 6,
-        "n_doors": 0,
+        "n_doors": 1,
         "n_adjacency": 6,
-        "confidence": 0.463,
-        "plan_area_m2": 103.0,
+        "confidence": 0.492,
+        "plan_area_m2": 10.83,
         "stated_area_m2": 103.0,
-        "area_ratio": 1.0,
+        "area_ratio": 0.105,
         "not_to_scale": false
       },
       {
@@ -321,16 +328,16 @@
       },
       {
         "listing_id": "89229111",
-        "scale_source": "stated_area",
-        "px_per_metre": 80.4091,
+        "scale_source": "printed_dimensions",
+        "px_per_metre": 212.96,
         "n_rooms": 10,
         "n_labelled": 8,
-        "n_doors": 2,
+        "n_doors": 0,
         "n_adjacency": 2,
-        "confidence": 0.48,
-        "plan_area_m2": 108.0,
+        "confidence": 0.51,
+        "plan_area_m2": 15.4,
         "stated_area_m2": 108.0,
-        "area_ratio": 1.0,
+        "area_ratio": 0.143,
         "not_to_scale": false
       },
       {
@@ -481,19 +488,19 @@
     "median_margin": {
       "n": 21,
       "median": 0.037,
-      "mean": 0.082,
-      "p10": -0.0,
-      "p90": 0.16,
+      "mean": 0.079,
+      "p10": 0.0,
+      "p90": 0.14,
       "min": -0.059,
       "max": 0.485
     },
     "mean_iou": {
       "n": 22,
-      "median": 0.517,
-      "mean": 0.506,
-      "p10": 0.35,
-      "p90": 0.7,
-      "min": 0.21,
+      "median": 0.462,
+      "mean": 0.448,
+      "p10": 0.22,
+      "p90": 0.67,
+      "min": 0.047,
       "max": 0.774
     },
     "rows": [
@@ -574,9 +581,9 @@
         "n_matched": 4,
         "n_unmatched_rooms": 2,
         "n_unmatched_plan": 3,
-        "median_margin": 0.1575,
-        "mean_iou": 0.7036,
-        "confidence": 0.274
+        "median_margin": 0.0432,
+        "mean_iou": 0.4039,
+        "confidence": 0.158
       },
       {
         "listing_id": "91094415",
@@ -610,9 +617,9 @@
         "n_matched": 6,
         "n_unmatched_rooms": 0,
         "n_unmatched_plan": 2,
-        "median_margin": 0.0049,
-        "mean_iou": 0.5423,
-        "confidence": 0.229
+        "median_margin": 0.0287,
+        "mean_iou": 0.0468,
+        "confidence": 0.181
       },
       {
         "listing_id": "161130452",
@@ -637,9 +644,9 @@
         "n_matched": 6,
         "n_unmatched_rooms": 0,
         "n_unmatched_plan": 4,
-        "median_margin": -0.0106,
-        "mean_iou": 0.5413,
-        "confidence": 0.212
+        "median_margin": 0.0166,
+        "mean_iou": 0.0523,
+        "confidence": 0.138
       },
       {
         "listing_id": "92182410",
@@ -702,44 +709,44 @@
     "scale_factor": {
       "n": 22,
       "median": 1.069,
-      "mean": 1.049,
+      "mean": 1.053,
       "p10": 0.77,
-      "p90": 1.32,
-      "min": 0.405,
+      "p90": 1.41,
+      "min": 0.276,
       "max": 1.595
     },
     "quality": {
       "n": 22,
-      "median": 0.803,
-      "mean": 0.816,
-      "p10": 0.71,
-      "p90": 0.91,
+      "median": 0.8,
+      "mean": 0.788,
+      "p10": 0.69,
+      "p90": 0.88,
       "min": 0.6,
-      "max": 0.959
+      "max": 0.937
     },
     "residual_rms_pct": {
       "n": 22,
-      "median": 14.563,
-      "mean": 30.336,
-      "p10": 2.25,
+      "median": 14.578,
+      "mean": 29.287,
+      "p10": 1.33,
       "p90": 39.06,
       "min": 0.002,
-      "max": 276.996
+      "max": 278.658
     },
     "self_consistency_pct": {
-      "n": 13,
-      "median": 10.816,
-      "mean": 35.273,
-      "p10": 5.83,
-      "p90": 84.45,
+      "n": 14,
+      "median": 11.212,
+      "mean": 31.78,
+      "p10": 5.59,
+      "p90": 70.96,
       "min": 4.699,
       "max": 201.645
     },
     "within_10pct": {
-      "n": 13,
+      "n": 14,
       "median": 0.5,
-      "mean": 0.432,
-      "p10": 0.0,
+      "mean": 0.542,
+      "p10": 0.05,
       "p90": 1.0,
       "min": 0.0,
       "max": 1.0
@@ -747,13 +754,13 @@
     "cross_disagreement_pct": {
       "n": 21,
       "median": 15.63,
-      "mean": 16.159,
-      "p10": 3.63,
-      "p90": 26.68,
+      "mean": 18.862,
+      "p10": 3.73,
+      "p90": 36.26,
       "min": 1.04,
-      "max": 48.21
+      "max": 72.17
     },
-    "constraints_rejected": 8,
+    "constraints_rejected": 18,
     "rows": [
       {
         "listing_id": "87977241",
@@ -769,15 +776,15 @@
       },
       {
         "listing_id": "172018976",
-        "scale": 1.103133,
-        "quality": 0.798,
-        "residual_rms_pct": 9.649,
-        "n_constraints": 4,
-        "n_rejected": 1,
-        "self_consistency_pct": 43.704,
-        "within_10pct": 0.0,
-        "ceiling_plausible_frac": 0.667,
-        "cross_disagreement_pct": 26.68
+        "scale": 1.173109,
+        "quality": 0.84,
+        "residual_rms_pct": 4.318,
+        "n_constraints": 5,
+        "n_rejected": 2,
+        "self_consistency_pct": 18.9,
+        "within_10pct": 0.5,
+        "ceiling_plausible_frac": 1.0,
+        "cross_disagreement_pct": 12.88
       },
       {
         "listing_id": "169576625",
@@ -829,15 +836,15 @@
       },
       {
         "listing_id": "87781278",
-        "scale": 0.54189,
-        "quality": 0.775,
-        "residual_rms_pct": 276.996,
-        "n_constraints": 3,
+        "scale": 1.049547,
+        "quality": 0.8,
+        "residual_rms_pct": 278.658,
+        "n_constraints": 5,
         "n_rejected": 0,
-        "self_consistency_pct": 94.637,
+        "self_consistency_pct": 87.164,
         "within_10pct": 0.0,
-        "ceiling_plausible_frac": 0.0,
-        "cross_disagreement_pct": 48.21
+        "ceiling_plausible_frac": 1.0,
+        "cross_disagreement_pct": 4.39
       },
       {
         "listing_id": "92098362",
@@ -853,15 +860,15 @@
       },
       {
         "listing_id": "90594978",
-        "scale": 1.294063,
-        "quality": 0.806,
-        "residual_rms_pct": 24.231,
+        "scale": 1.264208,
+        "quality": 0.69,
+        "residual_rms_pct": 23.076,
         "n_constraints": 4,
-        "n_rejected": 0,
-        "self_consistency_pct": 5.179,
+        "n_rejected": 1,
+        "self_consistency_pct": 9.503,
         "within_10pct": 1.0,
-        "ceiling_plausible_frac": 0.6,
-        "cross_disagreement_pct": 26.38
+        "ceiling_plausible_frac": 0.8,
+        "cross_disagreement_pct": 36.26
       },
       {
         "listing_id": "91094415",
@@ -901,15 +908,15 @@
       },
       {
         "listing_id": "91968666",
-        "scale": 0.958859,
-        "quality": 0.959,
-        "residual_rms_pct": 2.034,
-        "n_constraints": 3,
-        "n_rejected": 0,
-        "self_consistency_pct": null,
-        "within_10pct": null,
-        "ceiling_plausible_frac": 1.0,
-        "cross_disagreement_pct": 3.63
+        "scale": 0.275601,
+        "quality": 0.603,
+        "residual_rms_pct": 18.367,
+        "n_constraints": 6,
+        "n_rejected": 2,
+        "self_consistency_pct": 8.354,
+        "within_10pct": 0.667,
+        "ceiling_plausible_frac": 0.0,
+        "cross_disagreement_pct": 72.17
       },
       {
         "listing_id": "161130452",
@@ -937,15 +944,15 @@
       },
       {
         "listing_id": "89229111",
-        "scale": 0.774994,
-        "quality": 0.823,
-        "residual_rms_pct": 22.148,
-        "n_constraints": 4,
-        "n_rejected": 0,
-        "self_consistency_pct": 10.739,
-        "within_10pct": 0.0,
-        "ceiling_plausible_frac": 0.0,
-        "cross_disagreement_pct": 13.03
+        "scale": 0.809338,
+        "quality": 0.724,
+        "residual_rms_pct": 22.051,
+        "n_constraints": 6,
+        "n_rejected": 2,
+        "self_consistency_pct": 15.19,
+        "within_10pct": 0.333,
+        "ceiling_plausible_frac": 0.667,
+        "cross_disagreement_pct": 38.67
       },
       {
         "listing_id": "92182410",
@@ -964,10 +971,10 @@
         "scale": 1.161253,
         "quality": 0.7,
         "residual_rms_pct": 38.244,
-        "n_constraints": 8,
-        "n_rejected": 1,
-        "self_consistency_pct": 14.299,
-        "within_10pct": 0.2,
+        "n_constraints": 9,
+        "n_rejected": 2,
+        "self_consistency_pct": 24.033,
+        "within_10pct": 0.167,
         "ceiling_plausible_frac": 0.667,
         "cross_disagreement_pct": 16.72
       },
@@ -985,27 +992,27 @@
       },
       {
         "listing_id": "170816573",
-        "scale": 0.978217,
-        "quality": 0.9,
-        "residual_rms_pct": 12.465,
-        "n_constraints": 4,
+        "scale": 1.002558,
+        "quality": 0.884,
+        "residual_rms_pct": 14.525,
+        "n_constraints": 5,
         "n_rejected": 0,
-        "self_consistency_pct": 8.819,
+        "self_consistency_pct": 6.008,
         "within_10pct": 1.0,
         "ceiling_plausible_frac": 0.667,
-        "cross_disagreement_pct": 6.77
+        "cross_disagreement_pct": 9.79
       },
       {
         "listing_id": "91511466",
-        "scale": 1.316865,
-        "quality": 0.8,
-        "residual_rms_pct": 36.738,
-        "n_constraints": 4,
-        "n_rejected": 0,
-        "self_consistency_pct": 10.816,
-        "within_10pct": 0.0,
+        "scale": 1.467484,
+        "quality": 0.699,
+        "residual_rms_pct": 0.183,
+        "n_constraints": 5,
+        "n_rejected": 3,
+        "self_consistency_pct": 5.413,
+        "within_10pct": 0.5,
         "ceiling_plausible_frac": 0.5,
-        "cross_disagreement_pct": 18.66
+        "cross_disagreement_pct": 25.96
       },
       {
         "listing_id": "90211176",
@@ -1026,18 +1033,18 @@
     "bytes": {
       "n": 22,
       "median": 5168.0,
-      "mean": 4667.818,
-      "p10": 2484.4,
-      "p90": 5855.6,
+      "mean": 4635.091,
+      "p10": 2488.0,
+      "p90": 5931.6,
       "min": 1756,
       "max": 6912
     },
     "triangles": {
       "n": 22,
       "median": 64.0,
-      "mean": 58.0,
+      "mean": 57.455,
       "p10": 24.0,
-      "p90": 80.0,
+      "p90": 79.8,
       "min": 12,
       "max": 92
     },
@@ -1058,21 +1065,21 @@
     "low_assignment_margin": 20,
     "scale_candidates_disagree": 20,
     "no_doors_detected": 17,
-    "under_80pct_plausible_ceilings": 15,
+    "plan_area_disagrees_with_stated": 16,
     "unmatched_plan_polygons": 13,
-    "plan_area_disagrees_with_stated": 12,
-    "cross_model_scale_disagreement": 11,
+    "under_80pct_plausible_ceilings": 13,
     "rooms_omitted_from_shell": 11,
+    "scale_constraint_rejected": 11,
     "unmatched_reconstructed_rooms": 11,
+    "cross_model_scale_disagreement": 11,
     "large_regularisation_snap": 10,
-    "scale_constraints_disagree": 9,
+    "scale_constraints_disagree": 8,
     "room_dominates_plan": 8,
     "multiple_plan_outlines": 8,
-    "scale_constraint_rejected": 7,
-    "self_consistency_outside_10pct": 6,
-    "poor_polygon_fit": 4,
+    "poor_polygon_fit": 7,
     "no_room_captions": 4,
     "no_room_labels": 4,
+    "self_consistency_outside_10pct": 4,
     "no_plan_scale": 3,
     "low_resolution_plan": 3,
     "large_scale_correction": 2,
@@ -1082,19 +1089,12 @@
   "latency": {
     "metric": "M12",
     "profile": "all",
-    "n_runs": 159,
+    "n_runs": 69,
     "caveat": null,
-    "end_to_end_full_runs": {
-      "n": 33,
-      "p50": 87.627,
+    "end_to_end": {
+      "p50": 64.244,
       "p95": 149.084,
-      "mean": 108.13
-    },
-    "end_to_end_all_runs": {
-      "n": 159,
-      "p50": 3.371,
-      "p95": 101.443,
-      "note": "includes partial re-runs, which is why it is lower"
+      "mean": 62.067
     },
     "stages": {
       "0-triage": {
@@ -1128,31 +1128,31 @@
         "max": 5.082
       },
       "5-plan": {
-        "n": 83,
-        "p50": 3.811,
-        "p95": 59.062,
+        "n": 58,
+        "p50": 3.75,
+        "p95": 63.231,
         "max": 237.997
       },
       "6-assembly": {
-        "n": 116,
-        "p50": 0.044,
+        "n": 50,
+        "p50": 0.042,
         "p95": 0.066,
-        "max": 0.078
+        "max": 0.071
       },
       "7-scale": {
-        "n": 116,
+        "n": 50,
         "p50": 0.001,
-        "p95": 0.002,
+        "p95": 0.001,
         "max": 0.002
       },
       "8-shell": {
-        "n": 116,
+        "n": 50,
         "p50": 0.004,
         "p95": 0.006,
         "max": 0.007
       },
       "9-package": {
-        "n": 116,
+        "n": 50,
         "p50": 0.001,
         "p95": 0.002,
         "max": 0.002
