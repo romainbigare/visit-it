@@ -94,8 +94,12 @@ Before doing any of that, run `notebooks/plan_reading_modal.ipynb` on a Modal GP
 starts from the room-finder as published and tunes it: all five checkpoints the authors
 publish, the picture it is shown (cleaned, cropped, thresholded, strokes thickened), the
 plan cut into quarters, four views merged, and its own answer tidied. The last step pulls
-the corners onto our wall map, which is what stage 5 does anyway. Every step is measured on
-the same 25 plans and the notebook prints the recipe that won.
+the corners onto our wall map, which is what stage 5 does anyway.
+
+It is not automatic and is not meant to be. Every step is measured on the same 25 plans,
+draws all of them before and after the change, and then stops at a `True`/`False` cell. What
+you keep is what the next step builds on, and the notebook ends by printing the recipe you
+kept -- checkpoint, picture steps and reading -- along with the name to import.
 
 Two numbers, because either alone can be gamed: the share of the room names printed on the
 plan that land inside exactly one predicted room, and the share of each room edge that sits
