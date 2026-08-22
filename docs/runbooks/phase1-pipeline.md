@@ -87,14 +87,23 @@ python -m tools.import_room_predictions --clear   # back to the ink/wall reading
 ```
 
 `results.zip` comes from `notebooks/plan_reading_modal.ipynb`. With predictions in place
-stage 5 reports `method: room_finder_vectorise/v1` and flags how many of the rooms got
-their name from the plan rather than from the model.
+stage 5 reports `method: room_finder_vectorise/v1`, hands back **the outlines the model
+drew** (`outlines_as_predicted`), and names the rooms from the plan's own printed captions.
+A room the plan never named comes back unnamed, flagged `no_printed_name` with the model's
+own guess beside it. Both behaviours are one constant each in
+`pipeline/floorplan/vectorise.py` -- `KEEP_PREDICTED_OUTLINES` and `NAME_FROM_PLAN_ONLY` --
+and the reasoning is in [PLAN-READING-REPORT.md](../PLAN-READING-REPORT.md) section 8.
 
 Before doing any of that, run `notebooks/plan_reading_modal.ipynb` on a Modal GPU. It
 starts from the room-finder as published and tunes it: all five checkpoints the authors
 publish, the picture it is shown (cleaned, cropped, thresholded, strokes thickened), the
-plan cut into quarters, four views merged, and its own answer tidied. The last step pulls
-the corners onto our wall map, which is what stage 5 does anyway.
+plan cut into quarters, four views merged, and its own answer tidied. A last, optional step
+pulls the corners onto our wall map; it scores better and we do not ship it, so it is
+switched off -- section 8 of the report says why.
+
+Its toggles are set to the recipe we chose on 22 Aug: `cubicasa5k`, cleaned and thresholded,
+asked four ways. Run it top to bottom and it reproduces that; change a toggle and it
+explores from there.
 
 It is not automatic and is not meant to be. Every step is measured on the same 25 plans,
 draws all of them before and after the change, and then stops at a `True`/`False` cell. What
@@ -104,7 +113,7 @@ kept -- checkpoint, picture steps and reading -- along with the name to import.
 Two numbers, because either alone can be gamed: the share of the room names printed on the
 plan that land inside exactly one predicted room, and the share of each room edge that sits
 on a wall. A reading that deletes an awkward room loses on the first. Import a **room-finder**
-row, not the grown one; stage 5 does the growing itself.
+row -- the grown one is our own output and the importer refuses it.
 
 The contact sheet is the first thing to open, always. Phase 0's lesson stands: a
 flat grey render scored 12 dB and read as *merely poor* in a results table; only

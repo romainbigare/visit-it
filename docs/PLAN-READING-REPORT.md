@@ -399,11 +399,16 @@ Raster2Seq learns from room *polygons* with types. Same plans, a slower annotati
 25 plans is far too few either way. Worth doing after 1–3, not before — and if 1 works,
 the wall model is the only thing left that needs our labels at all.
 
+---
+
 ## 7. What to do next
 
 **Now, no cost:** `python -m tools.fetch_wallnet` puts the weights in place; without
 them stage 5 behaves exactly as before and says so in its QA flags. Nothing else in
 the pipeline changed, and no artifact contract moved (AD-4).
+
+> Written before section 8. Item 2 is what we did; items 1 and 4 are still open and are
+> carried into section 9. Kept as written so the order of events is legible.
 
 **Next, in this order:**
 
@@ -435,3 +440,107 @@ Keep it as the fallback if both of those disappoint, not as the next step.
 **Does this kill the project?** No. The reconstruction chain, the scale solve, the
 assembly and the viewer were never the weak link, and the weak link turned out to
 have an off-the-shelf answer that took an afternoon to wire in.
+
+---
+
+## 8. The reading we chose
+
+Settled 22 August 2026, after running every option on the 25 test plans and looking at
+every plan for every option. Reproduced by
+[`notebooks/plan_reading_modal.ipynb`](../notebooks/plan_reading_modal.ipynb), whose
+toggles are set to this recipe.
+
+| | |
+|---|---|
+| **model** | Raster2Seq, `cubicasa5k` checkpoint, 256 px |
+| **picture** | page levelled to white and every printed word painted out, then thresholded to pure black on white |
+| **reading** | asked four ways -- as it is, mirrored left-right, mirrored top-bottom, turned two degrees -- and the four answers merged, duplicates dropped |
+| **names** | ours: each caption printed on the plan goes to whichever room it was printed inside |
+| **scored** | **76%** -- rooms found **100%**, wall match **81%** |
+
+*Rooms found* is the share of the room names printed on the plan that land inside exactly
+one predicted room; inside none means a room was missed, inside two means it was split.
+*Wall match* is the share of each room's edge that sits on a wall. The headline is the two
+multiplied, so a reading cannot win by finding fewer rooms. Cropping to the drawing,
+thickening the strokes, the plan in four quarters and tidying the output were each tried,
+drawn on all 25 plans, and dropped.
+
+### The step we did not keep
+
+Growing the predicted rooms out to the wall map scores **better** -- wall match 81% to 91%
+on the same plans -- and we are not shipping it.
+
+The score it improves is a score about edges. What it changes is *whose* reading the
+outline is: growing replaces the model's answer with our watershed's answer to a different
+question, namely where the free space around this seed runs out. And it re-introduces the
+one failure that has never been measurable. A grown room can run out past the outer wall as
+a long spike, and outline-on-wall cannot see it, because a spike along the outside of a wall
+is still on a wall (F13). Four attempts at measuring that have now failed. Keeping the
+model's own outline avoids the failure by construction instead of by measurement, and a
+failure you have designed out beats one you are hoping to catch.
+
+The growing still happens, and has to: two rooms share a doorway only where their free space
+meets, so the *adjacency* is computed from grown regions. It just does not get to redraw the
+room. `KEEP_PREDICTED_OUTLINES` in [`pipeline/floorplan/vectorise.py`](../pipeline/floorplan/vectorise.py).
+
+### The names are ours
+
+A room-polygon model's vocabulary is its training set's. CubiCasa5K answers "Undefined" for
+anything it is unsure of and has no word at all for an airing cupboard; the plan prints
+"AIRING CUPBOARD" in plain English, and reading printed text is the half of this problem we
+are good at. So the geometry is the model's and the words are ours.
+
+A room the plan never names now arrives **unnamed**, rather than wearing the model's guess.
+The guess is kept on the record as a QA flag (`model_says_bedroom`) beside `no_printed_name`,
+so nothing is lost and nothing is claimed. `NAME_FROM_PLAN_ONLY`, same file. Both switches
+are one line each, and the old behaviour is still tested.
+
+---
+
+## 9. Next steps
+
+In order. Each of these is a thing we would know the answer to afterwards.
+
+**1. Re-run all 30 listings and re-measure end to end.** Everything in this report is
+measured on the plan channel in isolation. The question the project exists to answer is
+whether a better plan reading makes a better *walkthrough* -- and stage 5 feeds assembly,
+the scale solve and the shell. M1-M5 and the G1 bars, against the same holdout. Until this
+runs we do not know whether any of the plan work paid, and it is the cheapest thing on this
+list.
+
+**2. Move the recipe out of the notebook and into the repo.** The picture recipe (`clean`,
+`pure_lines`) and the four-way merge are notebook cells today, and the pipeline eats a zip
+of predictions made by hand. Whatever we ship has to hand the model the same picture the
+recipe won on, or the recipe is a result about a notebook rather than about the product.
+`pure_lines` and the merge belong beside `wallnet.whiten` and `wallnet.blank_text`, with the
+notebook importing them rather than defining its own.
+
+**3. Take the doors from the model rather than inferring them.** The `cubicasa5k` checkpoint
+predicts door and window instances -- classes 9 and 10 -- and `find_rooms` throws them away
+on import. We then infer doorways from where two grown regions touch, which is now a
+compromise rather than the sharp definition it was. The model's own doors are cheaper and
+probably better, and a walkthrough is exactly the product that needs to know where you can
+walk. Check it against the doors drawn on ten plans, by eye.
+
+**4. Decide what an unnamed room is called.** Under the plan-only policy above, a room the
+plan never labels reaches the shell with no name. Three options: leave it blank in the
+viewer; infer it from size and adjacency (a 2 m2 room off a bedroom is an ensuite); or use
+the photographs, which is what the rest of the pipeline is for. Count how many rooms this
+affects first -- it is a number we do not have, and it decides whether this is a footnote or
+a feature.
+
+**5. Put the GPU in the loop, or decide not to.** The room-finder needs a GPU and the
+pipeline runs on four CPU cores, so predictions are precomputed elsewhere and imported. That
+is fine for 30 listings and not fine for a service. Either a GPU step in the DAG or a batch
+pre-pass -- the choice belongs with the 5-10 s / GBP 0.05 target in
+[VARIANTS.md](VARIANTS.md), not with this report.
+
+**6. The failures still open.** F10 -- rooms coming out a few points smaller since the wall
+model landed -- is still open and still unexplained, and it is the one that moves the
+self-consistency metric. F13 is now avoided rather than fixed. F11 (door swings suppressed
+inconsistently) matters much less if 3 lands.
+
+**7. Fine-tuning, only if this plateaus.** It needs room polygons with types, which we do not
+have; `tools/annotate_walls.py` produces wall masks, which is a different label. A slower
+annotation job than the one we already declined to finish, and not worth starting before
+1-4 are done.

@@ -256,9 +256,18 @@ brought inside ±10%, the assembly stage does not work and the rest does not mat
 > because P2's splats are culled against room polygons, and culling against a wrong
 > polygon is worse than not culling.
 
+> **Amendment C (22 Aug 2026): we did not train one.** A published RoomFormer-class model
+> (Raster2Seq) turned out to read our plans well enough once we tuned *how* it is run rather
+> than *what* it knows — five checkpoints, the picture it is shown, and four views merged.
+> Measured recipe and decision: [docs/PLAN-READING-REPORT.md](docs/PLAN-READING-REPORT.md)
+> §8. Training remains the fallback if the recipe plateaus, and needs room-polygon labels we
+> do not have. The work below is amended accordingly.
+
 | Stream | Work |
 |---|---|
-| C | **Train the vectoriser.** RoomFormer-class, predicting room polygons directly. Pretrain on ResPlan (17K vector) + Swiss Dwellings (42K apartments, already downloaded and verified) + CubiCasa5K (5K raster — the modality the other two lack). Fine-tune on our own annotated UK plans. Keep the classical engine as the fallback binding and as the baseline to beat. |
+| C | ~~**Train the vectoriser.**~~ **Done differently: adopt and tune a published one.** Raster2Seq `cubicasa5k`, on a cleaned and thresholded copy of the plan, asked four ways and merged; room names read off the plan by our own OCR. Shipped in stage 5 behind `KEEP_PREDICTED_OUTLINES` / `NAME_FROM_PLAN_ONLY`. The classical engine stays as the fallback binding. |
+| C | **Re-run all 30 and re-measure end to end** — the plan channel is now good in isolation and nothing downstream has been re-measured. This is the gate on whether any of it paid. §9 step 1. |
+| C | **Move the recipe into the repo** and **take the doorways from the model's own door class** rather than inferring them from where regions touch. §9 steps 2-3. |
 | C | 🅑 **Shell from plan polygons** (see Amendment B). Small change, high value: removes the 31% rectangle inflation and the holes where unphotographed rooms should be. Rooms with no photograph are still built and tagged `inferred`. |
 | A | Annotate the remaining plan-bearing listings for arrangement (`tools/annotation_aid.py`); scrape 30 fresh listings for the re-measurement, because the holdout was inspected during the Phase 1 gate. |
 | A | Re-point the self-consistency metric: under the plan-polygon shell it measures the *vectoriser* against the plan's own printed text, not the photo channel. The photo channel's honest checks become ceiling height and cross-model scale agreement. |

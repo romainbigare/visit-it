@@ -763,23 +763,46 @@ class RoomFinderTest(unittest.TestCase):
             self.assertEqual(roomfinder.seeds_for("nobody", self._plan_image(), Path(tmp)),
                              ([], [], {}))
 
-    def test_coarse_seeds_grow_out_to_the_walls(self):
-        """The point of the whole thing: a seed that misses the walls comes back
-        sitting on them."""
+    def test_coarse_seeds_can_be_grown_out_to_the_walls(self):
+        """Growing still works and still puts the outline on the walls -- it is just
+        no longer what gets reported. Kept because the grown regions are what the
+        doorway detection runs on."""
         from pipeline.floorplan import vectorise, wallnet
         from pipeline.floorplan.ocr import PlanText
         pi = self._plan_image()
-        h, w = pi.ink.shape
         # two seeds, deliberately far too small and nowhere near the walls
         left = [[40, 60], [90, 60], [90, 130], [40, 130]]
         right = [[150, 60], [200, 60], [200, 130], [150, 130]]
-        v = vectorise.segment_from_room_seeds(pi, PlanText(), [left, right], mask=pi.ink)
+        v = vectorise.segment_from_room_seeds(pi, PlanText(), [left, right], mask=pi.ink,
+                                              keep_outlines=False)
         self.assertIsNotNone(v)
         self.assertEqual(len(v.rooms), 2)
         before = wallnet.outline_on_wall([left, right], pi.ink, tol=4)
         after = wallnet.outline_on_wall([r.polygon_px for r in v.rooms], pi.ink, tol=4)
         self.assertLess(max(before), 0.2, "the seeds should start off the walls")
         self.assertGreater(min(after), 0.85, "and finish on them")
+
+    def test_the_outline_reported_is_the_one_the_model_drew(self):
+        """What we ship: the model's own outline, not our watershed's version of it.
+
+        The rooms are still grown underneath -- that is how the doorways are found
+        -- but growing does not get to redraw them.
+        """
+        from pipeline.floorplan import vectorise
+        from pipeline.floorplan.ocr import PlanText
+        pi = self._plan_image()
+        left = [[40, 60], [90, 60], [90, 130], [40, 130]]
+        right = [[150, 60], [200, 60], [200, 130], [150, 130]]
+        v = vectorise.segment_from_room_seeds(pi, PlanText(), [left, right], mask=pi.ink)
+        self.assertEqual(len(v.rooms), 2)
+        got = sorted(([[round(x), round(y)] for x, y in r.polygon_px] for r in v.rooms),
+                     key=lambda p: min(x for x, _ in p))
+        for poly, want in zip(got, (left, right)):
+            self.assertCountEqual(poly, want)
+        for room in v.rooms:
+            self.assertIn("outline_as_predicted", room.qa_flags)
+        # and the regions underneath still meet, or there would be no doorway
+        self.assertTrue((v.labels > vectorise.EXTERIOR).any())
 
     def test_a_printed_name_beats_the_predicted_one(self):
         from pipeline.floorplan import vectorise
@@ -798,8 +821,26 @@ class RoomFinderTest(unittest.TestCase):
         named = {r.label: r.seeded_by for r in v.rooms}
         self.assertIn("kitchen", named, f"the printed name should win, got {named}")
         self.assertEqual(named["kitchen"], "caption")
-        self.assertEqual(named.get("bathroom"), "room_finder",
-                         "the room with no printed name keeps the predicted type")
+        # The room the plan never named stays unnamed. The model's guess is on the
+        # record as a flag, but its vocabulary is its training set's, not the plan's.
+        unnamed = [r for r in v.rooms if not r.label]
+        self.assertEqual(len(unnamed), 1, f"expected one unnamed room, got {named}")
+        self.assertIn("no_printed_name", unnamed[0].qa_flags)
+        self.assertIn("model_says_bathroom", unnamed[0].qa_flags)
+
+    def test_the_models_own_type_can_still_be_used_if_asked(self):
+        """The policy is a switch, not a rewrite -- the old behaviour is one flag away."""
+        from pipeline.floorplan import vectorise
+        from pipeline.floorplan.ocr import PlanText
+        pi = self._plan_image()
+        left = [[40, 60], [90, 60], [90, 130], [40, 130]]
+        right = [[150, 60], [200, 60], [200, 130], [150, 130]]
+        v = vectorise.segment_from_room_seeds(pi, PlanText(), [left, right], mask=pi.ink,
+                                              fallback_labels=["bathroom", "kitchen"],
+                                              name_from_plan_only=False)
+        got = {r.label for r in v.rooms}
+        self.assertEqual(got, {"bathroom", "kitchen"})
+        self.assertTrue(all(r.seeded_by == "room_finder" for r in v.rooms))
 
 
 class ImportPredictionsTest(unittest.TestCase):

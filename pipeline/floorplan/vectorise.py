@@ -267,11 +267,10 @@ def segment(pi: PlanImage, text: PlanText) -> Vectorisation:
     Four engines, in order of preference:
 
     1. A full trained plan reader, if one is installed (``learned``).
-    2. Room polygons predicted elsewhere by a GPU model (``roomfinder``), grown out
-       to the walls and named from the plan's own printed captions. Best of both:
-       measured on the golden set the predictions find the rooms -- open-plan
-       spaces whole, unlabelled WCs included -- and our walls put the corners in
-       the right place.
+    2. Room polygons predicted elsewhere by a GPU model (``roomfinder``), reported
+       as it drew them and named from the plan's own printed captions. Measured on
+       the golden set the predictions find the rooms -- open-plan spaces whole,
+       unlabelled WCs included -- and the plan's own text says what they are.
     3. The classical watershed over the ink mask.
     4. The same watershed over a *wall map from a pretrained net* (``wallnet``)
        instead of the ink mask.
@@ -354,7 +353,12 @@ COVERAGE_TOLERANCE = 0.8
 
 
 def segment_from_room_finder(pi: PlanImage, text: PlanText) -> Vectorisation | None:
-    """Rooms predicted by the GPU model, grown to our walls, named from the plan.
+    """Rooms as the GPU model drew them, named from what the plan prints.
+
+    The division of labour, settled by measurement (see
+    ``docs/PLAN-READING-REPORT.md`` section 8): the model finds the rooms and draws
+    them, and we read the plan to find out what they are called. Their geometry,
+    our words.
 
     Returns ``None`` when there is no prediction for this listing, which is the
     normal case until ``tools.import_room_predictions`` has been run -- so a fresh
@@ -376,11 +380,18 @@ def segment_from_room_finder(pi: PlanImage, text: PlanText) -> Vectorisation | N
     if v is None or not v.rooms:
         return None
     printed = sum(1 for r in v.rooms if r.seeded_by == "caption")
+    unnamed = sum(1 for r in v.rooms if "no_printed_name" in r.qa_flags)
     v.qa_flags = list(v.qa_flags) + [
         "rooms_from_room_finder",
         f"room_finder_kept_{len(v.rooms)}_of_{meta.get('predicted_rooms', '?')}",
         f"room_names_printed_{printed}_of_{len(v.rooms)}",
     ]
+    if KEEP_PREDICTED_OUTLINES:
+        v.qa_flags.append("outlines_as_predicted")
+    if unnamed:
+        # Worth seeing in the QA sheet: these are the rooms the plan never named,
+        # and under the plan-only policy they reach the shell with no name at all.
+        v.qa_flags.append(f"rooms_with_no_printed_name_{unnamed}")
     if mask is None:
         v.qa_flags.append("room_finder_without_wall_model")
     return v
@@ -419,6 +430,25 @@ def segment_with_wallnet(pi: PlanImage, text: PlanText,
     return v
 
 
+#: Report the outlines the model drew, rather than our watershed's opinion of where
+#: those rooms end. Growing them out to the walls does put more of each edge on a
+#: wall -- 81% to 91% on the 25 test plans -- but it is our reading of the room, not
+#: the model's, and it drags the outlines around to get there. Measured and chosen in
+#: ``notebooks/plan_reading_modal.ipynb``.
+#:
+#: The rooms still grow *internally*: two rooms share a doorway only where their free
+#: space meets, so adjacency and apertures are computed from the grown regions even
+#: though the outlines reported are the model's own.
+KEEP_PREDICTED_OUTLINES = True
+
+#: Name rooms only from what the plan prints. A room-polygon model's types come from
+#: whatever collection it was trained on -- CubiCasa5K answers "Undefined" for
+#: anything it is unsure of, and has no word for an airing cupboard at all -- while
+#: the plan prints "ENSUITE" and "AIRING CUPBOARD" in plain English and we read it.
+#: Where the plan says nothing the room stays unnamed and carries the model's guess
+#: as a QA flag, rather than wearing it as a name.
+NAME_FROM_PLAN_ONLY = True
+
 #: How far inside a predicted room its starting point is pulled, as a fraction of
 #: the room's own inscribed radius. A coarse polygon's edge routinely lands on -- or
 #: past -- the wall, and a starting point touching a wall lets the room grow straight
@@ -436,7 +466,10 @@ def segment_from_room_seeds(pi: PlanImage, text: PlanText,
                             room_seeds: list, mask: np.ndarray | None = None,
                             fallback_labels: list | None = None, *,
                             seed_core: float | None = None,
-                            confine: bool | None = None) -> Vectorisation | None:
+                            confine: bool | None = None,
+                            keep_outlines: bool | None = None,
+                            name_from_plan_only: bool | None = None
+                            ) -> Vectorisation | None:
     """Grow rooms somebody else found out to the walls we can see.
 
     Two models, each good at the half the other is bad at. A room-polygon model
@@ -530,17 +563,45 @@ def segment_from_room_seeds(pi: PlanImage, text: PlanText,
     if not rooms:
         return None
 
-    # Where the plan printed no name, fall back to the type the seeds came with.
-    # That is a guess from pixels rather than something the plan says, so the room
-    # carries a flag saying which of the two it got.
+    # The growing above decided which room is which and where the doorways are.
+    # What it reports as the room's shape is a separate question: hand back the
+    # outline the model drew, unless asked to hand back the grown one.
+    keep = KEEP_PREDICTED_OUTLINES if keep_outlines is None else keep_outlines
+    if keep:
+        came_from = {mid: i for (mid, _b, _xy), i in zip(seeds, order)}
+        for room in rooms:
+            idx = came_from.get(room.mask_label)
+            if idx is None:
+                continue
+            pts = np.asarray(room_seeds[idx], dtype=float).reshape(-1, 2)
+            if len(pts) < 3:
+                continue
+            poly = geom.ensure_ccw(pts)
+            room.polygon_px = [[float(x), float(y)] for x, y in poly]
+            room.area_px = float(geom.area(poly))
+            room.centroid_px = geom.centroid(poly)
+            room.qa_flags = list(room.qa_flags) + ["outline_as_predicted"]
+
+    # Where the plan printed no name, the model has a guess. Whether that guess
+    # becomes the room's name is a policy decision, not a technical one: its
+    # vocabulary is its training set's, and ours is the plan's own words.
+    plan_only = NAME_FROM_PLAN_ONLY if name_from_plan_only is None else name_from_plan_only
     predicted = {mid: name for (mid, _b, _xy), name in zip(seeds, fallback) if name}
     for room in rooms:
         if room.label:
             continue
         name = predicted.get(room.mask_label)
-        if name:
+        # Whatever happens to the name, the room itself came from the model, not
+        # from a distance peak -- which is what `_regions_from_labels` assumes for
+        # anything without a caption.
+        room.seeded_by = "room_finder"
+        if not name:
+            room.qa_flags = list(room.qa_flags) + ["no_printed_name"]
+        elif plan_only:
+            slug = "".join(ch if ch.isalnum() else "_" for ch in str(name).lower()).strip("_")
+            room.qa_flags = list(room.qa_flags) + ["no_printed_name", f"model_says_{slug}"]
+        else:
             room.label = name
-            room.seeded_by = "room_finder"
             room.qa_flags = list(room.qa_flags) + ["label_predicted_not_printed"]
     footprint = _footprint(labels, pi.wall_half_px)
     flags = ["rooms_from_external_seeds"]
